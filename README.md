@@ -49,29 +49,114 @@ npm run dev       # http://localhost:3000
 
 ### Publiceren
 
-De site gebruikt een SQLite-database en slaat geüploade foto's op de schijf op.
-Kies daarom een hosting waar **bestanden blijven bestaan**: een VPS, een
-Docker-host of een platform met een persistente schijf. Een omgeving die bij elke
-nieuwe versie de schijf leeggooit (zoals de standaard serverless hosting van
-Vercel) werkt niet zonder aanpassing.
+De site slaat alles op de schijf op: de database met je boekingen en berichten,
+en de foto's die je uploadt. Kies daarom hosting met een **schijf die blijft
+bestaan**. Een omgeving die bij elke nieuwe versie de schijf leeggooit, zoals de
+standaard serverless hosting van Vercel, werkt niet zonder aanpassing.
 
-Op een eigen server:
+In de repository staan een `Dockerfile` en een `fly.toml`, zodat je met een van
+onderstaande routes kunt publiceren.
+
+#### Route A — Fly.io (aanbevolen)
+
+Je hebt een Fly.io-account nodig, inclusief betaalgegevens. Een enkele kleine
+machine met een schijf van 1 GB valt in de goedkoopste categorie.
+
+```bash
+# eenmalig: installeren en inloggen
+curl -L https://fly.io/install.sh | sh
+fly auth login
+
+# in de projectmap
+fly launch --no-deploy --copy-config --name JOUW-APPNAAM
+fly volumes create kai_aerials_data --size 1 --region ams
+
+# geheimen instellen (deze komen NOOIT in de repository)
+npm run hash-password -- 'kies-hier-een-lang-wachtwoord'
+fly secrets set ADMIN_PASSWORD_HASH="scrypt:..." AUTH_SECRET="..."
+fly secrets set NEXT_PUBLIC_SITE_URL="https://JOUW-APPNAAM.fly.dev"
+
+fly deploy
+fly open
+```
+
+Let op: pas in `fly.toml` de regel `app = "kai-aerials"` aan naar de naam die je
+zelf kiest, en houd `[mounts]` ongewijzigd. Zonder die schijf is na een herstart
+alles weg.
+
+#### Route B — eigen server met Docker
+
+```bash
+docker build -t kai-aerials .
+docker volume create kai-aerials-data
+
+docker run -d --name kai-aerials \
+  -p 3000:3000 \
+  -v kai-aerials-data:/data \
+  -e ADMIN_PASSWORD_HASH="scrypt:..." \
+  -e AUTH_SECRET="..." \
+  -e NEXT_PUBLIC_SITE_URL="https://jouwdomein.nl" \
+  --restart unless-stopped \
+  kai-aerials
+```
+
+Zet er een reverse proxy met HTTPS voor (nginx of Caddy). Het inlogcookie wordt
+in productie alleen over HTTPS verstuurd, dus zonder HTTPS kun je niet inloggen.
+
+#### Route C — zonder Docker
 
 ```bash
 npm ci
 npm run build
-NODE_ENV=production npm start        # standaard poort 3000
+DATA_DIR=/var/lib/kai-aerials NODE_ENV=production npm start
 ```
 
-Zet daarbij:
+Draai dit onder een procesbeheerder zoals systemd of pm2, zodat de site na een
+herstart van de server vanzelf weer opkomt.
 
-- Een reverse proxy (nginx, Caddy) met HTTPS ervoor. Het inlogcookie wordt in
-  productie alleen over HTTPS verstuurd.
-- `DATA_DIR` naar een map die bewaard blijft, bijvoorbeeld
-  `/var/lib/kai-aerials`. Daar komen de database en de uploads te staan.
-- Een back-up van die map. Daar staan al je boekingen, projecten en berichten in.
+### Omgevingsvariabelen
 
----
+| Variabele | Verplicht | Waarvoor |
+| --- | --- | --- |
+| `ADMIN_PASSWORD_HASH` | ja | Zonder deze kun je niet in de beheeromgeving. Maken met `npm run hash-password`. |
+| `AUTH_SECRET` | ja | Ondertekent het inlogcookie. Komt uit hetzelfde commando. |
+| `NEXT_PUBLIC_SITE_URL` | ja | Paginatitels, deelbeeld, `robots.txt` en `sitemap.xml`. |
+| `DATA_DIR` | in productie | Map voor de database en de uploads. In Docker staat die al op `/data`. |
+| `DEMO_MODE` | nee | Staat standaard aan en toont de demobalk. Zet op `"false"` zodra je eigen inhoud erin staat. |
+| `SEED_ON_EMPTY` | nee | Staat standaard aan: een lege database wordt bij de eerste start met de voorbeelden gevuld. Zet op `"false"` als je leeg wilt beginnen. |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `MAIL_FROM`, `MAIL_TO` | nee | Nodig voor bevestigingsmails. Zonder deze gegevens gaat er geen mail uit, en zegt de site dat er ook bij. |
+
+Geheimen horen in de instellingen van je hosting, nooit in de repository.
+
+### Wat er na publicatie gebeurt
+
+De eerste keer dat de site opstart met een lege database, worden de fictieve
+diensten, beschikbaarheid en voorbeeldprojecten geplaatst. Dat gebeurt alleen
+als er nog geen enkele dienst bestaat, dus bestaande gegevens raak je nooit
+kwijt. Boven aan elke publieke pagina staat een balk die bezoekers vertelt dat
+het om voorbeeldgegevens gaat, met een link naar `/demo` waar precies staat wat
+verzonnen is en wat wel echt werkt.
+
+Controleer na het publiceren zelf even deze punten:
+
+- `https://jouwdomein.nl/api/health` geeft `{"status":"ok"}`.
+- De homepage laadt en de boekingsmodule toont vrije tijden.
+- Een proefaanvraag komt binnen onder Beheer → Boekingen.
+- Na `fly apps restart` of een herstart van de container staat die aanvraag er nog.
+
+### Back-up
+
+In `DATA_DIR` staat alles wat je niet kunt missen. Maak daar regelmatig een
+kopie van:
+
+```bash
+# Fly.io
+fly ssh console -C "sqlite3 /data/kai-aerials.db .dump" > backup.sql
+
+# Docker
+docker run --rm -v kai-aerials-data:/data -v "$PWD":/backup alpine \
+  tar czf /backup/kai-aerials-data.tar.gz -C /data .
+```
 
 ## 2. Toegang tot de beheeromgeving
 

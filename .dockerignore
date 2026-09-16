@@ -1,0 +1,9 @@
+node_modules
+.next
+data
+.git
+.env*
+!.env.example
+README.md
+*.tar.gz
+coverage

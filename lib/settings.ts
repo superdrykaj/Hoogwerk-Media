@@ -1,17 +1,9 @@
 // Let op: dit bestand draait alleen op de server (leest de database).
 import { getDb } from "./db";
+import { DEFAULT_SETTINGS } from "./defaults";
 import type { BookingSettings } from "./types";
 
-export const DEFAULT_SETTINGS: BookingSettings = {
-  /** Raster waarop tijdsloten beginnen, in minuten. */
-  slotIntervalMinutes: 30,
-  /** Standaard rusttijd tussen twee afspraken, in minuten. */
-  defaultBufferMinutes: 30,
-  /** Minimaal aantal uren tussen nu en de eerste boekbare afspraak. */
-  minLeadHours: 24,
-  /** Hoe ver vooruit bezoekers kunnen boeken, in dagen. */
-  maxAdvanceDays: 60,
-};
+export { DEFAULT_SETTINGS };
 
 export function getSettings(): BookingSettings {
   const rows = getDb()

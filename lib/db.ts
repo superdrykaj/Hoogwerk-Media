@@ -3,6 +3,9 @@ import Database from "better-sqlite3";
 import fs from "node:fs";
 import path from "node:path";
 
+import { DEFAULT_SETTINGS } from "./defaults";
+import { installExampleData } from "./example-data";
+
 /**
  * SQLite-database. Het bestand staat standaard in `data/kai-aerials.db`.
  * Zet DATABASE_PATH in het .env-bestand om een andere locatie te gebruiken.
@@ -31,7 +34,38 @@ function create(): Database.Database {
   // Wacht tot 5 seconden als een andere schrijver bezig is.
   db.pragma("busy_timeout = 5000");
   migrate(db);
+  bootstrap(db);
   return db;
+}
+
+/**
+ * Vult een verse database met de fictieve voorbeeldgegevens, zodat een nieuw
+ * geplaatste server niet leeg is. Draait alleen als er nog geen enkele dienst
+ * bestaat, dus bestaande gegevens worden nooit overschreven.
+ *
+ * Zet SEED_ON_EMPTY="false" om dit uit te schakelen, bijvoorbeeld als je met
+ * een schone installatie wilt beginnen.
+ */
+function bootstrap(db: Database.Database) {
+  if (process.env.SEED_ON_EMPTY === "false") return;
+
+  const existing = db.prepare("SELECT COUNT(*) AS n FROM services").get() as {
+    n: number;
+  };
+  if (existing.n > 0) return;
+
+  const insertSetting = db.prepare(
+    "INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO NOTHING",
+  );
+  for (const [key, value] of Object.entries(DEFAULT_SETTINGS)) {
+    insertSetting.run(key, String(value));
+  }
+
+  const counts = installExampleData(db);
+  console.log(
+    `[kai-aerials] Verse database gevuld met voorbeeldgegevens: ` +
+      `${counts.services} diensten, ${counts.projects} projecten.`,
+  );
 }
 
 export function getDb(): Database.Database {

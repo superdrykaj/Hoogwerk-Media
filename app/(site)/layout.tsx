@@ -1,3 +1,4 @@
+import { DemoBanner } from "@/components/demo-banner";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
@@ -9,6 +10,7 @@ export default function SiteLayout({
 }) {
   return (
     <div className="flex min-h-dvh flex-col">
+      <DemoBanner />
       <SiteHeader />
       <main id="hoofdinhoud" className="flex-1">
         {children}
