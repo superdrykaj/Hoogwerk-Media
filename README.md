@@ -315,6 +315,34 @@ het e-mailadres, het werkgebied, de hero-titel, het dienstenoverzicht, de
 werkwijze en de categorieën van het portfolio. Pas het bestand aan en de
 wijziging is overal op de site zichtbaar.
 
+### E-mailadressen
+
+Alle adressen staan in `content/site.ts`. Ze worden zo gebruikt:
+
+| Adres | Waar |
+| --- | --- |
+| `info@` | Op de site: footer, contactpagina, privacyverklaring. Contactformulier komt hier binnen. |
+| `boekingen@` | Aanvragen en afspraken. Meldingen van nieuwe boekingen en de bevestiging aan de klant. |
+| `kai@` | Persoonlijk. Staat bewust niet op de site, zodat spamverzamelaars het niet oppikken. |
+| `facturen@` | Administratie. Staat niet op de site en wordt door de website niet gebruikt. |
+
+`MAIL_TO` in je omgevingsvariabelen gaat voor op wat hier staat.
+
+### Logo
+
+Zet je logobestand in `public/` en verwijs ernaar in `content/site.ts`:
+
+```ts
+logo: { src: "/logo-mark.png", width: 36, height: 36 },
+```
+
+Zolang dat op `null` staat, toont de kop het ingebouwde beeldmerk. Gebruik een
+variant die leesbaar is op een donkere achtergrond, met een doorzichtige rand;
+de site is donker. De bedrijfsnaam ernaast blijft gewone tekst, zodat die
+scherp blijft op elk scherm en door zoekmachines gelezen wordt.
+
+Het pictogram op het browsertabblad staat los daarvan, in `app/icon.svg`.
+
 ### Afbeeldingen
 
 De tijdelijke beelden staan in **`public/images/`**:
@@ -390,8 +418,8 @@ SMTP_HOST="smtp.jouwprovider.nl"
 SMTP_PORT="587"
 SMTP_USER="jouw-gebruikersnaam"
 SMTP_PASSWORD="jouw-wachtwoord"
-MAIL_FROM="Hoogbeeld Media <no-reply@hoogbeeldmedia.nl>"
-MAIL_TO="hallo@hoogbeeldmedia.nl"
+MAIL_FROM="Hoogbeeld Media <boekingen@hoogbeeldmedia.nl>"
+MAIL_TO="boekingen@hoogbeeldmedia.nl"
 ```
 
 Daarna worden verstuurd:

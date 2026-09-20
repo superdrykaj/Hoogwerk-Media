@@ -23,8 +23,8 @@ export function DemoBanner() {
           Demo
         </span>
         <span>
-          Dit is een voorbeeldwebsite. De bedrijfsnaam, projecten, prijzen en
-          contactgegevens zijn <strong className="font-semibold">verzonnen</strong>.
+          De projecten, prijzen en foto&apos;s op deze site zijn nog{" "}
+          <strong className="font-semibold">voorbeelden</strong>.
         </span>
         <Link href="/demo" className="underline underline-offset-2 hover:text-amber-100">
           Wat betekent dat?

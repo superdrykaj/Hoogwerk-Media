@@ -36,7 +36,6 @@ export default function DemoPage() {
           </h2>
           <ul className="mt-5 space-y-3">
             {[
-              `De bedrijfsnaam ${site.name} en het e-mailadres ${site.email}.`,
               "Alle zes portfolioprojecten, inclusief de locaties en de verhalen erbij.",
               "De prijsindicaties bij de diensten.",
               "De afbeeldingen: dat zijn tijdelijke, automatisch gegenereerde beelden en geen echte dronefoto's.",
@@ -64,6 +63,7 @@ export default function DemoPage() {
           </h2>
           <ul className="mt-5 space-y-3">
             {[
+              `De bedrijfsnaam en het contactadres ${site.email}: die zijn echt, en berichten komen ook echt aan.`,
               "De boekingsmodule werkt volledig: aanvragen worden opgeslagen en een gekozen tijdslot is daarna bezet voor anderen.",
               "De beschikbaarheid, de tijdzone Europe/Amsterdam en de omgang met zomer- en wintertijd kloppen.",
               "Het contactformulier slaat berichten echt op, met validatie en spambeveiliging.",

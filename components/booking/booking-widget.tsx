@@ -760,7 +760,7 @@ function BookingConfirmation({
         <Link href="/portfolio" className="btn btn-ghost">
           Bekijk mijn werk
         </Link>
-        <a href={`mailto:${site.email}`} className="btn btn-quiet">
+        <a href={`mailto:${site.bookingEmail}`} className="btn btn-quiet">
           Mail me een aanvulling
         </a>
       </div>

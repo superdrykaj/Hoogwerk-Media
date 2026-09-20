@@ -20,8 +20,31 @@ export const site = {
   /** Werkgebied. */
   region: "Utrecht en omgeving",
 
-  /** E-mailadres waarop klanten je bereiken (FICTIEF). */
-  email: "hallo@hoogbeeldmedia.example",
+  /**
+   * Algemeen e-mailadres. Dit staat op de site: in de footer, op de
+   * contactpagina en in de privacyverklaring.
+   */
+  email: "info@hoogbeeldmedia.nl",
+
+  /**
+   * Adres voor aanvragen en afspraken. Hiernaartoe gaat de melding van een
+   * nieuwe boeking, en hiervandaan komt de bevestiging naar de klant.
+   * De omgevingsvariabele MAIL_TO gaat hierop voor.
+   */
+  bookingEmail: "boekingen@hoogbeeldmedia.nl",
+
+  /**
+   * Persoonlijk adres. Staat bewust niet op de site, zodat het niet door
+   * spamverzamelaars wordt opgepikt. Gebruik het in je eigen correspondentie.
+   */
+  personalEmail: "kai@hoogbeeldmedia.nl",
+
+  /**
+   * Administratie: facturen en offertes. Staat niet op de site en wordt door
+   * de website niet gebruikt; het staat hier zodat alle bedrijfsgegevens op
+   * één plek te vinden zijn.
+   */
+  invoiceEmail: "facturen@hoogbeeldmedia.nl",
 
   /**
    * Telefoonnummer. Laat leeg ("") als je geen nummer wilt tonen.
@@ -68,6 +91,20 @@ export const site = {
     "Een opnamesessie is altijd eerst een aanvraag. Ik controleer de locatie, " +
     "de luchtruimregels en de weersverwachting en bevestig daarna per e-mail. " +
     "Je zit dus nergens aan vast tot je die bevestiging hebt.",
+
+  /**
+   * Logo in de kop van de site.
+   *
+   * Zolang dit `null` is, wordt het ingebouwde beeldmerk getoond. Zet hier
+   * het pad naar je eigen bestand zodra dat in `public/` staat, bijvoorbeeld:
+   *
+   *   logo: { src: "/logo-mark.png", width: 36, height: 36 },
+   *
+   * Gebruik een variant die leesbaar is op een donkere achtergrond, met een
+   * doorzichtige rand. De naam ernaast blijft gewone tekst, zodat die
+   * scherp blijft en door zoekmachines gelezen wordt.
+   */
+  logo: null as { src: string; width: number; height: number } | null,
 
   /** Navigatie in de kop van de site. */
   nav: [

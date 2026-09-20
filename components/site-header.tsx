@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useState, useSyncExternalStore } from "react";
@@ -131,6 +132,20 @@ export function SiteHeader() {
 }
 
 function Mark() {
+  // Eigen logo zodra dat in content/site.ts is ingesteld.
+  if (site.logo) {
+    return (
+      <Image
+        src={site.logo.src}
+        alt=""
+        width={site.logo.width}
+        height={site.logo.height}
+        priority
+        className="h-9 w-auto"
+      />
+    );
+  }
+
   return (
     <span
       aria-hidden="true"

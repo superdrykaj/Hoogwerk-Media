@@ -125,12 +125,13 @@ export async function sendBookingRequestMails(booking: Booking): Promise<{
       "Vragen? Antwoord gerust op deze mail.",
       "",
       `Groet, Kai — ${site.name}`,
-      site.email,
+      site.bookingEmail,
     ].join("\n"),
   );
 
+  // Melding van een nieuwe aanvraag gaat naar het boekingenadres.
   const owner = await send(
-    process.env.MAIL_TO ?? site.email,
+    process.env.MAIL_TO ?? site.bookingEmail,
     `Nieuwe aanvraag ${booking.reference} — ${booking.name}`,
     ["Er is een nieuwe aanvraag binnengekomen.", "", bookingSummary(booking)].join(
       "\n",
@@ -156,6 +157,7 @@ export async function sendBookingConfirmedMail(
       "Verandert er iets aan het weer of de locatie, dan neem ik op tijd contact op.",
       "",
       `Groet, Kai — ${site.name}`,
+      site.bookingEmail,
     ].join("\n"),
   );
 }
@@ -202,6 +204,7 @@ export async function sendContactMails(
       `Groet, Kai — ${site.name}`,
     ].join("\n"),
   );
+  // Een contactbericht is algemeen en gaat naar het algemene adres.
   const owner = await send(
     process.env.MAIL_TO ?? site.email,
     `Contactformulier: ${message.subject}`,
