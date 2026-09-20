@@ -26,6 +26,7 @@ import {
 import {
   sendBookingCancelledMail,
   sendBookingConfirmedMail,
+  sendTestMail,
 } from "@/lib/mail";
 import { deleteMessage, setMessageHandled } from "@/lib/messages";
 import {
@@ -367,6 +368,55 @@ export async function saveSettingsAction(
   revalidatePath("/admin/instellingen");
   revalidatePath("/");
   return { status: "success", message: "De boekingsregels zijn opgeslagen." };
+}
+
+/**
+ * Stuurt een proefbericht, zodat je de SMTP-gegevens kunt controleren zonder
+ * een echte aanvraag te doen. De foutmelding van de mailserver komt terug in
+ * het scherm, want juist die vertelt wat er mis is.
+ */
+export async function sendTestMailAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  await requireAdmin();
+
+  const to = String(formData.get("to") ?? "").trim();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to)) {
+    return {
+      status: "error",
+      message: "Vul een geldig e-mailadres in om het proefbericht heen te sturen.",
+    };
+  }
+
+  const limit = rateLimit("proefmail", 10, 10 * 60 * 1000);
+  if (!limit.allowed) {
+    return {
+      status: "error",
+      message: "Er zijn net veel proefberichten verstuurd. Probeer het zo nog eens.",
+    };
+  }
+
+  const { status, detail } = await sendTestMail(to);
+  revalidatePath("/admin/instellingen");
+
+  if (status === "sent") {
+    return {
+      status: "success",
+      message: `Verstuurd naar ${to}. Komt het niet aan, kijk dan ook in de map ongewenste e-mail.`,
+    };
+  }
+  if (status === "skipped") {
+    return {
+      status: "warning",
+      message:
+        "E-mail is nog niet ingesteld, dus er is niets verstuurd. Zet eerst de SMTP-gegevens klaar.",
+    };
+  }
+  return {
+    status: "error",
+    message: `De mailserver weigerde het bericht: ${detail}`,
+  };
 }
 
 /* -------------------------------------------------------------------------- */

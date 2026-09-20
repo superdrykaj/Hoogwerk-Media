@@ -476,27 +476,82 @@ doet daar niet geheimzinnig over: bezoekers zien na het aanvragen dat er geen
 bevestigingsmail is verstuurd, en in de beheeromgeving staat een waarschuwing.
 Aanvragen en berichten worden wél gewoon opgeslagen.
 
-Zet in `.env.local`:
+#### Welke waarden je instelt
 
+| Variabele | Nodig | Waarvoor |
+| --- | --- | --- |
+| `SMTP_HOST` | ja | Mailserver, bij Microsoft 365 `smtp.office365.com` |
+| `SMTP_PORT` | ja | `587` (STARTTLS) of `465` (directe TLS) |
+| `SMTP_USER` | meestal | Het postvak waarmee wordt ingelogd |
+| `SMTP_PASSWORD` | meestal | Wachtwoord of app-wachtwoord van dat postvak |
+| `MAIL_FROM` | ja | Afzender. Moet een adres zijn dat het postvak mág gebruiken |
+| `MAIL_TO_BOOKINGS` | nee | Waar meldingen van aanvragen heen gaan; standaard `boekingen@` |
+| `MAIL_TO_CONTACT` | nee | Waar contactberichten heen gaan; standaard `info@` |
+| `MAIL_TO` | nee | Eén adres voor allebei, als je ze niet wilt scheiden |
+
+Laat je de drie `MAIL_TO`-regels weg, dan gebruikt de site de adressen uit
+`content/site.ts`. Dat is meestal precies goed.
+
+#### Microsoft 365 (Exchange Online)
+
+```bash
+fly secrets set \
+  SMTP_HOST="smtp.office365.com" \
+  SMTP_PORT="587" \
+  SMTP_USER="kai@hoogbeeldmedia.nl" \
+  SMTP_PASSWORD="het wachtwoord of app-wachtwoord" \
+  MAIL_FROM="Hoogbeeld Media <kai@hoogbeeldmedia.nl>"
 ```
-SMTP_HOST="smtp.jouwprovider.nl"
-SMTP_PORT="587"
-SMTP_USER="jouw-gebruikersnaam"
-SMTP_PASSWORD="jouw-wachtwoord"
-MAIL_FROM="Hoogbeeld Media <boekingen@hoogbeeldmedia.nl>"
-MAIL_TO="boekingen@hoogbeeldmedia.nl"
-```
 
-Daarna worden verstuurd:
+Drie dingen die bij Microsoft 365 misgaan als je ze overslaat:
 
-- een bevestiging van de aanvraag naar de klant, met het kenmerk;
-- een melding van de nieuwe aanvraag naar jou;
-- een bericht bij bevestigen, afwijzen of annuleren;
-- een ontvangstbevestiging van het contactformulier naar de afzender, plus het
-  bericht naar jou.
+1. **Authenticated SMTP staat per postvak uit.** Zet hem aan in het
+   Microsoft 365-beheercentrum: *Gebruikers → Actieve gebruikers → het account
+   → Mail → E-mail-apps beheren → Geverifieerde SMTP*.
+2. **Beveiligingsstandaarden blokkeren SMTP AUTH voor de hele tenant**, ook als
+   het postvak het wel mag. Staan ze aan, dan kun je ook geen app-wachtwoord
+   maken. Je moet dan overstappen op voorwaardelijke toegang, of een aparte
+   verzenddienst gebruiken.
+3. **Je mag standaard alleen versturen vanaf het hoofdadres.** `info@`,
+   `boekingen@` en `facturen@` zijn aliassen van hetzelfde postvak; versturen
+   als alias moet apart worden aangezet
+   (`Set-OrganizationConfig -SendFromAliasEnabled $true`). Daarom staat
+   `MAIL_FROM` hierboven op het hoofdadres. De site zet in elke mail een
+   **antwoordadres**, zodat een klant tóch bij `boekingen@` of `info@`
+   uitkomt.
 
-Op het beheeroverzicht zie je van de laatste vijf e-mails of ze zijn verzonden,
-overgeslagen of mislukt.
+Let op de houdbaarheid: Microsoft schakelt basisauthenticatie voor SMTP AUTH
+eind december 2026 standaard uit (een beheerder kan het daarna nog aanzetten),
+en stapt daarna over op OAuth. Reken erop dat je dit binnen afzienbare tijd
+vervangt door OAuth of door een aparte verzenddienst.
+
+#### Controleren of het werkt
+
+In **Beheer → Instellingen** staat onder *E-mail* precies welk bericht naar
+welk adres gaat, en een knop om een **proefbericht** te sturen. Mislukt het,
+dan staat de foutmelding van de mailserver er letterlijk bij — dat is meestal
+genoeg om te zien wat er scheelt. Op het beheeroverzicht zie je van de laatste
+vijf e-mails of ze zijn verzonden, overgeslagen of mislukt.
+
+#### Wat er verstuurd wordt
+
+| Bericht | Naar | Antwoordadres |
+| --- | --- | --- |
+| Bevestiging van de aanvraag, met kenmerk | de klant | `boekingen@` |
+| Melding van een nieuwe aanvraag | jou | de klant |
+| Bevestigen, afwijzen of annuleren | de klant | `boekingen@` |
+| Ontvangstbevestiging contactformulier | de afzender | `info@` |
+| Het contactbericht zelf | jou | de afzender |
+
+Je kunt dus rechtstreeks op een melding antwoorden; die reactie komt bij de
+klant terecht, niet bij jezelf.
+
+#### SPF, DKIM en DMARC
+
+Het SPF-record van `hoogbeeldmedia.nl` eindigt op `-all` en staat alleen
+Microsoft toe. Verstuur je via Microsoft 365, dan klopt dat en hoef je niets te
+doen. Ga je via een andere dienst versturen, dan moet die eerst in het
+SPF-record, anders worden je mails geweigerd in plaats van in de spammap gezet.
 
 ### Publieke adres van de site
 

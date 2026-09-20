@@ -1040,7 +1040,9 @@ function BookingConfirmation({
       <p className="mx-auto mt-5 max-w-md text-xs leading-relaxed text-mist-500">
         {result.mailSent
           ? "Je ontvangt een bevestigingsmail op het opgegeven adres."
-          : "Let op: het versturen van e-mail is op deze site nog niet ingesteld, dus je krijgt nu geen bevestigingsmail. Je aanvraag is wél opgeslagen."}
+          : result.mailConfigured
+            ? "Het versturen van de bevestigingsmail is niet gelukt. Je aanvraag is wél opgeslagen en ik heb hem gezien; ik neem zelf contact met je op."
+            : "Let op: het versturen van e-mail is op deze site nog niet ingesteld, dus je krijgt nu geen bevestigingsmail. Je aanvraag is wél opgeslagen."}
       </p>
       <div className="mt-7 flex flex-wrap justify-center gap-3">
         <Link href="/portfolio" className="btn btn-ghost">

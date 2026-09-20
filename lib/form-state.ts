@@ -13,7 +13,10 @@ export type FormState = {
     reference: string;
     when: string;
     serviceName: string;
+    /** Is de bevestigingsmail daadwerkelijk de deur uit gegaan? */
     mailSent: boolean;
+    /** Staan de SMTP-gegevens ingesteld? Zo niet, dan is er niets geprobeerd. */
+    mailConfigured: boolean;
   };
 };
 

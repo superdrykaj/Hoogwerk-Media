@@ -103,7 +103,8 @@ export async function requestBookingAction(
       reference: created.booking.reference,
       when: formatTimestamp(created.booking.startUtc),
       serviceName: created.booking.serviceName,
-      mailSent: isMailConfigured() && mail.customer === "sent",
+      mailSent: mail.customer === "sent",
+      mailConfigured: isMailConfigured(),
     },
   };
 }
@@ -167,7 +168,8 @@ export async function sendContactAction(
       reference: "",
       when: "",
       serviceName: "",
-      mailSent: isMailConfigured() && mail.customer === "sent",
+      mailSent: mail.customer === "sent",
+      mailConfigured: isMailConfigured(),
     },
   };
 }

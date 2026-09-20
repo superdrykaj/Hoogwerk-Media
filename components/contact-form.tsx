@@ -33,7 +33,9 @@ export function ContactForm({ mailReady }: { mailReady: boolean }) {
         <p className="mt-4 text-xs text-mist-600">
           {state.result?.mailSent
             ? "Je ontvangt ook een bevestiging per e-mail."
-            : "Let op: e-mail is op deze site nog niet ingesteld, dus je krijgt nu geen bevestigingsmail."}
+            : state.result?.mailConfigured
+              ? "Het versturen van de bevestigingsmail is niet gelukt. Je bericht is wél opgeslagen en wordt gelezen."
+              : "Let op: e-mail is op deze site nog niet ingesteld, dus je krijgt nu geen bevestigingsmail."}
         </p>
       </div>
     );
