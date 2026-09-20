@@ -330,18 +330,34 @@ Alle adressen staan in `content/site.ts`. Ze worden zo gebruikt:
 
 ### Logo
 
-Zet je logobestand in `public/` en verwijs ernaar in `content/site.ts`:
+Het originele logo staat in `brand/logo-origineel.png`. Daaruit worden de
+varianten gemaakt die de site gebruikt:
 
-```ts
-logo: { src: "/logo-mark.png", width: 36, height: 36 },
+```bash
+npm run logo
 ```
 
-Zolang dat op `null` staat, toont de kop het ingebouwde beeldmerk. Gebruik een
-variant die leesbaar is op een donkere achtergrond, met een doorzichtige rand;
-de site is donker. De bedrijfsnaam ernaast blijft gewone tekst, zodat die
-scherp blijft op elk scherm en door zoekmachines gelezen wordt.
+Dat script snijdt het beeldmerk los van de woordmerk en keert de tinten om,
+zodat de vorm licht op donker staat. Nodig, want het origineel is donker op
+wit en de site is donker. Het schrijft:
 
-Het pictogram op het browsertabblad staat los daarvan, in `app/icon.svg`.
+| Bestand | Waarvoor |
+| --- | --- |
+| `public/logo-mark.png` | Beeldmerk in de kop van de site |
+| `app/icon.png` | Pictogram op het browsertabblad |
+| `app/apple-icon.png` | Pictogram voor een snelkoppeling op iOS |
+
+Vervang je het logo, zet dan het nieuwe bestand op dezelfde plek en draai het
+script opnieuw. Het zoekt zelf waar het beeldmerk ophoudt en de tekst begint,
+dus een andere indeling is geen probleem, zolang het een donkere vorm op een
+lichte achtergrond is.
+
+De bedrijfsnaam naast het beeldmerk blijft gewone tekst. Dat blijft scherp op
+elk scherm en is leesbaar voor zoekmachines, wat bij een afbeelding niet zo
+is. Wil je toch het hele logo als beeld, zet dan in `content/site.ts` een
+ander bestand bij `logo` en haal de naam uit `components/site-header.tsx`.
+
+Staat `logo` op `null`, dan valt de kop terug op een ingebouwd beeldmerk.
 
 ### Afbeeldingen
 

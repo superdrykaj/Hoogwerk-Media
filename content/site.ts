@@ -104,7 +104,9 @@ export const site = {
    * doorzichtige rand. De naam ernaast blijft gewone tekst, zodat die
    * scherp blijft en door zoekmachines gelezen wordt.
    */
-  logo: null as { src: string; width: number; height: number } | null,
+  logo: { src: "/logo-mark.png", width: 160, height: 160 } as
+    | { src: string; width: number; height: number }
+    | null,
 
   /** Navigatie in de kop van de site. */
   nav: [

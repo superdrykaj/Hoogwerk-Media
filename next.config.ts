@@ -15,6 +15,8 @@ const nextConfig: NextConfig = {
     localPatterns: [
       { pathname: "/images/**" },
       { pathname: "/api/uploads/**" },
+      // Logovarianten in de wortel van public/, zoals /logo-mark.png.
+      { pathname: "/logo-*" },
     ],
     formats: ["image/avif", "image/webp"],
   },
