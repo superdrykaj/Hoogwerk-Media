@@ -72,14 +72,15 @@ zet hem dan op `1`; de machine draait dan altijd door.
 curl -L https://fly.io/install.sh | sh
 fly auth login
 
-# in de projectmap
-fly launch --no-deploy --copy-config --name JOUW-APPNAAM
+# in de projectmap. De appnaam moet wereldwijd uniek zijn op Fly; is
+# "hoogbeeld-media" bezet, kies dan een andere en zet die ook in fly.toml.
+fly launch --no-deploy --copy-config --name hoogbeeld-media
 fly volumes create hoogbeeld_media_data --size 1 --region ams
 
 # geheimen instellen (deze komen NOOIT in de repository)
 npm run hash-password -- 'kies-hier-een-lang-wachtwoord'
 fly secrets set ADMIN_PASSWORD_HASH="scrypt:..." AUTH_SECRET="..."
-fly secrets set NEXT_PUBLIC_SITE_URL="https://JOUW-APPNAAM.fly.dev"
+fly secrets set NEXT_PUBLIC_SITE_URL="https://hoogbeeld-media.fly.dev"
 
 fly deploy
 fly open
@@ -97,18 +98,18 @@ alles weg.
 
 #### Je eigen domein koppelen
 
-Doe dit nadat de site op `https://JOUW-APPNAAM.fly.dev` werkt.
+Doe dit nadat de site op `https://hoogbeeld-media.fly.dev` werkt.
 
 ```bash
 # 1. Kijk welke adressen je app heeft
 fly ips list
 
 # 2. Vraag een certificaat aan voor je domein
-fly certs add jouwdomein.nl
-fly certs add www.jouwdomein.nl
+fly certs add hoogbeeldmedia.nl
+fly certs add www.hoogbeeldmedia.nl
 
 # 3. Fly toont nu precies welke DNS-records je moet aanmaken
-fly certs show jouwdomein.nl
+fly certs show hoogbeeldmedia.nl
 ```
 
 Die laatste opdracht is de bron van waarheid: hij noemt per domein het type
@@ -118,7 +119,7 @@ die over zoals ze er staan, in plaats van ze zelf te bedenken.
 DNS-wijzigingen zijn niet meteen overal doorgevoerd. Volg met:
 
 ```bash
-fly certs check jouwdomein.nl
+fly certs check hoogbeeldmedia.nl
 ```
 
 Zodra het certificaat geldig is, zet je de publieke URL goed en publiceer je
@@ -126,11 +127,11 @@ opnieuw, zodat de paginatitels, het deelbeeld en de sitemap naar je eigen
 domein wijzen in plaats van naar het adres op fly.dev:
 
 ```bash
-fly secrets set NEXT_PUBLIC_SITE_URL="https://jouwdomein.nl"
+fly secrets set NEXT_PUBLIC_SITE_URL="https://hoogbeeldmedia.nl"
 ```
 
 Het zetten van een secret start de app automatisch opnieuw op. Controleer
-daarna dat `https://jouwdomein.nl/sitemap.xml` je eigen domein noemt.
+daarna dat `https://hoogbeeldmedia.nl/sitemap.xml` je eigen domein noemt.
 
 #### Route B — eigen server met Docker
 
@@ -143,7 +144,7 @@ docker run -d --name hoogbeeld-media \
   -v hoogbeeld-media-data:/data \
   -e ADMIN_PASSWORD_HASH="scrypt:..." \
   -e AUTH_SECRET="..." \
-  -e NEXT_PUBLIC_SITE_URL="https://jouwdomein.nl" \
+  -e NEXT_PUBLIC_SITE_URL="https://hoogbeeldmedia.nl" \
   --restart unless-stopped \
   hoogbeeld-media
 ```
@@ -187,7 +188,7 @@ verzonnen is en wat wel echt werkt.
 
 Controleer na het publiceren zelf even deze punten:
 
-- `https://jouwdomein.nl/api/health` geeft `{"status":"ok"}`.
+- `https://hoogbeeldmedia.nl/api/health` geeft `{"status":"ok"}`.
 - De homepage laadt en de boekingsmodule toont vrije tijden.
 - Een proefaanvraag komt binnen onder Beheer → Boekingen.
 - Na `fly apps restart` of een herstart van de container staat die aanvraag er nog.
@@ -366,8 +367,8 @@ SMTP_HOST="smtp.jouwprovider.nl"
 SMTP_PORT="587"
 SMTP_USER="jouw-gebruikersnaam"
 SMTP_PASSWORD="jouw-wachtwoord"
-MAIL_FROM="Hoogbeeld Media <no-reply@jouwdomein.nl>"
-MAIL_TO="hallo@jouwdomein.nl"
+MAIL_FROM="Hoogbeeld Media <no-reply@hoogbeeldmedia.nl>"
+MAIL_TO="hallo@hoogbeeldmedia.nl"
 ```
 
 Daarna worden verstuurd:
@@ -384,7 +385,7 @@ overgeslagen of mislukt.
 ### Publieke adres van de site
 
 ```
-NEXT_PUBLIC_SITE_URL="https://jouwdomein.nl"
+NEXT_PUBLIC_SITE_URL="https://hoogbeeldmedia.nl"
 ```
 
 Dit adres wordt gebruikt voor de paginatitels, het deelbeeld op sociale media,
