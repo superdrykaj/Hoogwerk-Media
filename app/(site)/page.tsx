@@ -85,7 +85,14 @@ function Hero() {
 function Services({
   services,
 }: {
-  services: { id: number; name: string; priceLabel: string; durationMinutes: number }[];
+  services: {
+    id: number;
+    name: string;
+    description: string;
+    priceLabel: string;
+    durationMinutes: number;
+    introOnly: boolean;
+  }[];
 }) {
   return (
     <section className="container-page py-24" aria-labelledby="diensten-titel">
@@ -115,24 +122,50 @@ function Services({
 
       {services.length > 0 && (
         <Reveal delay={120}>
-          <ul className="mt-10 flex flex-wrap gap-3">
-            {services.map((service) => (
-              <li
-                key={service.id}
-                className="flex items-baseline gap-2 rounded-full border border-ink-700 bg-ink-900 px-4 py-2 text-sm"
+          <div className="mt-12 overflow-hidden rounded-2xl border border-ink-700 bg-ink-900">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-ink-700 px-5 py-4 sm:px-7">
+              <h3 className="display-3 text-base">Diensten en tarieven</h3>
+              <p className="text-xs text-mist-600">
+                Indicaties. De prijs spreken we vooraf samen af.
+              </p>
+            </div>
+
+            <ul className="divide-y divide-ink-700">
+              {services.map((service) => (
+                <li key={service.id} className="px-5 py-4 sm:px-7">
+                  {/* Onder sm staat de prijs altijd op een eigen regel, zodat
+                      de lijst niet per dienst anders afbreekt. */}
+                  <div className="sm:flex sm:items-baseline sm:justify-between sm:gap-x-6">
+                    <p className="font-medium">
+                      {service.name}
+                      <span className="ml-2 text-sm font-normal text-mist-600">
+                        {service.introOnly
+                          ? `kennismaking van ${service.durationMinutes} min`
+                          : `${service.durationMinutes} min`}
+                      </span>
+                    </p>
+                    <p className="mt-0.5 text-sm font-semibold text-azure-300 sm:mt-0 sm:shrink-0">
+                      {service.priceLabel || "In overleg"}
+                    </p>
+                  </div>
+                  {service.description && (
+                    <p className="mt-1 max-w-2xl text-sm leading-relaxed text-mist-500">
+                      {service.description}
+                    </p>
+                  )}
+                </li>
+              ))}
+            </ul>
+
+            <div className="border-t border-ink-700 px-5 py-4 sm:px-7">
+              <a
+                href="#boeken"
+                className="text-sm font-medium text-azure-300 hover:underline"
               >
-                <span className="font-medium">{service.name}</span>
-                <span className="text-mist-600">·</span>
-                <span className="text-mist-500">{service.durationMinutes} min</span>
-                {service.priceLabel && (
-                  <>
-                    <span className="text-mist-600">·</span>
-                    <span className="text-azure-300">{service.priceLabel}</span>
-                  </>
-                )}
-              </li>
-            ))}
-          </ul>
+                Een moment kiezen →
+              </a>
+            </div>
+          </div>
         </Reveal>
       )}
     </section>
