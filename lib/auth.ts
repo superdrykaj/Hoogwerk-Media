@@ -15,7 +15,7 @@ import { hashPassword, verifyPassword } from "./password";
  * Beide waarden staan alleen op de server, nooit in de frontend.
  */
 
-const COOKIE_NAME = "kai_admin_session";
+const COOKIE_NAME = "hoogbeeld_admin_session";
 const SESSION_HOURS = 12;
 
 export class AuthNotConfiguredError extends Error {}

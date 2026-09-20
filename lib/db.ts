@@ -7,7 +7,10 @@ import { DEFAULT_SETTINGS } from "./defaults";
 import { installExampleData } from "./example-data";
 
 /**
- * SQLite-database. Het bestand staat standaard in `data/kai-aerials.db`.
+ * SQLite-database. Het bestand heet `kai-aerials.db`: die naam stamt uit de
+ * tijd vóór de naamswijziging en blijft staan, omdat hernoemen een bestaande
+ * database onvindbaar zou maken. Zet DATABASE_PATH om een andere naam of
+ * locatie te gebruiken.
  * Zet DATABASE_PATH in het .env-bestand om een andere locatie te gebruiken.
  */
 
@@ -22,7 +25,7 @@ const DB_PATH = process.env.DATABASE_PATH
   : path.join(DATA_DIR, "kai-aerials.db");
 
 declare global {
-  var __kaiAerialsDb: Database.Database | undefined;
+  var __hoogbeeldMediaDb: Database.Database | undefined;
 }
 
 function create(): Database.Database {
@@ -63,16 +66,16 @@ function bootstrap(db: Database.Database) {
 
   const counts = installExampleData(db);
   console.log(
-    `[kai-aerials] Verse database gevuld met voorbeeldgegevens: ` +
+    `[hoogbeeld-media] Verse database gevuld met voorbeeldgegevens: ` +
       `${counts.services} diensten, ${counts.projects} projecten.`,
   );
 }
 
 export function getDb(): Database.Database {
-  if (!globalThis.__kaiAerialsDb) {
-    globalThis.__kaiAerialsDb = create();
+  if (!globalThis.__hoogbeeldMediaDb) {
+    globalThis.__hoogbeeldMediaDb = create();
   }
-  return globalThis.__kaiAerialsDb;
+  return globalThis.__hoogbeeldMediaDb;
 }
 
 function migrate(db: Database.Database) {

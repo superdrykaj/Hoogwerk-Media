@@ -52,13 +52,13 @@ function map(row: Row): Booking {
   };
 }
 
-/** Kort, goed voorleesbaar kenmerk zoals "KA-7F3QD2". */
+/** Kort, goed voorleesbaar kenmerk zoals "HM-7F3QD2". */
 function makeReference(): string {
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let out = "";
   const bytes = crypto.randomBytes(6);
   for (const byte of bytes) out += alphabet[byte % alphabet.length];
-  return `KA-${out}`;
+  return `HM-${out}`;
 }
 
 export type NewBooking = {

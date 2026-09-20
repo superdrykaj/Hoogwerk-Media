@@ -12,7 +12,7 @@
 
 export const site = {
   /** Naam van het bedrijf, staat in het logo, de titels en de footer. */
-  name: "Kai Aerials",
+  name: "Hoogbeeld Media",
 
   /** Korte zin onder het logo en in de zoekresultaten. */
   tagline: "Dronefotografie en dronevideo in Utrecht en omgeving",
@@ -21,7 +21,7 @@ export const site = {
   region: "Utrecht en omgeving",
 
   /** E-mailadres waarop klanten je bereiken (FICTIEF). */
-  email: "hallo@kaiaerials.example",
+  email: "hallo@hoogbeeldmedia.example",
 
   /**
    * Telefoonnummer. Laat leeg ("") als je geen nummer wilt tonen.

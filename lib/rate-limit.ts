@@ -9,12 +9,12 @@ import "server-only";
 type Bucket = { count: number; resetAt: number };
 
 declare global {
-  var __kaiRateLimit: Map<string, Bucket> | undefined;
+  var __hoogbeeldRateLimit: Map<string, Bucket> | undefined;
 }
 
 function store(): Map<string, Bucket> {
-  if (!globalThis.__kaiRateLimit) globalThis.__kaiRateLimit = new Map();
-  return globalThis.__kaiRateLimit;
+  if (!globalThis.__hoogbeeldRateLimit) globalThis.__hoogbeeldRateLimit = new Map();
+  return globalThis.__hoogbeeldRateLimit;
 }
 
 export function rateLimit(

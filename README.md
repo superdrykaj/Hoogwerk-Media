@@ -1,4 +1,4 @@
-# Kai Aerials — website met online boekingsmodule
+# Hoogbeeld Media — website met online boekingsmodule
 
 Een complete website voor een zelfstandige dronepiloot: portfolio, contactpagina
 en een boekingsmodule op de homepage, met een beveiligde beheeromgeving op
@@ -69,7 +69,7 @@ fly auth login
 
 # in de projectmap
 fly launch --no-deploy --copy-config --name JOUW-APPNAAM
-fly volumes create kai_aerials_data --size 1 --region ams
+fly volumes create hoogbeeld_media_data --size 1 --region ams
 
 # geheimen instellen (deze komen NOOIT in de repository)
 npm run hash-password -- 'kies-hier-een-lang-wachtwoord'
@@ -80,24 +80,24 @@ fly deploy
 fly open
 ```
 
-Let op: pas in `fly.toml` de regel `app = "kai-aerials"` aan naar de naam die je
+Let op: pas in `fly.toml` de regel `app = "hoogbeeld-media"` aan naar de naam die je
 zelf kiest, en houd `[mounts]` ongewijzigd. Zonder die schijf is na een herstart
 alles weg.
 
 #### Route B — eigen server met Docker
 
 ```bash
-docker build -t kai-aerials .
-docker volume create kai-aerials-data
+docker build -t hoogbeeld-media .
+docker volume create hoogbeeld-media-data
 
-docker run -d --name kai-aerials \
+docker run -d --name hoogbeeld-media \
   -p 3000:3000 \
-  -v kai-aerials-data:/data \
+  -v hoogbeeld-media-data:/data \
   -e ADMIN_PASSWORD_HASH="scrypt:..." \
   -e AUTH_SECRET="..." \
   -e NEXT_PUBLIC_SITE_URL="https://jouwdomein.nl" \
   --restart unless-stopped \
-  kai-aerials
+  hoogbeeld-media
 ```
 
 Zet er een reverse proxy met HTTPS voor (nginx of Caddy). Het inlogcookie wordt
@@ -108,7 +108,7 @@ in productie alleen over HTTPS verstuurd, dus zonder HTTPS kun je niet inloggen.
 ```bash
 npm ci
 npm run build
-DATA_DIR=/var/lib/kai-aerials NODE_ENV=production npm start
+DATA_DIR=/var/lib/hoogbeeld-media NODE_ENV=production npm start
 ```
 
 Draai dit onder een procesbeheerder zoals systemd of pm2, zodat de site na een
@@ -152,10 +152,11 @@ kopie van:
 ```bash
 # Fly.io
 fly ssh console -C "sqlite3 /data/kai-aerials.db .dump" > backup.sql
+# Het databasebestand heet nog kai-aerials.db, van vóór de naamswijziging.
 
 # Docker
-docker run --rm -v kai-aerials-data:/data -v "$PWD":/backup alpine \
-  tar czf /backup/kai-aerials-data.tar.gz -C /data .
+docker run --rm -v hoogbeeld-media-data:/data -v "$PWD":/backup alpine \
+  tar czf /backup/hoogbeeld-media-data.tar.gz -C /data .
 ```
 
 ## 2. Toegang tot de beheeromgeving
@@ -317,7 +318,7 @@ SMTP_HOST="smtp.jouwprovider.nl"
 SMTP_PORT="587"
 SMTP_USER="jouw-gebruikersnaam"
 SMTP_PASSWORD="jouw-wachtwoord"
-MAIL_FROM="Kai Aerials <no-reply@jouwdomein.nl>"
+MAIL_FROM="Hoogbeeld Media <no-reply@jouwdomein.nl>"
 MAIL_TO="hallo@jouwdomein.nl"
 ```
 
@@ -344,7 +345,7 @@ Dit adres wordt gebruikt voor de paginatitels, het deelbeeld op sociale media,
 ### Opslaglocatie (aanbevolen in productie)
 
 ```
-DATA_DIR="/var/lib/kai-aerials"
+DATA_DIR="/var/lib/hoogbeeld-media"
 ```
 
 ### Wat er níét nodig is

@@ -1,5 +1,5 @@
 # Fly.io-configuratie. Pas "app" aan naar de naam die je zelf kiest.
-app = "kai-aerials"
+app = "hoogbeeld-media"
 primary_region = "ams"
 
 [build]
@@ -13,7 +13,7 @@ primary_region = "ams"
 # Blijvende schijf: hier staan de database en de geüploade foto's.
 # Zonder deze schijf is alles na een herstart weg.
 [mounts]
-  source = "kai_aerials_data"
+  source = "hoogbeeld_media_data"
   destination = "/data"
 
 [http_service]
