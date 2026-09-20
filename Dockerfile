@@ -48,7 +48,11 @@ RUN mkdir -p /data/uploads && chown -R nextjs:nodejs /data
 # gekoppelde schijf goedzetten, waarna de server als nextjs verder draait.
 # Zie docker-entrypoint.sh voor het waarom.
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+# Eventuele Windows-regeleindes weghalen. Met een \r achter de shebang zoekt
+# de kernel naar "/bin/sh\r" en start de container niet op. .gitattributes
+# voorkomt dit al, maar een bouwcontext kan ook anders tot stand komen.
+RUN sed -i 's/\r$//' /usr/local/bin/docker-entrypoint.sh \
+    && chmod +x /usr/local/bin/docker-entrypoint.sh
 # Liever nu falen dan straks bij het opstarten op de server.
 RUN if ! command -v setpriv >/dev/null; then \
       echo "setpriv ontbreekt in dit basisimage"; exit 1; \

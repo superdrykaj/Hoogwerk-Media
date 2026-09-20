@@ -1,0 +1,19 @@
+# Regeleindes vastleggen.
+#
+# Docker en Linux verwachten regels zonder CR. Een shellscript dat op Windows
+# met CRLF is uitgecheckt, start niet in de container: achter de shebang staat
+# dan een \r, waardoor de kernel naar "/bin/sh\r" zoekt in plaats van
+# "/bin/sh". De foutmelding luidt dan misleidend "No such file or directory".
+#
+# Daarom staat alles in de werkmap op LF, op elk besturingssysteem.
+* text=auto eol=lf
+
+# Binaire bestanden blijven ongemoeid.
+*.jpg  binary
+*.jpeg binary
+*.png  binary
+*.webp binary
+*.avif binary
+*.ico  binary
+*.woff binary
+*.woff2 binary
