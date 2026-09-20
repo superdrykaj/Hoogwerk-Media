@@ -67,6 +67,8 @@ niemand op de site is, en wordt door het eerste bezoek weer gewekt. Dat scheelt
 kosten, maar die ene bezoeker wacht een paar seconden langer. Wil je dat niet,
 zet hem dan op `1`; de machine draait dan altijd door.
 
+Op macOS en Linux:
+
 ```bash
 # eenmalig: installeren en inloggen
 curl -L https://fly.io/install.sh | sh
@@ -85,6 +87,27 @@ fly secrets set NEXT_PUBLIC_SITE_URL="https://hoogbeeld-media.fly.dev"
 fly deploy
 fly open
 ```
+
+Op Windows werkt PowerShell prima. Alleen het installeren gaat anders; de rest
+van de commando's is hetzelfde:
+
+```powershell
+# eenmalig installeren, daarna PowerShell opnieuw openen
+winget install --id Fly.Flyctl
+fly auth login
+```
+
+Drie dingen om op te letten in PowerShell:
+
+- Knip regels niet af met een backslash. In PowerShell is het vervolgteken een
+  backtick (`` ` ``). De commando's hierboven passen allemaal op één regel, dus
+  meestal speelt dit niet.
+- `fly secrets set KEY="waarde"` werkt zoals verwacht. De wachtwoord-hash en de
+  sessiesleutel bevatten geen dollarteken, juist omdat PowerShell en
+  .env-bestanden dat als een verwijzing zouden lezen.
+- Gebruik PowerShell 7 of nieuwer als je uitvoer naar een bestand wegschrijft,
+  bijvoorbeeld bij de back-up verderop. De oude Windows PowerShell 5.1 schrijft
+  standaard UTF-16 weg, waardoor zo'n bestand onbruikbaar wordt.
 
 Let op: pas in `fly.toml` de regel `app = "hoogbeeld-media"` aan naar de naam die je
 zelf kiest, en houd `[mounts]` ongewijzigd. Zonder die schijf is na een herstart
