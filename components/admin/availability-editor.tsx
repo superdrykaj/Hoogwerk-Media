@@ -18,8 +18,10 @@ import {
   WEEKDAY_LABELS,
 } from "@/lib/time";
 import type { BookingSettings, DateOverride, WeeklyWindow } from "@/lib/types";
+import { PERIODES_PER_DAG } from "@/lib/week-schedule";
 
-const SLOTS_PER_DAY = 4;
+// Hetzelfde aantal als waar de server op rekent, zodat die twee niet uiteenlopen.
+const SLOTS_PER_DAY = PERIODES_PER_DAG;
 /** Maandag eerst; de database gebruikt 0 = zondag. */
 const WEEK_ORDER = [1, 2, 3, 4, 5, 6, 0];
 

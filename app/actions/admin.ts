@@ -42,6 +42,7 @@ import { rateLimit } from "@/lib/rate-limit";
 import { createService, deleteService, updateService } from "@/lib/services";
 import { saveSettings } from "@/lib/settings";
 import { parseMinutes, zonedToUtc } from "@/lib/time";
+import { leesWeekschema } from "@/lib/week-schedule";
 import { saveUpload } from "@/lib/uploads";
 import {
   fieldErrors,
@@ -193,32 +194,14 @@ export async function saveWeeklyAvailabilityAction(
 ): Promise<ActionState> {
   await requireAdmin();
 
-  const windows: { weekday: number; startMinute: number; endMinute: number }[] = [];
-  for (let weekday = 0; weekday < 7; weekday++) {
-    // Per dag maximaal vier periodes.
-    for (let slot = 0; slot < 4; slot++) {
-      const from = String(formData.get(`d${weekday}-from-${slot}`) ?? "").trim();
-      const to = String(formData.get(`d${weekday}-to-${slot}`) ?? "").trim();
-      if (!from && !to) continue;
-      const start = parseMinutes(from);
-      const end = parseMinutes(to);
-      if (start === null || end === null) {
-        return {
-          status: "error",
-          message: `Ongeldige tijd op dag ${weekday + 1}. Gebruik het formaat 09:00.`,
-        };
-      }
-      if (end <= start) {
-        return {
-          status: "error",
-          message: `De eindtijd moet later zijn dan de begintijd (dag ${weekday + 1}).`,
-        };
-      }
-      windows.push({ weekday, startMinute: start, endMinute: end });
-    }
+  const gelezen = leesWeekschema((weekday, periode, kant) =>
+    String(formData.get(`d${weekday}-${kant}-${periode}`) ?? ""),
+  );
+  if (!gelezen.ok) {
+    return { status: "error", message: gelezen.melding };
   }
 
-  replaceWeeklyWindows(windows);
+  replaceWeeklyWindows(gelezen.vensters);
   revalidatePath("/admin/beschikbaarheid");
   revalidatePath("/");
 
