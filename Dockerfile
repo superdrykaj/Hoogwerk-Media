@@ -44,7 +44,17 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # Aanmaken zodat de map bestaat als er (nog) geen schijf gekoppeld is.
 RUN mkdir -p /data/uploads && chown -R nextjs:nodejs /data
 
-USER nextjs
+# De container start als root en laat het startscript de rechten op de
+# gekoppelde schijf goedzetten, waarna de server als nextjs verder draait.
+# Zie docker-entrypoint.sh voor het waarom.
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+# Liever nu falen dan straks bij het opstarten op de server.
+RUN if ! command -v setpriv >/dev/null; then \
+      echo "setpriv ontbreekt in dit basisimage"; exit 1; \
+    fi
+
 EXPOSE 3000
 
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["node", "server.js"]
