@@ -2,6 +2,7 @@ import "server-only";
 
 import { site } from "@/content/site";
 import { getDb } from "./db";
+import { scopeLines } from "./project-scope";
 import { formatTimestamp } from "./time";
 import type { Booking, ContactMessage } from "./types";
 
@@ -89,6 +90,7 @@ async function send(
 }
 
 function bookingSummary(booking: Booking): string {
+  const scope = scopeLines(booking.scope, booking.location);
   return [
     `Kenmerk: ${booking.reference}`,
     `Dienst: ${booking.serviceName}`,
@@ -97,6 +99,9 @@ function bookingSummary(booking: Booking): string {
     `Naam: ${booking.name}`,
     `E-mail: ${booking.email}`,
     `Telefoon: ${booking.phone || "niet opgegeven"}`,
+    ...(scope.length > 0
+      ? ["", "Over het project:", ...scope.map(({ label, value }) => `${label}: ${value.replace(/\n/g, ", ")}`)]
+      : []),
     "",
     "Omschrijving:",
     booking.description || "(geen omschrijving)",

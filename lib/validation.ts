@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { MAX_LOCATIES } from "./project-scope";
+
 const trimmed = (max: number) => z.string().trim().max(max);
 
 /** Formulier van de boekingsmodule (wordt ook op de server gecontroleerd). */
@@ -18,6 +20,15 @@ export const bookingFormSchema = z.object({
     10,
     "Vertel in een paar zinnen wat je wilt laten maken (minimaal 10 tekens).",
   ),
+  /* Alleen bij een project op maat ingevuld; zie lib/project-scope.ts. */
+  extraLocations: z
+    .array(trimmed(200))
+    .max(MAX_LOCATIES - 1)
+    .optional()
+    .default([]),
+  sessionCount: trimmed(20).optional().default(""),
+  periodWish: trimmed(200).optional().default(""),
+  timePreferences: z.array(trimmed(30)).max(12).optional().default([]),
   // Spambeveiliging: dit veld hoort leeg te blijven.
   website: z.string().max(0, "Aanvraag geweigerd.").optional().default(""),
 });

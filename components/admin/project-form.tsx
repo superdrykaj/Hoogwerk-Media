@@ -60,7 +60,7 @@ export function ProjectForm({ project }: { project?: Project }) {
           name="location"
           label="Locatie"
           defaultValue={project?.location ?? ""}
-          hint="Bijvoorbeeld: Nieuwegein"
+          hint="Bijvoorbeeld: Zaandam"
         />
         <Text
           id="sortOrder"

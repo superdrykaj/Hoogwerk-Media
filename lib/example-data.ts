@@ -55,7 +55,7 @@ export const EXAMPLE_SERVICES = [
     slug: "project-op-maat",
     name: "Project op maat",
     description:
-      "Meerdere locaties, meerdere dagen of een combinatie van foto en video. We beginnen met een kennismaking.",
+      "Meerdere locaties, meerdere dagen of een combinatie van foto en video. Je plant een kennismaking; in het formulier vraag ik alvast naar de locaties en de gewenste periode.",
     duration_minutes: 20,
     price_label: "Prijs in overleg",
     buffer_minutes: 15,
@@ -83,10 +83,10 @@ export const EXAMPLE_WEEKLY: [number, number, number][] = [
 
 export const EXAMPLE_PROJECTS = [
   {
-    slug: "herenhuis-aan-de-vecht",
-    title: "Herenhuis aan de Vecht",
+    slug: "herenhuis-aan-de-zaan",
+    title: "Herenhuis aan de Zaan",
     category: "vastgoed",
-    location: "Maarssen (voorbeeld)",
+    location: "Zaandam (voorbeeld)",
     summary:
       "Luchtfoto's van een vrijstaand herenhuis, gemaakt voor de verkoopbrochure van een makelaar.",
     body:
@@ -106,7 +106,7 @@ export const EXAMPLE_PROJECTS = [
     slug: "nieuwbouwwijk-in-aanbouw",
     title: "Nieuwbouwwijk in aanbouw",
     category: "vastgoed",
-    location: "Houten (voorbeeld)",
+    location: "Purmerend (voorbeeld)",
     summary:
       "Maandelijkse voortgangsopnames van een nieuwbouwproject, steeds vanaf hetzelfde punt.",
     body:
@@ -119,10 +119,10 @@ export const EXAMPLE_PROJECTS = [
     images: [["/images/gallery-2.jpg", "Voorbeeldbeeld: overzicht van de bouwplaats"]],
   },
   {
-    slug: "bedrijventerrein-lage-weide",
-    title: "Bedrijventerrein Lage Weide",
+    slug: "bedrijventerrein-achtersluispolder",
+    title: "Bedrijventerrein Achtersluispolder",
     category: "bedrijven",
-    location: "Utrecht (voorbeeld)",
+    location: "Zaandam (voorbeeld)",
     summary:
       "Sfeer- en overzichtsbeelden van een logistiek terrein voor de nieuwe bedrijfswebsite.",
     body:
@@ -138,7 +138,7 @@ export const EXAMPLE_PROJECTS = [
     slug: "productielocatie-in-bedrijf",
     title: "Productielocatie in bedrijf",
     category: "bedrijven",
-    location: "Nieuwegein (voorbeeld)",
+    location: "Wormerveer (voorbeeld)",
     summary:
       "Beelden van een productielocatie, gebruikt in een wervingscampagne voor nieuwe collega's.",
     body:
@@ -154,7 +154,7 @@ export const EXAMPLE_PROJECTS = [
     slug: "zomerfestival-in-het-park",
     title: "Zomerfestival in het park",
     category: "evenementen",
-    location: "Utrecht (voorbeeld)",
+    location: "Zaandam (voorbeeld)",
     summary:
       "Een overzichtsbeeld van een eendaags festival, in overleg met de organisatie en de terreinbeheerder.",
     body:
@@ -167,16 +167,16 @@ export const EXAMPLE_PROJECTS = [
     images: [["/images/gallery-3.jpg", "Voorbeeldbeeld: het terrein in de avond"]],
   },
   {
-    slug: "uiterwaarden-bij-zonsopkomst",
-    title: "Uiterwaarden bij zonsopkomst",
+    slug: "veenweide-bij-zonsopkomst",
+    title: "Veenweidegebied bij zonsopkomst",
     category: "natuur",
-    location: "Kromme Rijngebied (voorbeeld)",
+    location: "Wormer- en Jisperveld (voorbeeld)",
     summary:
-      "Vrij werk: een reeks landschapsbeelden van de uiterwaarden in de vroege ochtend.",
+      "Vrij werk: een reeks landschapsbeelden van het veenweidegebied in de vroege ochtend.",
     body:
       "Dit is eigen werk, gemaakt om te oefenen met licht en compositie in het open landschap.\n\nDe beelden zijn gemaakt in het half uur na zonsopkomst, als er nog mist boven het water hangt. Ik vloog laag en langzaam, zodat de lijnen van de sloten goed uitkomen.\n\nEen deel van deze reeks hangt als print in mijn werkruimte.",
     cover_url: "/images/project-natuur-1.jpg",
-    cover_alt: "Voorbeeldbeeld: luchtfoto van uiterwaarden in de ochtendmist",
+    cover_alt: "Voorbeeldbeeld: luchtfoto van veenweidegebied in de ochtendmist",
     video_url: "",
     featured: 1,
     sort_order: 6,

@@ -41,6 +41,10 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+# Eenmalig onderhoudsscript, te draaien met `fly ssh console -C "node ..."`.
+# Het hoort niet bij de serverbundel en wordt daarom apart meegenomen.
+COPY --chown=nextjs:nodejs scripts/onderhoud ./scripts/onderhoud
+
 # Aanmaken zodat de map bestaat als er (nog) geen schijf gekoppeld is.
 RUN mkdir -p /data/uploads && chown -R nextjs:nodejs /data
 

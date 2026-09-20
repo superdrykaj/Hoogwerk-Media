@@ -6,7 +6,9 @@ import { createBooking } from "@/lib/bookings";
 import { isMailConfigured, sendBookingRequestMails, sendContactMails } from "@/lib/mail";
 import { createMessage } from "@/lib/messages";
 import type { FormState } from "@/lib/form-state";
+import { normaliseScope, PERIODE_VERPLICHT } from "@/lib/project-scope";
 import { rateLimit } from "@/lib/rate-limit";
+import { getService } from "@/lib/services";
 import { formatTimestamp } from "@/lib/time";
 import { bookingFormSchema, contactFormSchema, fieldErrors } from "@/lib/validation";
 
@@ -47,6 +49,10 @@ export async function requestBookingAction(
     phone: formData.get("phone") ?? "",
     location: formData.get("location") ?? "",
     description: formData.get("description") ?? "",
+    extraLocations: formData.getAll("extraLocation").map(String),
+    sessionCount: formData.get("sessionCount") ?? "",
+    periodWish: formData.get("periodWish") ?? "",
+    timePreferences: formData.getAll("timePreference").map(String),
     website: formData.get("website") ?? "",
   });
 
@@ -58,6 +64,20 @@ export async function requestBookingAction(
     };
   }
 
+  const scope = normaliseScope(parsed.data);
+
+  // Bij een project op maat plan je op de website de kennismaking; de opname-
+  // dagen komen daarna. Dan is de gewenste periode het minimum dat nodig is
+  // om dat gesprek zinvol te maken.
+  const service = getService(parsed.data.serviceId);
+  if (service?.introOnly && scope.periodWish.length < 2) {
+    return {
+      status: "error",
+      message: "Controleer de gemarkeerde velden.",
+      errors: { periodWish: PERIODE_VERPLICHT },
+    };
+  }
+
   const created = createBooking({
     serviceId: parsed.data.serviceId,
     startUtc: parsed.data.startUtc,
@@ -66,6 +86,7 @@ export async function requestBookingAction(
     phone: parsed.data.phone ?? "",
     location: parsed.data.location,
     description: parsed.data.description,
+    scope,
   });
 
   if (!created.ok) {

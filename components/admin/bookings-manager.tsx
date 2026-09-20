@@ -9,6 +9,7 @@ import {
   updateBookingStatusAction,
 } from "@/app/actions/admin";
 import { emptyActionState, type ActionState } from "@/lib/form-state";
+import { scopeLines } from "@/lib/project-scope";
 import { StatusBadge } from "@/components/admin/ui";
 import {
   dateKeyOf,
@@ -175,6 +176,10 @@ function BookingRow({
           <span className="block truncate font-medium">{booking.name}</span>
           <span className="block truncate text-sm text-mist-500">
             {booking.serviceName} · {booking.location || "geen locatie"}
+            {booking.scope.extraLocations.length > 0 &&
+              ` + ${booking.scope.extraLocations.length} locatie${
+                booking.scope.extraLocations.length === 1 ? "" : "s"
+              }`}
           </span>
         </span>
         <StatusBadge status={booking.status} label={STATUS_LABELS[booking.status]} />
@@ -211,6 +216,7 @@ function BookingDetail({ booking }: { booking: Booking }) {
 
   const dateKey = dateKeyOf(booking.startUtc);
   const time = formatMinutes(minutesOfDayOf(booking.startUtc));
+  const scope = scopeLines(booking.scope, booking.location);
 
   return (
     <div className="border-t border-ink-700 bg-ink-900/60 p-5">
@@ -238,6 +244,25 @@ function BookingDetail({ booking }: { booking: Booking }) {
             <Row label="Locatie" value={booking.location || "—"} />
             <Row label="Aangevraagd op" value={formatTimestamp(booking.createdUtc)} />
           </dl>
+
+          {scope.length > 0 && (
+            <>
+              <h3 className="mt-6 text-sm font-semibold text-mist-100">
+                Over het project
+              </h3>
+              <dl className="mt-3 space-y-2 text-sm">
+                {scope.map((line) => (
+                  <Row
+                    key={line.label}
+                    label={line.label}
+                    value={
+                      <span className="whitespace-pre-wrap">{line.value}</span>
+                    }
+                  />
+                ))}
+              </dl>
+            </>
+          )}
 
           <h3 className="mt-6 text-sm font-semibold text-mist-100">Projectomschrijving</h3>
           <p className="mt-2 whitespace-pre-wrap rounded-lg border border-ink-700 bg-ink-900 p-3 text-sm text-mist-300">

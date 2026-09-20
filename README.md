@@ -315,6 +315,32 @@ het e-mailadres, het werkgebied, de hero-titel, het dienstenoverzicht, de
 werkwijze en de categorieën van het portfolio. Pas het bestand aan en de
 wijziging is overal op de site zichtbaar.
 
+Het werkgebied staat er twee keer in: `region` is de korte versie (kop, footer,
+zoekresultaten) en `regionDetail` de uitgeschreven versie met plaatsnamen, die
+alleen op de contactpagina staat.
+
+### Voorbeeldprojecten in een bestaande database bijwerken
+
+De voorbeeldprojecten worden alleen in een **lege** database gezet. Ze
+veranderen dus niet mee als de teksten in `lib/example-data.ts` wijzigen: dat is
+met opzet, zodat je eigen projecten nooit worden overschreven.
+
+Bij de overstap van Utrecht naar Noord-Holland is daar een eenmalig script voor.
+Het werkt alleen rijen bij die nog exact de oude voorbeeldtekst bevatten, laat
+alles wat je zelf hebt aangepast met rust, en is zonder gevolgen nog eens te
+draaien:
+
+```bash
+# lokaal
+node scripts/onderhoud/werkgebied-noord-holland.cjs
+
+# op de server, nadat de nieuwe versie is uitgerold
+fly ssh console -C "node scripts/onderhoud/werkgebied-noord-holland.cjs"
+```
+
+Het script noemt per project wat het heeft gedaan. Je kunt hetzelfde met de hand
+doen via **Beheer → Projecten**.
+
 ### E-mailadressen
 
 Alle adressen staan in `content/site.ts`. Ze worden zo gebruikt:
@@ -390,6 +416,29 @@ verwijderen. **Uitgelicht** bepaalt welke drie projecten op de homepage komen.
 **Beheer → Diensten**: naam, omschrijving, duur, buffertijd, prijsindicatie en
 volgorde. De prijsindicatie is vrije tekst, dus "Gratis", "Indicatie vanaf € 149"
 of "Prijs in overleg" kan allemaal.
+
+#### Project op maat: extra vragen bij het boeken
+
+Een dienst met het vinkje **Via kennismaking** (in de database `intro_only`)
+werkt anders dan de andere. Het tijdslot dat de bezoeker kiest is dan niet de
+opname, maar het kennismakingsgesprek: de opnamedagen plan je daarna zelf in.
+Omdat zo'n project vaak over meerdere plekken en meerdere dagen gaat, vraagt het
+formulier daar meteen naar:
+
+| Vraag                 | Verplicht | Wat je ermee kunt                              |
+| --------------------- | --------- | ---------------------------------------------- |
+| Locaties              | Ja, minstens één | Tot zes plekken; extra regels voeg je toe met "+ Locatie toevoegen" |
+| Aantal opnamemomenten | Nee       | Eén, twee, drie of meer, of "weet ik nog niet"  |
+| Gewenste periode      | Ja        | Vrije tekst, bij benadering mag ook             |
+| Voorkeur              | Nee       | Ochtend, middag, gouden uur, doordeweeks, weekend |
+
+De antwoorden staan bij de boeking onder **Over het project** in de
+beheeromgeving, en in de aanvraagmail. In de lijst zie je achter de locatie
+staan hoeveel extra plekken er zijn.
+
+Zet je het vinkje **Via kennismaking** bij een andere dienst aan, dan krijgt die
+dienst dezelfde vragen. Zet je het uit, dan verdwijnen ze; antwoorden die al bij
+bestaande boekingen staan blijven bewaard.
 
 ### Privacyverklaring
 

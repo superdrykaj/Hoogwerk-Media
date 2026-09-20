@@ -15,10 +15,19 @@ export const site = {
   name: "Hoogbeeld Media",
 
   /** Korte zin onder het logo en in de zoekresultaten. */
-  tagline: "Dronefotografie en dronevideo in Utrecht en omgeving",
+  tagline: "Dronefotografie en dronevideo in Zaandam en Noord-Holland",
 
-  /** Werkgebied. */
-  region: "Utrecht en omgeving",
+  /** Werkgebied, kort. Staat in de kop, de footer en de zoekresultaten. */
+  region: "Zaandam en Noord-Holland",
+
+  /**
+   * Werkgebied, uitgeschreven. Staat op de contactpagina, zodat bezoekers uit
+   * de rest van de provincie zien dat ze ook bij je terechtkunnen.
+   */
+  regionDetail:
+    "Zaandam en de hele Zaanstreek, en verder in Noord-Holland: Amsterdam, " +
+    "Purmerend, Haarlem, Alkmaar, Hoorn, Beverwijk en alles daartussen. " +
+    "Buiten de provincie in overleg.",
 
   /**
    * Algemeen e-mailadres. Dit staat op de site: in de footer, op de
@@ -69,9 +78,10 @@ export const site = {
   /** Korte introductie op de homepage, onder de titel. */
   heroTitle: "Een nieuw perspectief op jouw verhaal.",
   heroIntro:
-    "Ik ben Kai, zelfstandig dronepiloot in Utrecht en omgeving. Ik maak lucht" +
-    "foto's en luchtvideo's voor vastgoed, bedrijven, locaties en evenementen. " +
-    "Van eerste gesprek tot oplevering heb je één aanspreekpunt: ik.",
+    "Ik ben Kai, zelfstandig dronepiloot in Zaandam. Ik maak luchtfoto's en " +
+    "luchtvideo's voor vastgoed, bedrijven, locaties en evenementen, in de " +
+    "Zaanstreek en de rest van Noord-Holland. Van eerste gesprek tot " +
+    "oplevering heb je één aanspreekpunt: ik.",
 
   /** Persoonlijke introductie op de contactpagina. */
   contactIntro:

@@ -128,6 +128,11 @@ function migrate(db: Database.Database) {
       phone        TEXT NOT NULL DEFAULT '',
       location     TEXT NOT NULL DEFAULT '',
       description  TEXT NOT NULL DEFAULT '',
+      -- Alleen ingevuld bij een project op maat (zie lib/project-scope.ts).
+      extra_locations  TEXT NOT NULL DEFAULT '',
+      session_count    TEXT NOT NULL DEFAULT '',
+      period_wish      TEXT NOT NULL DEFAULT '',
+      time_preferences TEXT NOT NULL DEFAULT '',
       admin_note   TEXT NOT NULL DEFAULT '',
       created_utc  INTEGER NOT NULL,
       updated_utc  INTEGER NOT NULL
@@ -180,6 +185,27 @@ function migrate(db: Database.Database) {
       created_utc INTEGER NOT NULL
     );
   `);
+
+  // Kolommen die later zijn bijgekomen. `CREATE TABLE IF NOT EXISTS` voegt ze
+  // niet toe aan een database die al bestaat, dus dat gebeurt hier.
+  addColumn(db, "bookings", "extra_locations", "TEXT NOT NULL DEFAULT ''");
+  addColumn(db, "bookings", "session_count", "TEXT NOT NULL DEFAULT ''");
+  addColumn(db, "bookings", "period_wish", "TEXT NOT NULL DEFAULT ''");
+  addColumn(db, "bookings", "time_preferences", "TEXT NOT NULL DEFAULT ''");
+}
+
+/** Voegt een kolom toe als die er nog niet is. Bestaande gegevens blijven. */
+function addColumn(
+  db: Database.Database,
+  table: string,
+  column: string,
+  definition: string,
+) {
+  const columns = db.prepare(`PRAGMA table_info(${table})`).all() as {
+    name: string;
+  }[];
+  if (columns.some((c) => c.name === column)) return;
+  db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
 }
 
 /**

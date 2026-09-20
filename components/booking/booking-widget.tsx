@@ -9,6 +9,14 @@ import {
 import { emptyFormState, type FormState } from "@/lib/form-state";
 import { site } from "@/content/site";
 import {
+  MAX_LOCATIES,
+  OPNAMEMOMENTEN,
+  PERIODE_VERPLICHT,
+  TIJDVOORKEUREN,
+  opnamemomentLabel,
+  tijdvoorkeurLabel,
+} from "@/lib/project-scope";
+import {
   addDays,
   formatDateLong,
   formatDateShort,
@@ -32,6 +40,34 @@ type DaySlots = { dateKey: string; slots: { startUtc: number; minutes: number }[
 
 const DAYS_PER_PAGE = 14;
 
+/**
+ * Wat de bezoeker invult. `locations` is een lijst, omdat een project op maat
+ * over meerdere plekken kan gaan; bij een gewone dienst blijft het er één.
+ * De laatste drie velden worden alleen gevraagd bij een dienst die met een
+ * kennismaking begint (`introOnly`).
+ */
+type Details = {
+  name: string;
+  email: string;
+  phone: string;
+  locations: string[];
+  description: string;
+  sessionCount: string;
+  periodWish: string;
+  timePreferences: string[];
+};
+
+const LEGE_DETAILS: Details = {
+  name: "",
+  email: "",
+  phone: "",
+  locations: [""],
+  description: "",
+  sessionCount: "",
+  periodWish: "",
+  timePreferences: [],
+};
+
 const STEPS = ["Dienst", "Datum", "Tijd", "Gegevens", "Controle"] as const;
 
 export function BookingWidget({ services }: { services: PublicService[] }) {
@@ -50,16 +86,14 @@ export function BookingWidget({ services }: { services: PublicService[] }) {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [dateKey, setDateKey] = useState<string | null>(null);
   const [startUtc, setStartUtc] = useState<number | null>(null);
-  const [details, setDetails] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    location: "",
-    description: "",
-  });
+  const [details, setDetails] = useState<Details>(LEGE_DETAILS);
   const [localErrors, setLocalErrors] = useState<Record<string, string>>({});
 
   const service = bookable.find((s) => s.id === serviceId) ?? null;
+  // Een dienst die met een kennismaking begint: het gekozen tijdslot is dat
+  // gesprek, niet de opname. Daarom vragen we dan naar de omvang vooraf.
+  const opMaat = service?.introOnly ?? false;
+  const locaties = details.locations.filter((value) => value.trim() !== "");
   const headingRef = useRef<HTMLParagraphElement>(null);
 
   const loadSlots = useCallback(
@@ -127,11 +161,16 @@ export function BookingWidget({ services }: { services: PublicService[] }) {
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(details.email.trim())) {
       errors.email = "Vul een geldig e-mailadres in.";
     }
-    if (details.location.trim().length < 3) {
-      errors.location = "Vul de opnamelocatie in.";
+    if ((details.locations[0] ?? "").trim().length < 3) {
+      errors.location = opMaat
+        ? "Vul minstens één locatie in."
+        : "Vul de opnamelocatie in.";
     }
     if (details.description.trim().length < 10) {
       errors.description = "Beschrijf je project in minimaal 10 tekens.";
+    }
+    if (opMaat && details.periodWish.trim().length < 2) {
+      errors.periodWish = PERIODE_VERPLICHT;
     }
     setLocalErrors(errors);
     return Object.keys(errors).length === 0;
@@ -173,9 +212,15 @@ export function BookingWidget({ services }: { services: PublicService[] }) {
         </p>
         <p className="mb-6 text-sm text-mist-500">
           {step === 0 && "Kies de dienst die het beste past. Twijfel je? Begin met een gratis kennismaking."}
-          {step === 1 && `Alleen dagen met vrije tijden zijn te kiezen. Tijden in ${"Europe/Amsterdam"}.`}
+          {step === 1 &&
+            (opMaat
+              ? "Kies een dag voor de kennismaking. De opnamedagen zelf plannen we in dat gesprek."
+              : `Alleen dagen met vrije tijden zijn te kiezen. Tijden in ${"Europe/Amsterdam"}.`)}
           {step === 2 && dateKey && formatDateLong(dateKey)}
-          {step === 3 && "Ik gebruik deze gegevens alleen om contact met je op te nemen over deze aanvraag."}
+          {step === 3 &&
+            (opMaat
+              ? "Vertel me kort waar het project uit bestaat, dan kan ik me op het gesprek voorbereiden."
+              : "Ik gebruik deze gegevens alleen om contact met je op te nemen over deze aanvraag.")}
           {step === 4 && "Klopt alles? Dan kun je de aanvraag versturen."}
         </p>
 
@@ -201,6 +246,11 @@ export function BookingWidget({ services }: { services: PublicService[] }) {
                       {item.durationMinutes} min
                     </span>
                   </span>
+                  {item.introOnly && (
+                    <span className="mt-2 inline-block rounded-full border border-ink-600 px-2 py-0.5 text-[11px] text-mist-400">
+                      Begint met een kennismaking
+                    </span>
+                  )}
                   {item.description && (
                     <span className="mt-2 block text-sm leading-relaxed text-mist-500">
                       {item.description}
@@ -271,6 +321,7 @@ export function BookingWidget({ services }: { services: PublicService[] }) {
         {step === 3 && (
           <DetailsForm
             values={details}
+            opMaat={opMaat}
             errors={{ ...localErrors, ...state.errors }}
             onChange={(next) => setDetails(next)}
             onSubmit={() => {
@@ -288,8 +339,38 @@ export function BookingWidget({ services }: { services: PublicService[] }) {
             <input type="hidden" name="name" value={details.name} />
             <input type="hidden" name="email" value={details.email} />
             <input type="hidden" name="phone" value={details.phone} />
-            <input type="hidden" name="location" value={details.location} />
+            <input type="hidden" name="location" value={locaties[0] ?? ""} />
             <input type="hidden" name="description" value={details.description} />
+            {opMaat && (
+              <>
+                {locaties.slice(1).map((value, index) => (
+                  <input
+                    key={`${index}-${value}`}
+                    type="hidden"
+                    name="extraLocation"
+                    value={value}
+                  />
+                ))}
+                <input
+                  type="hidden"
+                  name="sessionCount"
+                  value={details.sessionCount}
+                />
+                <input
+                  type="hidden"
+                  name="periodWish"
+                  value={details.periodWish}
+                />
+                {details.timePreferences.map((value) => (
+                  <input
+                    key={value}
+                    type="hidden"
+                    name="timePreference"
+                    value={value}
+                  />
+                ))}
+              </>
+            )}
             {/* Spamval: onzichtbaar voor mensen, ingevuld door bots. */}
             <input
               type="text"
@@ -303,17 +384,45 @@ export function BookingWidget({ services }: { services: PublicService[] }) {
 
             <dl className="divide-y divide-ink-700 rounded-xl border border-ink-700 bg-ink-900">
               <Row label="Dienst" value={service.name} />
-              <Row label="Wanneer" value={formatTimestamp(startUtc)} />
+              <Row
+                label={opMaat ? "Kennismaking" : "Wanneer"}
+                value={formatTimestamp(startUtc)}
+              />
               <Row label="Duur" value={`${service.durationMinutes} minuten`} />
               <Row label="Indicatie" value={service.priceLabel || "In overleg"} />
               <Row label="Naam" value={details.name} />
               <Row label="E-mail" value={details.email} />
               {details.phone && <Row label="Telefoon" value={details.phone} />}
-              <Row label="Opnamelocatie" value={details.location} />
+              <Row
+                label={locaties.length > 1 ? `Locaties (${locaties.length})` : "Opnamelocatie"}
+                value={locaties.join("\n")}
+                multiline
+              />
+              {opMaat && details.sessionCount && (
+                <Row
+                  label="Opnamemomenten"
+                  value={opnamemomentLabel(details.sessionCount)}
+                />
+              )}
+              {opMaat && (
+                <Row label="Gewenste periode" value={details.periodWish} />
+              )}
+              {opMaat && details.timePreferences.length > 0 && (
+                <Row
+                  label="Voorkeur"
+                  value={details.timePreferences.map(tijdvoorkeurLabel).join(", ")}
+                />
+              )}
               <Row label="Project" value={details.description} multiline />
             </dl>
 
-            <p className="notice notice-info">{site.bookingDisclaimer}</p>
+            <p className="notice notice-info">
+              {opMaat
+                ? "Je plant hiermee de kennismaking. Daarin bespreken we de " +
+                  "locaties, het aantal opnamedagen en de planning; daarna leg " +
+                  "ik de opnamedagen vast."
+                : site.bookingDisclaimer}
+            </p>
 
             {state.status === "error" && (
               <p className="notice notice-error" role="alert">
@@ -537,25 +646,49 @@ function DatePicker({
 
 function DetailsForm({
   values,
+  opMaat,
   errors,
   onChange,
   onSubmit,
   onBack,
 }: {
-  values: {
-    name: string;
-    email: string;
-    phone: string;
-    location: string;
-    description: string;
-  };
+  values: Details;
+  opMaat: boolean;
   errors: Record<string, string>;
-  onChange: (next: typeof values) => void;
+  onChange: (next: Details) => void;
   onSubmit: () => void;
   onBack: () => void;
 }) {
-  const set = (key: keyof typeof values) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-    onChange({ ...values, [key]: event.target.value });
+  const set =
+    (key: "name" | "email" | "phone" | "description" | "periodWish") =>
+    (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+      onChange({ ...values, [key]: event.target.value });
+
+  function setLocation(index: number, value: string) {
+    onChange({
+      ...values,
+      locations: values.locations.map((item, i) => (i === index ? value : item)),
+    });
+  }
+
+  function addLocation() {
+    if (values.locations.length >= MAX_LOCATIES) return;
+    onChange({ ...values, locations: [...values.locations, ""] });
+  }
+
+  function removeLocation(index: number) {
+    const rest = values.locations.filter((_, i) => i !== index);
+    onChange({ ...values, locations: rest.length > 0 ? rest : [""] });
+  }
+
+  function toggleVoorkeur(key: string) {
+    onChange({
+      ...values,
+      timePreferences: values.timePreferences.includes(key)
+        ? values.timePreferences.filter((item) => item !== key)
+        : [...values.timePreferences, key],
+    });
+  }
 
   return (
     <form
@@ -564,7 +697,7 @@ function DetailsForm({
         event.preventDefault();
         onSubmit();
       }}
-      className="space-y-5"
+      className="space-y-6"
     >
       <div className="grid gap-5 sm:grid-cols-2">
         <Field
@@ -595,16 +728,169 @@ function DetailsForm({
           onChange={set("phone")}
           autoComplete="tel"
         />
-        <Field
-          id="booking-location"
-          label="Opnamelocatie"
-          required
-          hint="Adres of omschrijving van de plek."
-          error={errors.location}
-          value={values.location}
-          onChange={set("location")}
-        />
+        {!opMaat && (
+          <Field
+            id="booking-location"
+            label="Opnamelocatie"
+            required
+            hint="Adres of omschrijving van de plek."
+            error={errors.location}
+            value={values.locations[0] ?? ""}
+            onChange={(event) => setLocation(0, event.target.value)}
+          />
+        )}
       </div>
+
+      {/* Meerdere locaties: alleen bij een project op maat ----------------- */}
+      {opMaat && (
+        <fieldset>
+          <legend className="field-label">
+            Locaties <Required />
+          </legend>
+          <p id="booking-locations-hint" className="field-hint mb-2">
+            Adres of omschrijving per plek. Weet je nog niet alles? Vul in wat
+            je wel weet.
+          </p>
+          <ul className="space-y-2">
+            {values.locations.map((value, index) => {
+              const id = `booking-location-${index}`;
+              const fout = index === 0 ? errors.location : undefined;
+              return (
+                <li key={id} className="flex items-start gap-2">
+                  <div className="min-w-0 flex-1">
+                    <label htmlFor={id} className="sr-only">
+                      Locatie {index + 1}
+                    </label>
+                    <input
+                      id={id}
+                      className="field-input"
+                      value={value}
+                      onChange={(event) => setLocation(index, event.target.value)}
+                      placeholder={
+                        index === 0 ? "Bijvoorbeeld: Gedempte Gracht 12, Zaandam" : "Volgende locatie"
+                      }
+                      aria-invalid={fout ? "true" : undefined}
+                      aria-describedby={
+                        fout ? `${id}-error` : "booking-locations-hint"
+                      }
+                    />
+                    {fout && (
+                      <p id={`${id}-error`} className="field-error">
+                        {fout}
+                      </p>
+                    )}
+                  </div>
+                  {values.locations.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeLocation(index)}
+                      title={`Locatie ${index + 1} verwijderen`}
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-ink-600 bg-ink-900 text-mist-500 transition-colors hover:border-red-500/60 hover:text-red-300"
+                    >
+                      <span aria-hidden="true" className="text-lg leading-none">
+                        ×
+                      </span>
+                      <span className="sr-only">
+                        Locatie {index + 1} verwijderen
+                      </span>
+                    </button>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+          {values.locations.length < MAX_LOCATIES && (
+            <button
+              type="button"
+              className="btn btn-quiet mt-2"
+              onClick={addLocation}
+            >
+              + Locatie toevoegen
+            </button>
+          )}
+        </fieldset>
+      )}
+
+      {/* Omvang van het project ------------------------------------------- */}
+      {opMaat && (
+        <div className="space-y-5 rounded-xl border border-ink-700 bg-ink-900/60 p-4 sm:p-5">
+          <p className="text-sm text-mist-300">
+            Een project op maat beslaat vaak meerdere dagen. Met deze antwoorden
+            kan ik de planning voorbereiden voordat we elkaar spreken.
+          </p>
+
+          <fieldset>
+            <legend className="field-label">Aantal opnamemomenten</legend>
+            <div className="mt-2 grid gap-2 sm:grid-cols-2">
+              {OPNAMEMOMENTEN.map((optie) => (
+                <label
+                  key={optie.key}
+                  className="flex items-center gap-2 rounded-lg border border-ink-600 bg-ink-900 px-3 py-2 text-sm"
+                >
+                  <input
+                    type="radio"
+                    name="booking-session-count"
+                    className="h-4 w-4 border-ink-600 bg-ink-900"
+                    checked={values.sessionCount === optie.key}
+                    onChange={() =>
+                      onChange({ ...values, sessionCount: optie.key })
+                    }
+                  />
+                  {optie.label}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          <div>
+            <label htmlFor="booking-period" className="field-label">
+              Gewenste periode <Required />
+            </label>
+            <input
+              id="booking-period"
+              className="field-input"
+              value={values.periodWish}
+              onChange={set("periodWish")}
+              placeholder="Bijvoorbeeld: in de tweede helft van mei"
+              aria-invalid={errors.periodWish ? "true" : undefined}
+              aria-describedby={
+                errors.periodWish ? "booking-period-error" : "booking-period-hint"
+              }
+            />
+            {errors.periodWish ? (
+              <p id="booking-period-error" className="field-error">
+                {errors.periodWish}
+              </p>
+            ) : (
+              <p id="booking-period-hint" className="field-hint">
+                Bij benadering mag ook. Een week, een maand of &ldquo;zodra het
+                weer het toelaat&rdquo; is genoeg.
+              </p>
+            )}
+          </div>
+
+          <fieldset>
+            <legend className="field-label">Voorkeur voor de opnames</legend>
+            <p className="field-hint mb-2">Meerdere antwoorden mogen.</p>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {TIJDVOORKEUREN.map((optie) => (
+                <label
+                  key={optie.key}
+                  className="flex items-center gap-2 rounded-lg border border-ink-600 bg-ink-900 px-3 py-2 text-sm"
+                >
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 rounded border-ink-600 bg-ink-900"
+                    checked={values.timePreferences.includes(optie.key)}
+                    onChange={() => toggleVoorkeur(optie.key)}
+                  />
+                  {optie.label}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        </div>
+      )}
 
       <div>
         <label htmlFor="booking-description" className="field-label">

@@ -13,4 +13,10 @@ export default defineConfig([
     "data/**",
     "node_modules/**",
   ]),
+  {
+    // Onderhoudsscripts draaien met `node` in de container, buiten de
+    // serverbundel om. Daar bestaat geen bundler, dus daar hoort require().
+    files: ["scripts/onderhoud/**/*.cjs"],
+    rules: { "@typescript-eslint/no-require-imports": "off" },
+  },
 ]);

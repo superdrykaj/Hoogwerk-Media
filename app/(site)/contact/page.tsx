@@ -52,6 +52,9 @@ export default function ContactPage() {
             <div>
               <dt className="text-sm text-mist-500">Werkgebied</dt>
               <dd className="mt-1 text-lg font-medium">{site.region}</dd>
+              <dd className="mt-2 text-sm leading-relaxed text-mist-500">
+                {site.regionDetail}
+              </dd>
             </div>
             <div>
               <dt className="text-sm text-mist-500">Liever meteen een moment prikken?</dt>

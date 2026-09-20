@@ -1,3 +1,5 @@
+import type { ProjectScope } from "./project-scope";
+
 export type BookingStatus = "pending" | "confirmed" | "rejected" | "cancelled";
 
 /** Statussen die een tijdslot bezet houden. */
@@ -37,6 +39,8 @@ export type Booking = {
   phone: string;
   location: string;
   description: string;
+  /** Extra antwoorden bij een project op maat; leeg bij een gewone dienst. */
+  scope: ProjectScope;
   adminNote: string;
   createdUtc: number;
   updatedUtc: number;

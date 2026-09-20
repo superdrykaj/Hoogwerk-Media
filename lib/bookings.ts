@@ -3,6 +3,7 @@ import crypto from "node:crypto";
 
 import { validateSlot } from "./availability";
 import { getDb, withWriteTransaction } from "./db";
+import { normaliseScope, type ProjectScope } from "./project-scope";
 import { getService } from "./services";
 import {
   BLOCKING_STATUSES,
@@ -23,10 +24,22 @@ type Row = {
   phone: string;
   location: string;
   description: string;
+  extra_locations: string;
+  session_count: string;
+  period_wish: string;
+  time_preferences: string;
   admin_note: string;
   created_utc: number;
   updated_utc: number;
 };
+
+/** Meerdere waarden staan als regels in één tekstveld. */
+function splitList(value: string): string[] {
+  return value
+    .split("\n")
+    .map((part) => part.trim())
+    .filter((part) => part.length > 0);
+}
 
 const SELECT =
   `SELECT b.*, s.name AS service_name FROM bookings b
@@ -46,6 +59,12 @@ function map(row: Row): Booking {
     phone: row.phone,
     location: row.location,
     description: row.description,
+    scope: normaliseScope({
+      extraLocations: splitList(row.extra_locations ?? ""),
+      sessionCount: row.session_count ?? "",
+      periodWish: row.period_wish ?? "",
+      timePreferences: splitList(row.time_preferences ?? ""),
+    }),
     adminNote: row.admin_note,
     createdUtc: row.created_utc,
     updatedUtc: row.updated_utc,
@@ -69,6 +88,8 @@ export type NewBooking = {
   phone: string;
   location: string;
   description: string;
+  /** Alleen gebruikt bij een dienst die via een kennismaking loopt. */
+  scope: ProjectScope;
 };
 
 export type CreateResult =
@@ -104,12 +125,18 @@ export function createBooking(input: NewBooking): CreateResult {
       reference = makeReference();
     }
 
+    // De extra projectvragen horen bij een dienst die met een kennismaking
+    // begint. Bij een gewone dienst worden ze niet opgeslagen, ook niet als
+    // ze toch worden meegestuurd.
+    const scope = service.introOnly ? normaliseScope(input.scope) : null;
+
     const result = db
       .prepare(
         `INSERT INTO bookings
           (reference, service_id, start_utc, end_utc, status, name, email,
-           phone, location, description, admin_note, created_utc, updated_utc)
-         VALUES (?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?, '', ?, ?)`,
+           phone, location, description, extra_locations, session_count,
+           period_wish, time_preferences, admin_note, created_utc, updated_utc)
+         VALUES (?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, '', ?, ?)`,
       )
       .run(
         reference,
@@ -121,6 +148,10 @@ export function createBooking(input: NewBooking): CreateResult {
         input.phone,
         input.location,
         input.description,
+        scope ? scope.extraLocations.join("\n") : "",
+        scope ? scope.sessionCount : "",
+        scope ? scope.periodWish : "",
+        scope ? scope.timePreferences.join("\n") : "",
         now,
         now,
       );

@@ -5,6 +5,7 @@
  *   npx tsx scripts/test-concurrency.ts <startUtc>
  */
 import { createBooking } from "../lib/bookings";
+import { LEGE_SCOPE } from "../lib/project-scope";
 
 const startUtc = Number(process.argv[2]);
 const label = process.argv[3] ?? "?";
@@ -17,6 +18,7 @@ const result = createBooking({
   phone: "",
   location: "DEMOGEGEVENS: testlocatie",
   description: "DEMOGEGEVENS: gelijktijdigheidstest",
+  scope: LEGE_SCOPE,
 });
 
 console.log(
