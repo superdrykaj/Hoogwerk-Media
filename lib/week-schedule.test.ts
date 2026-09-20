@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { leesWeekschema, type WeekResultaat } from "./week-schedule";
+import { leesPeriode, leesWeekschema, type WeekResultaat } from "./week-schedule";
 
 /** Bouwt een leesfunctie uit een eenvoudige tabel: dag -> lijst van [van, tot]. */
 function formulier(tabel: Record<number, [string, string][]>) {
@@ -76,5 +76,39 @@ describe("weekschema uit het formulier lezen", () => {
     expect(r.ok).toBe(true);
     if (!r.ok) return;
     expect(r.vensters).toEqual([]);
+  });
+});
+
+describe("losse periode nakijken", () => {
+  it("herkent een bruikbare periode", () => {
+    expect(leesPeriode("09:00", "12:30")).toEqual({
+      soort: "ok",
+      start: 540,
+      eind: 750,
+    });
+  });
+
+  it("herkent een lege en een per ongeluk gevulde rij als niet gebruikt", () => {
+    expect(leesPeriode("", "")).toEqual({ soort: "leeg" });
+    expect(leesPeriode("00:00", "00:00")).toEqual({ soort: "leeg" });
+  });
+
+  it("benoemt waarom een periode niet klopt", () => {
+    expect(leesPeriode("09:00", "")).toEqual({ soort: "fout", reden: "onvolledig" });
+    expect(leesPeriode("onzin", "10:00")).toEqual({ soort: "fout", reden: "ongeldig" });
+    expect(leesPeriode("14:00", "12:00")).toEqual({ soort: "fout", reden: "omgekeerd" });
+    expect(leesPeriode("10:00", "10:00")).toEqual({ soort: "fout", reden: "omgekeerd" });
+  });
+
+  it("geeft bij een fout terug waar die staat", () => {
+    const r = leesWeekschema((weekday, periode, kant) =>
+      weekday === 5 && periode === 1 && kant === "to" ? "08:00" :
+      weekday === 5 && periode === 1 ? "17:00" : "",
+    );
+    expect(r.ok).toBe(false);
+    if (r.ok) return;
+    expect(r.weekday).toBe(5);
+    expect(r.periode).toBe(1);
+    expect(r.melding).toContain("vrijdag");
   });
 });

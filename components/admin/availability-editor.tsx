@@ -10,20 +10,14 @@ import {
 } from "@/app/actions/admin";
 import { emptyActionState, type ActionState } from "@/lib/form-state";
 import { Panel } from "@/components/admin/ui";
+import { WeekScheduleEditor } from "@/components/admin/week-schedule-editor";
 import {
   formatDateLong,
   formatMinutes,
   formatTimestamp,
   todayKey,
-  WEEKDAY_LABELS,
 } from "@/lib/time";
 import type { BookingSettings, DateOverride, WeeklyWindow } from "@/lib/types";
-import { PERIODES_PER_DAG } from "@/lib/week-schedule";
-
-// Hetzelfde aantal als waar de server op rekent, zodat die twee niet uiteenlopen.
-const SLOTS_PER_DAY = PERIODES_PER_DAG;
-/** Maandag eerst; de database gebruikt 0 = zondag. */
-const WEEK_ORDER = [1, 2, 3, 4, 5, 6, 0];
 
 export function AvailabilityEditor({
   weekly,
@@ -46,9 +40,6 @@ export function AvailabilityEditor({
   >(addOverrideAction, emptyActionState);
 
   const [wholeDay, setWholeDay] = useState(true);
-
-  const byWeekday = (weekday: number) =>
-    weekly.filter((w) => w.weekday === weekday).slice(0, SLOTS_PER_DAY);
 
   const blocks = overrides.filter((o) => o.kind === "block");
   const extras = overrides.filter((o) => o.kind === "open");
@@ -98,66 +89,13 @@ export function AvailabilityEditor({
             </p>
           )}
 
-          <div className="space-y-4">
-            {WEEK_ORDER.map((weekday) => {
-              const windows = byWeekday(weekday);
-              return (
-                <fieldset
-                  key={weekday}
-                  className="rounded-xl border border-ink-700 bg-ink-900/60 p-4"
-                >
-                  <legend className="px-2 text-sm font-semibold">
-                    {WEEKDAY_LABELS[weekday]}
-                  </legend>
-                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                    {Array.from({ length: SLOTS_PER_DAY }).map((_, slot) => {
-                      const existing = windows[slot];
-                      return (
-                        <div key={slot} className="flex items-center gap-2">
-                          <label className="sr-only" htmlFor={`d${weekday}-from-${slot}`}>
-                            {WEEKDAY_LABELS[weekday]} periode {slot + 1} begintijd
-                          </label>
-                          <input
-                            id={`d${weekday}-from-${slot}`}
-                            name={`d${weekday}-from-${slot}`}
-                            type="time"
-                            defaultValue={
-                              existing ? formatMinutes(existing.startMinute) : ""
-                            }
-                            className="field-input"
-                          />
-                          <span aria-hidden="true" className="text-mist-600">
-                            –
-                          </span>
-                          <label className="sr-only" htmlFor={`d${weekday}-to-${slot}`}>
-                            {WEEKDAY_LABELS[weekday]} periode {slot + 1} eindtijd
-                          </label>
-                          <input
-                            id={`d${weekday}-to-${slot}`}
-                            name={`d${weekday}-to-${slot}`}
-                            type="time"
-                            defaultValue={
-                              existing ? formatMinutes(existing.endMinute) : ""
-                            }
-                            className="field-input"
-                          />
-                        </div>
-                      );
-                    })}
-                  </div>
-                </fieldset>
-              );
-            })}
-          </div>
+          <WeekScheduleEditor weekly={weekly} bezig={weekPending} />
 
-          <button type="submit" className="btn btn-primary mt-6" disabled={weekPending}>
-            {weekPending ? "Bezig met opslaan…" : "Weekschema opslaan"}
-          </button>
           <p className="field-hint">
             Tijden gelden in Europe/Amsterdam. Zomer- en wintertijd worden
             automatisch verwerkt. Minimaal {settings.minLeadHours} uur vooraf
-            boeken, maximaal {settings.maxAdvanceDays} dagen vooruit (aan te passen
-            bij Instellingen).
+            boeken, maximaal {settings.maxAdvanceDays} dagen vooruit (aan te
+            passen bij Instellingen).
           </p>
         </form>
       </Panel>
