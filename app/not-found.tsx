@@ -1,4 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+// Een foutpagina hoort niet in de zoekresultaten. Next genereert deze route
+// altijd vooraf, dus het deelbeeld erop valt terug op het adres van tijdens
+// de build. Met noindex maakt dat niet uit: de pagina wordt niet gedeeld of
+// geïndexeerd.
+export const metadata: Metadata = {
+  title: "Pagina niet gevonden",
+  robots: { index: false, follow: true },
+};
 
 export default function NotFound() {
   return (

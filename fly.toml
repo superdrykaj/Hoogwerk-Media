@@ -2,6 +2,10 @@
 app = "hoogbeeld-media"
 primary_region = "ams"
 
+# Wisselgeheugen: 512 MB werkgeheugen is krap als Next.js tegelijk
+# afbeeldingen aan het verkleinen is. Dit voorkomt dat de machine omvalt.
+swap_size_mb = 512
+
 [build]
 
 [env]
@@ -12,6 +16,10 @@ primary_region = "ams"
 
 # Blijvende schijf: hier staan de database en de geüploade foto's.
 # Zonder deze schijf is alles na een herstart weg.
+#
+# LET OP: draai hier altijd precies ÉÉN machine. Bij twee machines krijgt
+# elke machine een eigen schijf, dus een eigen database. Boekingen komen dan
+# willekeurig in de ene of de andere terecht. Controleer met `fly status`.
 [mounts]
   source = "hoogbeeld_media_data"
   destination = "/data"

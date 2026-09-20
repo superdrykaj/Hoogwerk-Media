@@ -32,6 +32,11 @@ export const site = {
   /**
    * Publieke URL van de website. Wordt gebruikt voor metadata en de sitemap.
    * Stel in productie NEXT_PUBLIC_SITE_URL in; die waarde gaat voor.
+   *
+   * Deze waarde wordt alleen op de server gelezen (layout, sitemap, robots),
+   * en dus pas bij het draaien bepaald. Gebruik `site.url` niet in een
+   * component met "use client": in die bundel wordt de waarde tijdens de
+   * build vastgelegd en klopt hij na een wijziging niet meer.
    */
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
 

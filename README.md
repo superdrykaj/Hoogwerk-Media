@@ -62,6 +62,11 @@ onderstaande routes kunt publiceren.
 Je hebt een Fly.io-account nodig, inclusief betaalgegevens. Een enkele kleine
 machine met een schijf van 1 GB valt in de goedkoopste categorie.
 
+In `fly.toml` staat `min_machines_running = 0`: de machine gaat slapen als er
+niemand op de site is, en wordt door het eerste bezoek weer gewekt. Dat scheelt
+kosten, maar die ene bezoeker wacht een paar seconden langer. Wil je dat niet,
+zet hem dan op `1`; de machine draait dan altijd door.
+
 ```bash
 # eenmalig: installeren en inloggen
 curl -L https://fly.io/install.sh | sh
@@ -83,6 +88,49 @@ fly open
 Let op: pas in `fly.toml` de regel `app = "hoogbeeld-media"` aan naar de naam die je
 zelf kiest, en houd `[mounts]` ongewijzigd. Zonder die schijf is na een herstart
 alles weg.
+
+> **Draai precies één machine.** Bij twee machines krijgt elke machine een eigen
+> schijf, en dus een eigen database. Boekingen belanden dan willekeurig in de
+> ene of de andere, zonder foutmelding. Controleer na het publiceren met
+> `fly status` dat er één machine draait, en schaal zo nodig terug met
+> `fly scale count 1`.
+
+#### Je eigen domein koppelen
+
+Doe dit nadat de site op `https://JOUW-APPNAAM.fly.dev` werkt.
+
+```bash
+# 1. Kijk welke adressen je app heeft
+fly ips list
+
+# 2. Vraag een certificaat aan voor je domein
+fly certs add jouwdomein.nl
+fly certs add www.jouwdomein.nl
+
+# 3. Fly toont nu precies welke DNS-records je moet aanmaken
+fly certs show jouwdomein.nl
+```
+
+Die laatste opdracht is de bron van waarheid: hij noemt per domein het type
+record, de naam en de waarde die je bij je domeinregistrar moet invullen. Neem
+die over zoals ze er staan, in plaats van ze zelf te bedenken.
+
+DNS-wijzigingen zijn niet meteen overal doorgevoerd. Volg met:
+
+```bash
+fly certs check jouwdomein.nl
+```
+
+Zodra het certificaat geldig is, zet je de publieke URL goed en publiceer je
+opnieuw, zodat de paginatitels, het deelbeeld en de sitemap naar je eigen
+domein wijzen in plaats van naar het adres op fly.dev:
+
+```bash
+fly secrets set NEXT_PUBLIC_SITE_URL="https://jouwdomein.nl"
+```
+
+Het zetten van een secret start de app automatisch opnieuw op. Controleer
+daarna dat `https://jouwdomein.nl/sitemap.xml` je eigen domein noemt.
 
 #### Route B — eigen server met Docker
 
