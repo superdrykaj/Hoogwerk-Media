@@ -4,6 +4,10 @@ Een complete website voor een zelfstandige dronepiloot: portfolio, contactpagina
 en een boekingsmodule op de homepage, met een beveiligde beheeromgeving op
 `/admin`.
 
+> **De site staat standaard dicht.** Bezoekers zien alleen een pagina met de
+> mededeling dat hij binnenkort opengaat; als ingelogde beheerder zie je alles.
+> Zie [De site open- en dichtzetten](#de-site-open--en-dichtzetten).
+>
 > **Alle bedrijfsgegevens, projecten en prijzen in dit project zijn fictief.**
 > Ze staan er als voorbeeld en zijn bedoeld om vervangen te worden.
 
@@ -194,11 +198,46 @@ herstart van de server vanzelf weer opkomt.
 | `AUTH_SECRET` | ja | Ondertekent het inlogcookie. Komt uit hetzelfde commando. |
 | `NEXT_PUBLIC_SITE_URL` | ja | Paginatitels, deelbeeld, `robots.txt` en `sitemap.xml`. |
 | `DATA_DIR` | in productie | Map voor de database en de uploads. In Docker staat die al op `/data`. |
+| `SITE_STATUS` | nee | Staat standaard op `"soon"`: bezoekers zien alleen de pagina "binnenkort online". Zet op `"live"` om de site te openen. |
 | `DEMO_MODE` | nee | Staat standaard aan en toont de demobalk. Zet op `"false"` zodra je eigen inhoud erin staat. |
 | `SEED_ON_EMPTY` | nee | Staat standaard aan: een lege database wordt bij de eerste start met de voorbeelden gevuld. Zet op `"false"` als je leeg wilt beginnen. |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `MAIL_FROM`, `MAIL_TO` | nee | Nodig voor bevestigingsmails. Zonder deze gegevens gaat er geen mail uit, en zegt de site dat er ook bij. |
 
 Geheimen horen in de instellingen van je hosting, nooit in de repository.
+
+### De site open- en dichtzetten
+
+De site staat standaard **dicht**. Een bezoeker krijgt dan één pagina te zien:
+naam, beeldmerk en de mededeling dat de site binnenkort opengaat. Alle andere
+pagina's sturen we terug naar die voorpagina, en zoekmachines vragen we via
+`robots.txt` om helemaal weg te blijven. Zo staat er geen half afgebouwde site
+in Google voordat je er klaar voor bent.
+
+Ben je ingelogd via `/admin`, dan zie je de volledige site gewoon, met een balk
+bovenin die eraan herinnert dat niemand anders dit ziet. Je kunt dus alles
+rustig nakijken terwijl de deur dicht blijft.
+
+Opengaan doe je met één variabele:
+
+```bash
+# Fly.io
+fly secrets set SITE_STATUS=live      # of pas [env] in fly.toml aan en deploy
+
+# lokaal
+SITE_STATUS=live npm run dev
+```
+
+Doe dat pas als de lijst onder *Voor je opengaat* hieronder afgevinkt is.
+
+### Voor je opengaat
+
+- Eigen domein werkt, en e-mail op dat domein komt echt binnen.
+- Minimaal acht eigen dronefoto's staan in het portfolio, geen voorbeelden meer.
+- `content/site.ts`: KvK, BTW, RDW-operatornummer en verzekeraar ingevuld.
+- Privacyverklaring en algemene voorwaarden nagelopen.
+- Tarieven kloppen met wat je daadwerkelijk rekent.
+- Contactformulier getest: er komt echt een mailtje binnen.
+- `DEMO_MODE="false"`, daarna pas `SITE_STATUS="live"`.
 
 ### Wat er na publicatie gebeurt
 
@@ -340,6 +379,26 @@ fly ssh console -C "node scripts/onderhoud/werkgebied-noord-holland.cjs"
 
 Het script noemt per project wat het heeft gedaan. Je kunt hetzelfde met de hand
 doen via **Beheer → Projecten**.
+
+### Diensten en tarieven in een bestaande database bijwerken
+
+Hetzelfde geldt voor de diensten: die staan in de database en veranderen niet
+mee met `lib/example-data.ts`. Voor de herziening van de tarieven is er een
+tweede script. Het hernoemt de fotografie- en videodienst, zet de nieuwe
+bedragen erin, voegt *Bedrijfsfilm* en *Bouwvordering* toe, haalt het
+voorbeeldproject over een festival van de site en verplaatst het
+nieuwbouwproject naar de categorie bouwvordering.
+
+```bash
+# lokaal
+node scripts/onderhoud/tarieven-2026.cjs
+
+# op de server, nadat de nieuwe versie is uitgerold
+fly ssh console -C "node scripts/onderhoud/tarieven-2026.cjs"
+```
+
+Een dienst die je zelf al hebt aangepast, blijft staan; het script zegt dat er
+per regel bij. Nog een keer draaien verandert niets meer.
 
 ### E-mailadressen
 

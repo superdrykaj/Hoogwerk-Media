@@ -2,10 +2,14 @@ import type { MetadataRoute } from "next";
 
 import { site } from "@/content/site";
 import { listProjects } from "@/lib/projects";
+import { siteStatus } from "@/lib/site-status";
 
 export const dynamic = "force-dynamic";
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  // Dichte site: geen sitemap. Zie lib/site-status.ts.
+  if (siteStatus() !== "live") return [];
+
   const base = site.url.replace(/\/$/, "");
   const projects = listProjects({ onlyPublished: true });
 

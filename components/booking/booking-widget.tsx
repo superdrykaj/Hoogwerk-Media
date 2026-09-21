@@ -234,8 +234,8 @@ export function BookingWidget({ services }: { services: PublicService[] }) {
                   onClick={() => chooseService(item.id)}
                   className={`group h-full w-full rounded-xl border p-5 text-left transition-colors ${
                     serviceId === item.id
-                      ? "border-azure-500 bg-azure-600/10"
-                      : "border-ink-600 bg-ink-900 hover:border-azure-500/60"
+                      ? "border-haze-500 bg-haze-600/10"
+                      : "border-ink-600 bg-ink-900 hover:border-haze-500/60"
                   }`}
                 >
                   <span className="flex items-baseline justify-between gap-3">
@@ -256,7 +256,7 @@ export function BookingWidget({ services }: { services: PublicService[] }) {
                       {item.description}
                     </span>
                   )}
-                  <span className="mt-3 block text-sm font-semibold text-azure-300">
+                  <span className="mt-3 block text-sm font-semibold text-haze-300">
                     {item.priceLabel}
                   </span>
                 </button>
@@ -304,8 +304,8 @@ export function BookingWidget({ services }: { services: PublicService[] }) {
                       onClick={() => chooseTime(slot.startUtc)}
                       className={`w-full rounded-lg border px-3 py-3 text-sm font-semibold tabular-nums transition-colors ${
                         startUtc === slot.startUtc
-                          ? "border-azure-500 bg-azure-600/15 text-azure-300"
-                          : "border-ink-600 bg-ink-900 hover:border-azure-500/60"
+                          ? "border-haze-500 bg-haze-600/15 text-haze-300"
+                          : "border-ink-600 bg-ink-900 hover:border-haze-500/60"
                       }`}
                     >
                       {formatMinutes(slot.minutes)}
@@ -489,7 +489,7 @@ function Stepper({
               <button
                 type="button"
                 onClick={() => onBack(index)}
-                className="flex items-center gap-1.5 rounded-full px-2 py-1 text-mist-500 hover:text-azure-300"
+                className="flex items-center gap-1.5 rounded-full px-2 py-1 text-mist-500 hover:text-haze-300"
               >
                 <Dot done />
                 {label}
@@ -522,7 +522,7 @@ function Dot({ done, active }: { done: boolean; active?: boolean }) {
     <span
       aria-hidden="true"
       className={`inline-block h-1.5 w-1.5 rounded-full ${
-        done ? "bg-azure-400" : active ? "bg-mist-100" : "bg-ink-600"
+        done ? "bg-haze-400" : active ? "bg-mist-100" : "bg-ink-600"
       }`}
     />
   );
@@ -622,10 +622,10 @@ function DatePicker({
                   onClick={() => onPick(day.dateKey)}
                   className={`h-full w-full rounded-lg border px-2 py-3 text-center transition-colors ${
                     selected === day.dateKey
-                      ? "border-azure-500 bg-azure-600/15"
+                      ? "border-haze-500 bg-haze-600/15"
                       : disabled
                         ? "cursor-not-allowed border-ink-800 bg-ink-900/40 text-mist-600"
-                        : "border-ink-600 bg-ink-900 hover:border-azure-500/60"
+                        : "border-ink-600 bg-ink-900 hover:border-haze-500/60"
                   }`}
                 >
                   <span className="block text-sm font-semibold">
@@ -984,7 +984,7 @@ function Field({
 
 function Required() {
   return (
-    <span className="text-azure-300">
+    <span className="text-haze-300">
       <span aria-hidden="true">*</span>
       <span className="sr-only">(verplicht)</span>
     </span>
@@ -1016,11 +1016,11 @@ function BookingConfirmation({
 }) {
   return (
     <div className="card p-8 text-center" role="status">
-      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-azure-600/20">
+      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-haze-600/20">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path
             d="M5 12.5 10 17.5 19 7"
-            stroke="var(--color-azure-300)"
+            stroke="var(--color-haze-300)"
             strokeWidth="2.2"
             strokeLinecap="round"
             strokeLinejoin="round"

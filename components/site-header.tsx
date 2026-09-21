@@ -32,9 +32,9 @@ export function SiteHeader() {
 
   return (
     <header
-      className={`sticky top-0 z-50 transition-colors duration-300 ${
+      className={`sticky top-0 z-(--z-header) transition-colors duration-300 ${
         scrolled || open
-          ? "border-b border-ink-700/80 bg-ink-950/85 backdrop-blur-xl"
+          ? "border-b border-ink-700/70 bg-ink-950/80 backdrop-blur-xl"
           : "border-b border-transparent bg-transparent"
       }`}
     >
@@ -45,7 +45,7 @@ export function SiteHeader() {
           aria-label={`${site.name} — naar de homepage`}
         >
           <Mark />
-          <span className="font-[family-name:var(--font-display)] text-lg font-semibold tracking-tight">
+          <span className="font-[family-name:var(--font-display)] text-lg font-semibold tracking-[-0.03em]">
             {site.name}
           </span>
         </Link>
@@ -149,16 +149,16 @@ function Mark() {
   return (
     <span
       aria-hidden="true"
-      className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-azure-400 to-azure-600 shadow-[0_0_24px_-6px_var(--color-azure-500)]"
+      className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-mist-500/40 text-mist-100"
     >
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
         <path
-          d="M12 4.5 20 19H4L12 4.5Z"
-          stroke="#04070d"
+          d="M4 4h4M4 4v4M20 4h-4M20 4v4M4 20h4M4 20v-4M20 20h-4M20 20v-4"
+          stroke="currentColor"
           strokeWidth="1.8"
-          strokeLinejoin="round"
+          strokeLinecap="round"
         />
-        <circle cx="12" cy="14.5" r="1.9" fill="#04070d" />
+        <circle cx="12" cy="12" r="3.2" stroke="currentColor" strokeWidth="1.8" />
       </svg>
     </span>
   );

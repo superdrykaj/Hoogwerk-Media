@@ -127,7 +127,7 @@ const SCENES = [
   {
     file: "hero.jpg",
     kind: "city",
-    label: "Voorbeeldbeeld — vervang door je eigen dronefoto",
+    label: "Voorbeeldbeeld",
     palette: {
       sky: ["#070b14", "#14263f", "#2c4f79"],
       ground: ["#0d1826", "#132435", "#1a3047", "#213a55"],

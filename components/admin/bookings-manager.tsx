@@ -71,7 +71,7 @@ export function BookingsManager({
                 aria-pressed={filter === item.key}
                 className={`rounded-full border px-3.5 py-1.5 text-sm transition-colors ${
                   filter === item.key
-                    ? "border-azure-500 bg-azure-600/15 text-azure-300"
+                    ? "border-haze-500 bg-haze-600/15 text-haze-300"
                     : "border-ink-600 text-mist-500 hover:text-mist-100"
                 }`}
               >
@@ -235,7 +235,7 @@ function BookingDetail({ booking }: { booking: Booking }) {
             <Row
               label="E-mail"
               value={
-                <a href={`mailto:${booking.email}`} className="text-azure-300 hover:underline">
+                <a href={`mailto:${booking.email}`} className="text-haze-300 hover:underline">
                   {booking.email}
                 </a>
               }
@@ -489,7 +489,7 @@ function CalendarView({
               key={dateKey}
               className={`min-h-24 rounded-lg border p-1.5 text-left ${
                 dateKey === today
-                  ? "border-azure-500/60 bg-azure-600/5"
+                  ? "border-haze-500/60 bg-haze-600/5"
                   : "border-ink-700 bg-ink-900/60"
               }`}
             >

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { site } from "@/content/site";
+import { requireOpenSite } from "@/lib/site-status";
 
 // Per verzoek renderen, niet vooraf: de publieke URL komt uit een
 // omgevingsvariabele en is tijdens de build nog niet bekend. Zonder dit
@@ -16,7 +17,9 @@ export const metadata: Metadata = {
   alternates: { canonical: "/demo" },
 };
 
-export default function DemoPage() {
+export default async function DemoPage() {
+  await requireOpenSite();
+
   return (
     <div className="container-page py-20">
       <div className="max-w-3xl">
