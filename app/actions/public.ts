@@ -136,16 +136,28 @@ export async function sendContactAction(
   const locale = localeOf(formData);
   const t = copy(locale);
 
+  // Wat er is ingevuld, gaat bij een foutmelding mee terug naar het formulier,
+  // zodat de bezoeker niet opnieuw hoeft te beginnen. De spamval hoort daar
+  // niet bij: die moet leeg blijven.
+  const values = {
+    name: String(formData.get("name") ?? ""),
+    email: String(formData.get("email") ?? ""),
+    subject: String(formData.get("subject") ?? ""),
+    message: String(formData.get("message") ?? ""),
+  };
+
   const limit = rateLimit(await clientKey("contact"), 5, 10 * 60 * 1000);
   if (!limit.allowed) {
-    return { status: "error", message: t.forms.errTooManyMessages, errors: {} };
+    return {
+      status: "error",
+      message: t.forms.errTooManyMessages,
+      errors: {},
+      values,
+    };
   }
 
   const parsed = contactFormSchema(t.forms).safeParse({
-    name: formData.get("name") ?? "",
-    email: formData.get("email") ?? "",
-    subject: formData.get("subject") ?? "",
-    message: formData.get("message") ?? "",
+    ...values,
     website: formData.get("website") ?? "",
   });
 
@@ -154,6 +166,7 @@ export async function sendContactAction(
       status: "error",
       message: t.forms.errCheck,
       errors: fieldErrors(parsed.error),
+      values,
     };
   }
 

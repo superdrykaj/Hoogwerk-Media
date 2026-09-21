@@ -75,6 +75,43 @@ export function recentMailLog(limit = 20) {
   }[];
 }
 
+/**
+ * De SMTP-verbinding, één keer opgezet en daarna hergebruikt.
+ *
+ * Twee dingen zijn hier belangrijk voor hoe snel het formulier reageert:
+ *
+ * 1. Eerder werd voor elk bericht een nieuwe verbinding opgetuigd. Bij een
+ *    aanvraag gaan er twee berichten uit, dus gebeurde dat twee keer.
+ * 2. Zonder tijdslimieten wacht nodemailer standaard minutenlang op een server
+ *    die niet antwoordt. De bezoeker kijkt zolang naar "bezig met versturen".
+ *    Met deze grenzen duurt een mislukte poging hooguit een paar seconden.
+ *
+ * De instellingen komen uit de omgeving en veranderen niet zolang de server
+ * draait, dus het bewaren van de verbinding is veilig.
+ */
+let transportCache: Promise<import("nodemailer").Transporter> | null = null;
+
+function getTransport() {
+  if (!transportCache) {
+    transportCache = import("nodemailer").then((mod) =>
+      mod.default.createTransport({
+        host: process.env.SMTP_HOST,
+        port: Number(process.env.SMTP_PORT),
+        secure: Number(process.env.SMTP_PORT) === 465,
+        auth: process.env.SMTP_USER
+          ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASSWORD }
+          : undefined,
+        // Wachten op verbinding, op de begroeting van de server en op het
+        // versturen zelf. In milliseconden.
+        connectionTimeout: 8000,
+        greetingTimeout: 8000,
+        socketTimeout: 15000,
+      }),
+    );
+  }
+  return transportCache;
+}
+
 async function send(
   to: string,
   subject: string,
@@ -87,15 +124,7 @@ async function send(
     return "skipped";
   }
   try {
-    const nodemailer = (await import("nodemailer")).default;
-    const transport = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT),
-      secure: Number(process.env.SMTP_PORT) === 465,
-      auth: process.env.SMTP_USER
-        ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASSWORD }
-        : undefined,
-    });
+    const transport = await getTransport();
     await transport.sendMail({
       from: process.env.MAIL_FROM,
       to,
@@ -177,44 +206,47 @@ export async function sendBookingRequestMails(booking: Booking): Promise<{
   const t = copy(locale).mail;
   const naarJou = mailRecipients().bookings;
 
-  const customer = await send(
-    booking.email,
-    t.requestSubject(booking.reference),
-    [
-      t.greeting(booking.name),
-      "",
-      t.requestBody,
-      "",
-      bookingSummary(booking, locale),
-      "",
-      ...t.requestNotice,
-      "",
-      t.requestReply,
-      "",
-      t.signature,
-      site.bookingEmail,
-    ].join("\n"),
-    // Antwoorden van de klant horen in de boekingenmap, ook als de site vanaf
-    // een ander adres verstuurt.
-    site.bookingEmail,
-  );
-
   // De melding aan de eigenaar is altijd Nederlands: die leest Kai zelf.
   const eigen = copy(DEFAULT_LOCALE).mail;
-  const owner = await send(
-    naarJou,
-    eigen.ownerSubject(booking.reference, booking.name),
-    [
-      eigen.ownerBody,
-      ...(locale === DEFAULT_LOCALE
-        ? []
-        : ["", "(De aanvraag is gedaan op de Engelse versie van de site.)"]),
-      "",
-      bookingSummary(booking, DEFAULT_LOCALE),
-    ].join("\n"),
-    // Zo kun je rechtstreeks op de melding antwoorden naar de klant.
-    booking.email,
-  );
+
+  // Tegelijk, niet na elkaar: de bezoeker wacht anders twee keer zo lang.
+  const [customer, owner] = await Promise.all([
+    send(
+      booking.email,
+      t.requestSubject(booking.reference),
+      [
+        t.greeting(booking.name),
+        "",
+        t.requestBody,
+        "",
+        bookingSummary(booking, locale),
+        "",
+        ...t.requestNotice,
+        "",
+        t.requestReply,
+        "",
+        t.signature,
+        site.bookingEmail,
+      ].join("\n"),
+      // Antwoorden van de klant horen in de boekingenmap, ook als de site vanaf
+      // een ander adres verstuurt.
+      site.bookingEmail,
+    ),
+    send(
+      naarJou,
+      eigen.ownerSubject(booking.reference, booking.name),
+      [
+        eigen.ownerBody,
+        ...(locale === DEFAULT_LOCALE
+          ? []
+          : ["", "(De aanvraag is gedaan op de Engelse versie van de site.)"]),
+        "",
+        bookingSummary(booking, DEFAULT_LOCALE),
+      ].join("\n"),
+      // Zo kun je rechtstreeks op de melding antwoorden naar de klant.
+      booking.email,
+    ),
+  ]);
 
   return { customer, owner };
 }
@@ -273,35 +305,38 @@ export async function sendContactMails(
   locale: Locale = DEFAULT_LOCALE,
 ): Promise<{ customer: MailStatus; owner: MailStatus }> {
   const t = copy(locale).mail;
-  const customer = await send(
-    message.email,
-    t.contactSubject,
-    [
-      t.greeting(message.name),
-      "",
-      t.contactBody,
-      "",
-      t.contactYours,
-      message.message,
-      "",
-      t.signature,
-    ].join("\n"),
-    site.email,
-  );
-
-  // Een contactbericht is algemeen en gaat naar het algemene adres. De melding
-  // aan de eigenaar blijft Nederlands.
+  // De melding aan de eigenaar blijft Nederlands.
   const eigen = copy(DEFAULT_LOCALE).mail;
-  const owner = await send(
-    mailRecipients().contact,
-    eigen.contactOwnerSubject(message.subject),
-    [
-      `${eigen.contactFrom} ${message.name} <${message.email}>`,
-      `${eigen.contactRe} ${message.subject}`,
-      "",
-      message.message,
-    ].join("\n"),
-    message.email,
-  );
+
+  // Tegelijk, niet na elkaar: de bezoeker wacht anders twee keer zo lang.
+  const [customer, owner] = await Promise.all([
+    send(
+      message.email,
+      t.contactSubject,
+      [
+        t.greeting(message.name),
+        "",
+        t.contactBody,
+        "",
+        t.contactYours,
+        message.message,
+        "",
+        t.signature,
+      ].join("\n"),
+      site.email,
+    ),
+    // Een contactbericht is algemeen en gaat naar het algemene adres.
+    send(
+      mailRecipients().contact,
+      eigen.contactOwnerSubject(message.subject),
+      [
+        `${eigen.contactFrom} ${message.name} <${message.email}>`,
+        `${eigen.contactRe} ${message.subject}`,
+        "",
+        message.message,
+      ].join("\n"),
+      message.email,
+    ),
+  ]);
   return { customer, owner };
 }

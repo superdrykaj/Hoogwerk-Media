@@ -8,6 +8,13 @@ export type FormState = {
   status: "idle" | "success" | "error";
   message: string;
   errors: Record<string, string>;
+  /**
+   * Wat de bezoeker had ingevuld. Nodig bij een foutmelding: React maakt een
+   * formulier na het versturen leeg, dus zonder deze waarden begint iemand die
+   * één veld verkeerd invulde weer helemaal opnieuw. De velden zetten ze terug
+   * via defaultValue.
+   */
+  values?: Record<string, string>;
   /** Extra gegevens bij een geslaagde aanvraag. */
   result?: {
     reference: string;

@@ -138,6 +138,22 @@ gebleven; er is niets opnieuw opgebouwd.
 - De controle van het inlogcookie staat nu in `lib/session-token.ts`, zodat
   `proxy.ts` hem kan gebruiken. Vijf tests erbij; in totaal 45.
 
+## September 2026 — contactformulier
+
+- **Opgelost: het versturen duurde minuten.** Voor elk bericht werd een nieuwe
+  SMTP-verbinding opgezet, zonder tijdslimiet, en de twee berichten (bevestiging
+  naar de bezoeker, melding naar jou) gingen na elkaar de deur uit. Antwoordde
+  de mailserver niet, dan wachtte nodemailer standaard twee minuten per
+  bericht — vier minuten "bezig met versturen" in totaal. De verbinding wordt nu
+  hergebruikt, de twee berichten gaan tegelijk, en er staat een grens op het
+  wachten: maximaal acht seconden. Hetzelfde geldt voor de boekingsaanvragen.
+- **Opgelost: het formulier liep leeg bij een foutmelding.** React maakt een
+  formulier na het versturen automatisch leeg. Werd een veld afgekeurd — een
+  bericht korter dan tien tekens, bijvoorbeeld — dan begon je weer helemaal
+  opnieuw. De ingevulde tekst komt nu mee terug en staat er weer in.
+- De foutmelding krijgt de aandacht van de schermlezer en van de cursor, zodat
+  op een mobiel duidelijk is waaróm er niets gebeurde.
+
 ## Nog te doen — dit kan de website niet voor je oplossen
 
 - Acht tot twaalf **eigen** dronefoto's, en minstens drie echte cases.
