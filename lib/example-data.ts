@@ -16,7 +16,7 @@ export const EXAMPLE_SERVICES = [
     slug: "kennismaking",
     name: "Kennismaking",
     description:
-      "Een kort videogesprek of telefoongesprek waarin we je plannen doornemen. Vrijblijvend.",
+      "Kort videogesprek over je locatie en wat je nodig hebt. Vrijblijvend.",
     duration_minutes: 20,
     price_label: "Gratis",
     buffer_minutes: 15,
@@ -27,11 +27,11 @@ export const EXAMPLE_SERVICES = [
   },
   {
     slug: "dronefotografie",
-    name: "Dronefotografie",
+    name: "Fotoreportage",
     description:
-      "Een fotosessie op locatie. Je ontvangt een selectie bewerkte foto's in hoge resolutie.",
+      "Eén object of terrein. Vijftien tot vijfentwintig bewerkte foto's, gebruiksrecht voor web en socials.",
     duration_minutes: 60,
-    price_label: "Indicatie vanaf € 149",
+    price_label: "vanaf € 195",
     buffer_minutes: 45,
     bookable: 1,
     intro_only: 0,
@@ -40,11 +40,11 @@ export const EXAMPLE_SERVICES = [
   },
   {
     slug: "dronevideo",
-    name: "Dronevideo",
+    name: "Foto en korte film",
     description:
-      "Videobeelden op locatie, inclusief montage tot een korte film voor je website of socials.",
+      "Dezelfde reportage, plus een gemonteerde clip van dertig tot vijfenveertig seconden.",
     duration_minutes: 90,
-    price_label: "Indicatie vanaf € 249",
+    price_label: "vanaf € 349",
     buffer_minutes: 45,
     bookable: 1,
     intro_only: 0,
@@ -52,16 +52,42 @@ export const EXAMPLE_SERVICES = [
     active: 1,
   },
   {
+    slug: "bedrijfsfilm",
+    name: "Bedrijfsfilm",
+    description:
+      "Sfeerfilm van zestig tot negentig seconden over je terrein of project. Muziek en voice-over in overleg.",
+    duration_minutes: 120,
+    price_label: "vanaf € 495",
+    buffer_minutes: 60,
+    bookable: 1,
+    intro_only: 0,
+    sort_order: 4,
+    active: 1,
+  },
+  {
+    slug: "bouwvordering",
+    name: "Bouwvordering",
+    description:
+      "Vaste route en vaste hoogte, elke maand opnieuw. Vanaf vier bezoeken geldt een staffel.",
+    duration_minutes: 45,
+    price_label: "vanaf € 149 per bezoek",
+    buffer_minutes: 30,
+    bookable: 1,
+    intro_only: 0,
+    sort_order: 5,
+    active: 1,
+  },
+  {
     slug: "project-op-maat",
     name: "Project op maat",
     description:
-      "Meerdere locaties, meerdere dagen of een combinatie van foto en video. Je plant een kennismaking; in het formulier vraag ik alvast naar de locaties en de gewenste periode.",
+      "Meerdere locaties of meerdere dagen. Je plant een kennismaking; in het formulier vraag ik alvast naar de locaties en de periode.",
     duration_minutes: 20,
-    price_label: "Prijs in overleg",
+    price_label: "In overleg",
     buffer_minutes: 15,
     bookable: 1,
     intro_only: 1,
-    sort_order: 4,
+    sort_order: 6,
     active: 1,
   },
 ];
@@ -105,7 +131,7 @@ export const EXAMPLE_PROJECTS = [
   {
     slug: "nieuwbouwwijk-in-aanbouw",
     title: "Nieuwbouwwijk in aanbouw",
-    category: "vastgoed",
+    category: "bouw",
     location: "Purmerend (voorbeeld)",
     summary:
       "Maandelijkse voortgangsopnames van een nieuwbouwproject, steeds vanaf hetzelfde punt.",
@@ -151,22 +177,6 @@ export const EXAMPLE_PROJECTS = [
     images: [],
   },
   {
-    slug: "zomerfestival-in-het-park",
-    title: "Zomerfestival in het park",
-    category: "evenementen",
-    location: "Zaandam (voorbeeld)",
-    summary:
-      "Een overzichtsbeeld van een eendaags festival, in overleg met de organisatie en de terreinbeheerder.",
-    body:
-      "De organisatie wilde één goed overzichtsbeeld voor de aftermovie en de verantwoording richting de gemeente.\n\nEr is vooraf afgestemd wanneer er gevlogen mocht worden en over welke delen van het terrein. Tijdens de vlucht is er op veilige afstand van het publiek gebleven.\n\nOpgeleverd: drie overzichtsfoto's en ruw videomateriaal voor de montage van de organisatie.",
-    cover_url: "/images/project-evenementen-1.jpg",
-    cover_alt: "Voorbeeldbeeld: luchtfoto van een festivalterrein in een park",
-    video_url: "",
-    featured: 0,
-    sort_order: 5,
-    images: [["/images/gallery-3.jpg", "Voorbeeldbeeld: het terrein in de avond"]],
-  },
-  {
     slug: "veenweide-bij-zonsopkomst",
     title: "Veenweidegebied bij zonsopkomst",
     category: "natuur",
@@ -179,7 +189,7 @@ export const EXAMPLE_PROJECTS = [
     cover_alt: "Voorbeeldbeeld: luchtfoto van veenweidegebied in de ochtendmist",
     video_url: "",
     featured: 1,
-    sort_order: 6,
+    sort_order: 5,
     images: [
       ["/images/project-natuur-2.jpg", "Voorbeeldbeeld: waterloop door het landschap"],
       ["/images/gallery-1.jpg", "Voorbeeldbeeld: velden vanuit de lucht"],

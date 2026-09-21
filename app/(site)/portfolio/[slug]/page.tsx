@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { ProjectGallery } from "@/components/project-gallery";
 import { categoryLabel, site } from "@/content/site";
 import { getProjectBySlug, listProjectImages, listProjects } from "@/lib/projects";
+import { requireOpenSite } from "@/lib/site-status";
 
 export const dynamic = "force-dynamic";
 
@@ -38,6 +39,8 @@ export default async function ProjectPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  await requireOpenSite();
+
   const { slug } = await params;
   const project = getProjectBySlug(slug);
   if (!project || !project.published) notFound();
@@ -80,7 +83,7 @@ export default async function ProjectPage({
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <span className="chip">{categoryLabel(project.category)}</span>
             {project.location && <span className="chip">{project.location}</span>}
-            <span className="chip border-azure-500/40 text-azure-300">
+            <span className="chip border-haze-500/40 text-haze-300">
               Voorbeeldproject
             </span>
           </div>
@@ -168,7 +171,7 @@ export default async function ProjectPage({
                 <li key={other.id}>
                   <Link
                     href={`/portfolio/${other.slug}`}
-                    className="group flex items-center gap-4 rounded-xl border border-ink-700 bg-ink-900 p-4 transition-colors hover:border-azure-500/60"
+                    className="group flex items-center gap-4 rounded-xl border border-ink-700 bg-ink-900 p-4 transition-colors hover:border-haze-500/60"
                   >
                     {other.coverUrl && (
                       <span className="relative h-16 w-20 shrink-0 overflow-hidden rounded-lg">
@@ -182,7 +185,7 @@ export default async function ProjectPage({
                       </span>
                     )}
                     <span>
-                      <span className="block text-sm font-semibold group-hover:text-azure-300">
+                      <span className="block text-sm font-semibold group-hover:text-haze-300">
                         {other.title}
                       </span>
                       <span className="mt-1 block text-xs text-mist-500">

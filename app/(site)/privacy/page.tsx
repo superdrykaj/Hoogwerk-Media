@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { site } from "@/content/site";
+import { requireOpenSite } from "@/lib/site-status";
 
 // Per verzoek renderen, niet vooraf: de publieke URL komt uit een
 // omgevingsvariabele en is tijdens de build nog niet bekend. Zonder dit
@@ -24,7 +25,9 @@ function Fill({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  await requireOpenSite();
+
   return (
     <div className="container-page py-20">
       <div className="max-w-3xl">
@@ -48,7 +51,7 @@ export default function PrivacyPage() {
             <p>
               KvK-nummer: <Fill>KvK-nummer</Fill>. Btw-nummer:{" "}
               <Fill>btw-identificatienummer</Fill>. Contact:{" "}
-              <a href={`mailto:${site.email}`} className="text-azure-300 hover:underline">
+              <a href={`mailto:${site.email}`} className="text-haze-300 hover:underline">
                 {site.email}
               </a>
               .
@@ -133,7 +136,7 @@ export default function PrivacyPage() {
               Je mag je gegevens inzien, laten corrigeren of laten verwijderen, en
               je kunt bezwaar maken tegen de verwerking. Stuur daarvoor een mail
               naar{" "}
-              <a href={`mailto:${site.email}`} className="text-azure-300 hover:underline">
+              <a href={`mailto:${site.email}`} className="text-haze-300 hover:underline">
                 {site.email}
               </a>
               . Kom je er samen niet uit, dan kun je een klacht indienen bij de

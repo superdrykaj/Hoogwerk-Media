@@ -195,8 +195,8 @@ function Stat({
   return (
     <Link
       href={href}
-      className={`card block p-5 transition-colors hover:border-azure-500/60 ${
-        highlight ? "border-azure-500/50" : ""
+      className={`card block p-5 transition-colors hover:border-haze-500/60 ${
+        highlight ? "border-haze-500/50" : ""
       }`}
     >
       <p className="text-sm text-mist-500">{label}</p>

@@ -93,10 +93,10 @@ function FilterButton({
       disabled={count === 0}
       className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
         active
-          ? "border-azure-500 bg-azure-600/15 text-azure-300"
+          ? "border-haze-500 bg-haze-600/15 text-haze-300"
           : count === 0
             ? "cursor-not-allowed border-ink-800 text-mist-600"
-            : "border-ink-600 text-mist-300 hover:border-azure-500/60 hover:text-mist-100"
+            : "border-ink-600 text-mist-300 hover:border-haze-500/60 hover:text-mist-100"
       }`}
     >
       {label}
