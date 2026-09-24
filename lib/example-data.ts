@@ -16,12 +16,12 @@ export const EXAMPLE_SERVICES = [
     slug: "kennismaking",
     name: "Kennismaking",
     description:
-      "Een kort videogesprek of telefoongesprek waarin we je plannen doornemen. Vrijblijvend.",
+      "Kort videogesprek over je locatie en wat je nodig hebt. Vrijblijvend.",
     duration_minutes: 20,
     price_label: "Gratis",
     name_en: "Intro call",
     description_en:
-      "A short video or phone call to go through your plans. No obligation.",
+      "A short video call about your location and what you need. No obligation.",
     price_label_en: "Free",
     buffer_minutes: 15,
     bookable: 1,
@@ -31,15 +31,15 @@ export const EXAMPLE_SERVICES = [
   },
   {
     slug: "dronefotografie",
-    name: "Dronefotografie",
+    name: "Fotoreportage",
     description:
-      "Een fotosessie op locatie. Je ontvangt een selectie bewerkte foto's in hoge resolutie.",
+      "Eén object of terrein. Vijftien tot vijfentwintig bewerkte foto's, gebruiksrecht voor web en socials.",
     duration_minutes: 60,
-    price_label: "Indicatie vanaf € 149",
-    name_en: "Drone photography",
+    price_label: "vanaf € 195",
+    name_en: "Photo shoot",
     description_en:
-      "A photo session on location. You receive a selection of edited photos in high resolution.",
-    price_label_en: "From € 149",
+      "One building or site. Fifteen to twenty-five edited photos, usage rights for web and social.",
+    price_label_en: "from € 195",
     buffer_minutes: 45,
     bookable: 1,
     intro_only: 0,
@@ -48,15 +48,15 @@ export const EXAMPLE_SERVICES = [
   },
   {
     slug: "dronevideo",
-    name: "Dronevideo",
+    name: "Foto en korte film",
     description:
-      "Videobeelden op locatie, inclusief montage tot een korte film voor je website of socials.",
+      "Dezelfde reportage, plus een gemonteerde clip van dertig tot vijfenveertig seconden.",
     duration_minutes: 90,
-    price_label: "Indicatie vanaf € 249",
-    name_en: "Drone video",
+    price_label: "vanaf € 349",
+    name_en: "Photos and short film",
     description_en:
-      "Video on location, including editing into a short film for your website or social channels.",
-    price_label_en: "From € 249",
+      "The same shoot, plus an edited clip of thirty to forty-five seconds.",
+    price_label_en: "from € 349",
     buffer_minutes: 45,
     bookable: 1,
     intro_only: 0,
@@ -64,20 +64,54 @@ export const EXAMPLE_SERVICES = [
     active: 1,
   },
   {
+    slug: "bedrijfsfilm",
+    name: "Bedrijfsfilm",
+    description:
+      "Sfeerfilm van zestig tot negentig seconden over je terrein of project. Muziek en voice-over in overleg.",
+    duration_minutes: 120,
+    price_label: "vanaf € 495",
+    name_en: "Company film",
+    description_en:
+      "A sixty to ninety second film about your site or project. Music and voice-over by arrangement.",
+    price_label_en: "from € 495",
+    buffer_minutes: 60,
+    bookable: 1,
+    intro_only: 0,
+    sort_order: 4,
+    active: 1,
+  },
+  {
+    slug: "bouwvordering",
+    name: "Bouwvordering",
+    description:
+      "Vaste route en vaste hoogte, elke maand opnieuw. Vanaf vier bezoeken geldt een staffel.",
+    duration_minutes: 45,
+    price_label: "vanaf € 149 per bezoek",
+    name_en: "Construction progress",
+    description_en:
+      "Fixed route and fixed altitude, every month. A discount applies from four visits.",
+    price_label_en: "from € 149 per visit",
+    buffer_minutes: 30,
+    bookable: 1,
+    intro_only: 0,
+    sort_order: 5,
+    active: 1,
+  },
+  {
     slug: "project-op-maat",
     name: "Project op maat",
     description:
-      "Meerdere locaties, meerdere dagen of een combinatie van foto en video. Je plant een kennismaking; in het formulier vraag ik alvast naar de locaties en de gewenste periode.",
+      "Meerdere locaties of meerdere dagen. Je plant een kennismaking; in het formulier vraag ik alvast naar de locaties en de periode.",
     duration_minutes: 20,
-    price_label: "Prijs in overleg",
+    price_label: "In overleg",
     name_en: "Custom project",
     description_en:
-      "Several locations, several days or a mix of photo and video. You book an intro call; the form asks up front about the locations and the preferred period.",
-    price_label_en: "Price on request",
+      "Several locations or several days. You book an intro call; the form asks up front about the locations and the period.",
+    price_label_en: "On request",
     buffer_minutes: 15,
     bookable: 1,
     intro_only: 1,
-    sort_order: 4,
+    sort_order: 6,
     active: 1,
   },
 ];
@@ -110,8 +144,10 @@ export const EXAMPLE_PROJECTS = [
     cover_url: "/images/project-vastgoed-1.jpg",
     cover_alt:
       "Voorbeeldbeeld: luchtfoto van een vrijstaand huis met tuin aan het water",
-    title_en: "Townhouse on the river Zaan",
-    location_en: "Zaandam (example)",
+    title_en:
+      "Townhouse on the river Zaan",
+    location_en:
+      "Zaandam (example)",
     summary_en:
       "Aerial photos of a detached townhouse, made for an estate agent's brochure.",
     body_en:
@@ -129,7 +165,7 @@ export const EXAMPLE_PROJECTS = [
   {
     slug: "nieuwbouwwijk-in-aanbouw",
     title: "Nieuwbouwwijk in aanbouw",
-    category: "vastgoed",
+    category: "bouw",
     location: "Purmerend (voorbeeld)",
     summary:
       "Maandelijkse voortgangsopnames van een nieuwbouwproject, steeds vanaf hetzelfde punt.",
@@ -137,8 +173,10 @@ export const EXAMPLE_PROJECTS = [
       "Een ontwikkelaar wilde de bouw van 48 woningen vastleggen, zodat kopers de voortgang konden volgen.\n\nElke maand vloog ik dezelfde route op dezelfde hoogte. Daardoor zijn de beelden onderling goed te vergelijken en ontstaat er vanzelf een reeks.\n\nDe foto's stonden op de projectwebsite en zijn aan het eind gebruikt voor een korte terugblikvideo.",
     cover_url: "/images/project-vastgoed-2.jpg",
     cover_alt: "Voorbeeldbeeld: luchtfoto van een nieuwbouwwijk in aanbouw",
-    title_en: "New housing estate under construction",
-    location_en: "Purmerend (example)",
+    title_en:
+      "New housing estate under construction",
+    location_en:
+      "Purmerend (example)",
     summary_en:
       "Monthly progress shots of a new-build project, always from the same point.",
     body_en:
@@ -161,8 +199,10 @@ export const EXAMPLE_PROJECTS = [
       "Het bedrijf verhuisde naar een groter pand en wilde daar beelden van voor de website en een investeerderspresentatie.\n\nWe hebben gevlogen op een rustige zaterdagochtend, zodat er geen vrachtverkeer op het terrein stond. Naast overzichten heb ik een paar lagere passages gemaakt langs de gevel.\n\nOpgeleverd: acht foto's en een montage van veertig seconden.",
     cover_url: "/images/project-bedrijven-1.jpg",
     cover_alt: "Voorbeeldbeeld: luchtfoto van een bedrijventerrein",
-    title_en: "Achtersluispolder business park",
-    location_en: "Zaandam (example)",
+    title_en:
+      "Achtersluispolder business park",
+    location_en:
+      "Zaandam (example)",
     summary_en:
       "Atmosphere and overview shots of a logistics site for the new company website.",
     body_en:
@@ -185,8 +225,10 @@ export const EXAMPLE_PROJECTS = [
       "Voor een wervingscampagne waren beelden nodig die laten zien hoe groot de locatie is en hoe er gewerkt wordt.\n\nWe hebben vooraf met de bedrijfsleiding afgestemd welke delen wel en niet in beeld mochten komen. Tijdens de vlucht hield een collega toezicht op de begane grond.\n\nDe beelden zijn gebruikt op de vacaturepagina en in korte video's voor sociale media.",
     cover_url: "/images/project-bedrijven-2.jpg",
     cover_alt: "Voorbeeldbeeld: luchtfoto van een productielocatie",
-    title_en: "Production site at work",
-    location_en: "Wormerveer (example)",
+    title_en:
+      "Production site at work",
+    location_en:
+      "Wormerveer (example)",
     summary_en:
       "Images of a production site, used in a recruitment campaign for new colleagues.",
     body_en:
@@ -199,30 +241,6 @@ export const EXAMPLE_PROJECTS = [
     images: [],
   },
   {
-    slug: "zomerfestival-in-het-park",
-    title: "Zomerfestival in het park",
-    category: "evenementen",
-    location: "Zaandam (voorbeeld)",
-    summary:
-      "Een overzichtsbeeld van een eendaags festival, in overleg met de organisatie en de terreinbeheerder.",
-    body:
-      "De organisatie wilde één goed overzichtsbeeld voor de aftermovie en de verantwoording richting de gemeente.\n\nEr is vooraf afgestemd wanneer er gevlogen mocht worden en over welke delen van het terrein. Tijdens de vlucht is er op veilige afstand van het publiek gebleven.\n\nOpgeleverd: drie overzichtsfoto's en ruw videomateriaal voor de montage van de organisatie.",
-    cover_url: "/images/project-evenementen-1.jpg",
-    cover_alt: "Voorbeeldbeeld: luchtfoto van een festivalterrein in een park",
-    title_en: "Summer festival in the park",
-    location_en: "Zaandam (example)",
-    summary_en:
-      "An overview shot of a one-day festival, agreed with the organisers and the site manager.",
-    body_en:
-      "The organisers wanted one good overview shot for the aftermovie and for their report to the council.\n\nWe agreed beforehand when flying was allowed and over which parts of the site. During the flight I kept a safe distance from the public.\n\nDelivered: three overview photos and raw video material for the organisers' own edit.",
-    cover_alt_en:
-      "Example image: aerial photo of a festival site in a park",
-    video_url: "",
-    featured: 0,
-    sort_order: 5,
-    images: [["/images/gallery-3.jpg", "Voorbeeldbeeld: het terrein in de avond"]],
-  },
-  {
     slug: "veenweide-bij-zonsopkomst",
     title: "Veenweidegebied bij zonsopkomst",
     category: "natuur",
@@ -233,8 +251,10 @@ export const EXAMPLE_PROJECTS = [
       "Dit is eigen werk, gemaakt om te oefenen met licht en compositie in het open landschap.\n\nDe beelden zijn gemaakt in het half uur na zonsopkomst, als er nog mist boven het water hangt. Ik vloog laag en langzaam, zodat de lijnen van de sloten goed uitkomen.\n\nEen deel van deze reeks hangt als print in mijn werkruimte.",
     cover_url: "/images/project-natuur-1.jpg",
     cover_alt: "Voorbeeldbeeld: luchtfoto van veenweidegebied in de ochtendmist",
-    title_en: "Peat meadows at sunrise",
-    location_en: "Wormer- en Jisperveld (example)",
+    title_en:
+      "Peat meadows at sunrise",
+    location_en:
+      "Wormer- en Jisperveld (example)",
     summary_en:
       "Personal work: a series of landscape images of the peat meadows in the early morning.",
     body_en:
@@ -243,7 +263,7 @@ export const EXAMPLE_PROJECTS = [
       "Example image: aerial photo of peat meadows in the morning mist",
     video_url: "",
     featured: 1,
-    sort_order: 6,
+    sort_order: 5,
     images: [
       ["/images/project-natuur-2.jpg", "Voorbeeldbeeld: waterloop door het landschap"],
       ["/images/gallery-1.jpg", "Voorbeeldbeeld: velden vanuit de lucht"],

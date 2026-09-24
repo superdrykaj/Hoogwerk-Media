@@ -23,11 +23,11 @@ export function ContactForm({
   if (state.status === "success") {
     return (
       <div role="status" className="rounded-xl border border-ink-700 bg-ink-900 p-7 text-center">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-azure-600/20">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-haze-600/20">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path
               d="M5 12.5 10 17.5 19 7"
-              stroke="var(--color-azure-300)"
+              stroke="var(--color-haze-300)"
               strokeWidth="2.2"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -186,7 +186,7 @@ function Field({
 
 function Required({ t }: { t: Dictionary }) {
   return (
-    <span className="text-azure-300">
+    <span className="text-haze-300">
       <span aria-hidden="true">*</span>
       <span className="sr-only">{t.forms.required}</span>
     </span>

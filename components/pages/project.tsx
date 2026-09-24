@@ -7,14 +7,17 @@ import { copy } from "@/content/copy";
 import { href, type Locale } from "@/lib/locale";
 import { projectText } from "@/lib/localised";
 import { getProjectBySlug, listProjectImages, listProjects } from "@/lib/projects";
+import { requireOpenSite } from "@/lib/site-status";
 
-export function ProjectPage({
+export async function ProjectPage({
   slug,
   locale,
 }: {
   slug: string;
   locale: Locale;
 }) {
+  await requireOpenSite();
+
   const t = copy(locale);
   const project = getProjectBySlug(slug);
   if (!project || !project.published) notFound();
@@ -62,7 +65,7 @@ export function ProjectPage({
               {t.portfolio.categories[project.category] ?? project.category}
             </span>
             {tekst.location && <span className="chip">{tekst.location}</span>}
-            <span className="chip border-azure-500/40 text-azure-300">
+            <span className="chip border-haze-500/40 text-haze-300">
               {t.project.exampleChip}
             </span>
           </div>
@@ -155,7 +158,7 @@ export function ProjectPage({
                 <li key={other.id}>
                   <Link
                     href={href(`/portfolio/${other.slug}`, locale)}
-                    className="group flex items-center gap-4 rounded-xl border border-ink-700 bg-ink-900 p-4 transition-colors hover:border-azure-500/60"
+                    className="group flex items-center gap-4 rounded-xl border border-ink-700 bg-ink-900 p-4 transition-colors hover:border-haze-500/60"
                   >
                     {other.coverUrl && (
                       <span className="relative h-16 w-20 shrink-0 overflow-hidden rounded-lg">
@@ -169,7 +172,7 @@ export function ProjectPage({
                       </span>
                     )}
                     <span>
-                      <span className="block text-sm font-semibold group-hover:text-azure-300">
+                      <span className="block text-sm font-semibold group-hover:text-haze-300">
                         {projectText(other, locale).title}
                       </span>
                       <span className="mt-1 block text-xs text-mist-500">

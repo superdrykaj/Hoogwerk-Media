@@ -2,15 +2,16 @@
  * ============================================================================
  *  BEDRIJFSGEGEVENS
  * ============================================================================
- *  Hier staan de gegevens die in beide talen hetzelfde zijn: de bedrijfsnaam,
- *  de e-mailadressen, de apparatuur, het logo en de categorieën.
+ *  Hier staat wat in beide talen hetzelfde is: de bedrijfsnaam, de
+ *  e-mailadressen, de KvK-gegevens, het logo en de categoriesleutels.
  *
  *  De teksten van de website staan per taal in content/copy.nl.ts en
  *  content/copy.en.ts. Zoek je een zin die op de site staat, dan staat die
  *  daar en niet hier.
  *
- *  LET OP: alle gegevens hieronder zijn FICTIEF en bedoeld als voorbeeld.
- *  Vervang ze door je echte gegevens voordat je de site publiceert.
+ *  De diensten en tarieven staan NIET hier maar in de beheeromgeving, zodat je
+ *  ze kunt wijzigen zonder de site opnieuw te bouwen. De startwaarden staan in
+ *  lib/example-data.ts.
  * ============================================================================
  */
 
@@ -51,6 +52,37 @@ export const site = {
   phone: "" as string,
 
   /**
+   * Zakelijk WhatsApp-nummer, in internationale notatie zonder plus of spaties
+   * (bijvoorbeeld "31612345678"). Laat leeg om de knop te verbergen.
+   * Veel lokale opdrachtgevers appen liever dan dat ze mailen.
+   */
+  whatsapp: "" as string,
+
+  /**
+   * --------------------------------------------------------------------
+   *  BEDRIJFSGEGEVENS
+   * --------------------------------------------------------------------
+   *  Vul in zodra je ze hebt. Wat leeg blijft, toont de site niet: je ziet
+   *  dus nooit een lege regel of een placeholder staan.
+   *
+   *  Opdrachtgevers, en zeker gemeenten en aannemers, kijken hiernaar. Zonder
+   *  KvK-nummer en verzekering kom je bij hen de poort niet door.
+   */
+  business: {
+    /** KvK-nummer van de eenmanszaak. Voorbeeld: "12345678". */
+    kvk: "" as string,
+    /** BTW-identificatienummer. Laat leeg als je de KOR gebruikt. */
+    vat: "" as string,
+    /** Operatornummer van de RDW, begint met NLD. */
+    droneOperator: "" as string,
+    /** Naam van de verzekeraar voor de aansprakelijkheidsverzekering. */
+    insurer: "" as string,
+  },
+
+  /** Instagram. Laat leeg om de link te verbergen. */
+  instagram: "" as string,
+
+  /**
    * Publieke URL van de website. Wordt gebruikt voor metadata en de sitemap.
    * Stel in productie NEXT_PUBLIC_SITE_URL in; die waarde gaat voor.
    *
@@ -81,14 +113,13 @@ export const site = {
     | null,
 
   /**
-   * Categorieën in het portfolio. De sleutel wordt in de database opgeslagen
-   * en verandert dus niet mee met de taal; de woorden erbij staan per taal in
-   * content/copy.nl.ts en content/copy.en.ts onder `portfolio.categories`.
+   * Categorieën in het portfolio. De sleutel wordt in de database opgeslagen;
+   * wijzig een bestaande sleutel dus niet zonder de projecten aan te passen.
    */
   categories: [
     { key: "vastgoed" },
     { key: "bedrijven" },
-    { key: "evenementen" },
+    { key: "bouw" },
     { key: "natuur" },
   ],
 } as const;

@@ -2,23 +2,33 @@
   "services": {
     "kennismaking": {
       "name_en": "Intro call",
-      "description_en": "A short video or phone call to go through your plans. No obligation.",
+      "description_en": "A short video call about your location and what you need. No obligation.",
       "price_label_en": "Free"
     },
     "dronefotografie": {
-      "name_en": "Drone photography",
-      "description_en": "A photo session on location. You receive a selection of edited photos in high resolution.",
-      "price_label_en": "From € 149"
+      "name_en": "Photo shoot",
+      "description_en": "One building or site. Fifteen to twenty-five edited photos, usage rights for web and social.",
+      "price_label_en": "from € 195"
     },
     "dronevideo": {
-      "name_en": "Drone video",
-      "description_en": "Video on location, including editing into a short film for your website or social channels.",
-      "price_label_en": "From € 249"
+      "name_en": "Photos and short film",
+      "description_en": "The same shoot, plus an edited clip of thirty to forty-five seconds.",
+      "price_label_en": "from € 349"
+    },
+    "bedrijfsfilm": {
+      "name_en": "Company film",
+      "description_en": "A sixty to ninety second film about your site or project. Music and voice-over by arrangement.",
+      "price_label_en": "from € 495"
+    },
+    "bouwvordering": {
+      "name_en": "Construction progress",
+      "description_en": "Fixed route and fixed altitude, every month. A discount applies from four visits.",
+      "price_label_en": "from € 149 per visit"
     },
     "project-op-maat": {
       "name_en": "Custom project",
-      "description_en": "Several locations, several days or a mix of photo and video. You book an intro call; the form asks up front about the locations and the preferred period.",
-      "price_label_en": "Price on request"
+      "description_en": "Several locations or several days. You book an intro call; the form asks up front about the locations and the period.",
+      "price_label_en": "On request"
     }
   },
   "projects": {
@@ -49,13 +59,6 @@
       "summary_en": "Images of a production site, used in a recruitment campaign for new colleagues.",
       "body_en": "A recruitment campaign needed images showing how large the site is and how the work is done.\n\nWe agreed in advance with management which parts could and could not be shown. During the flight a colleague kept watch on the ground.\n\nThe images were used on the vacancies page and in short videos for social media.",
       "cover_alt_en": "Example image: aerial photo of a production site"
-    },
-    "zomerfestival-in-het-park": {
-      "title_en": "Summer festival in the park",
-      "location_en": "Zaandam (example)",
-      "summary_en": "An overview shot of a one-day festival, agreed with the organisers and the site manager.",
-      "body_en": "The organisers wanted one good overview shot for the aftermovie and for their report to the council.\n\nWe agreed beforehand when flying was allowed and over which parts of the site. During the flight I kept a safe distance from the public.\n\nDelivered: three overview photos and raw video material for the organisers' own edit.",
-      "cover_alt_en": "Example image: aerial photo of a festival site in a park"
     },
     "veenweide-bij-zonsopkomst": {
       "title_en": "Peat meadows at sunrise",

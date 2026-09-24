@@ -39,7 +39,7 @@ export default function MessagesPage() {
                     {message.name} ·{" "}
                     <a
                       href={`mailto:${message.email}`}
-                      className="text-azure-300 hover:underline"
+                      className="text-haze-300 hover:underline"
                     >
                       {message.email}
                     </a>{" "}

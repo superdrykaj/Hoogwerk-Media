@@ -18,29 +18,37 @@ export const nl = {
   taalknop: "Bekijk deze pagina in het Engels",
   taalknopKort: "EN",
 
+  /** Regel uit het logo. Staat op de contactpagina en in de footer. */
+  motto: "Een hoger perspectief",
+
+  /** De enige zin op de pagina "binnenkort online". */
+  soonLine:
+    "Dronefotografie in Zaandam en Noord-Holland. De site is in aanbouw en " +
+    "gaat binnenkort open.",
+  soonBadge: "Binnenkort online",
+
   meta: {
-    tagline: "Dronefotografie en dronevideo in Zaandam en Noord-Holland",
+    tagline: "Dronefotografie in Zaandam en Noord-Holland",
     description:
-      `${site.name} maakt dronefoto's en dronevideo's voor vastgoed, ` +
-      `bedrijven, locaties en evenementen in Zaandam en Noord-Holland. ` +
+      `${site.name} maakt luchtfoto's en korte films van vastgoed, ` +
+      `bedrijfsterreinen en bouw in Zaandam en Noord-Holland. ` +
       `Plan direct een afspraak.`,
     ogDescription:
-      "Dronebeelden voor vastgoed, bedrijven, locaties en evenementen in " +
+      "Luchtfoto's en korte films van vastgoed, bedrijfsterreinen en bouw in " +
       "Zaandam en Noord-Holland.",
   },
 
   region: {
     short: "Zaandam en Noord-Holland",
     detail:
-      "Zaandam en de hele Zaanstreek, en verder in Noord-Holland: Amsterdam, " +
-      "Purmerend, Haarlem, Alkmaar, Hoorn, Beverwijk en alles daartussen. " +
-      "Buiten de provincie in overleg.",
+      "Zaandam en de Zaanstreek, en verder in Noord-Holland: Amsterdam, " +
+      "Purmerend, Haarlem, Alkmaar, Hoorn en Beverwijk. Daarbuiten in overleg.",
   },
 
   /* -- Kop en voettekst ---------------------------------------------------- */
   nav: {
-    home: "Home",
-    portfolio: "Portfolio",
+    home: "Start",
+    portfolio: "Werk",
     contact: "Contact",
     privacy: "Privacy",
     book: "Plan een afspraak",
@@ -57,14 +65,26 @@ export const nl = {
   },
 
   footer: {
-    note: "Zelfstandig dronepiloot. Elke opname wordt vooraf besproken en bevestigd.",
+    note:
+      "Zelfstandig dronepiloot in Zaandam. Elke vlucht wordt vooraf getoetst " +
+      "en bevestigd.",
     workArea: "Werkgebied:",
+    complianceNote:
+      "Geregistreerd als drone-exploitant en verzekerd voor " +
+      "aansprakelijkheid. Bewijzen stuur ik op verzoek mee.",
+    kvk: "KvK",
+    vat: "BTW",
+    operator: "Operatornummer",
+    insurer: "Verzekerd bij",
+    whatsapp: "WhatsApp",
+    instagram: "Instagram",
     rights: (jaar: number) =>
       `© ${jaar} ${site.name}. Alle bedrijfsgegevens en projecten op deze site zijn voorbeelden.`,
   },
 
   demoBanner: {
     label: "Demo",
+    short: "Projecten en foto's zijn nog voorbeelden.",
     text: "De projecten, prijzen en foto's op deze site zijn nog",
     emphasis: "voorbeelden",
     link: "Wat betekent dat?",
@@ -72,41 +92,32 @@ export const nl = {
 
   /* -- Homepage ------------------------------------------------------------ */
   home: {
-    heroTitle: "Een nieuw perspectief op jouw verhaal.",
+    heroTitle: "Een hoger perspectief op jouw pand.",
     heroIntro:
-      "Ik ben Kai, zelfstandig dronepiloot in Zaandam. Ik maak luchtfoto's en " +
-      "luchtvideo's voor vastgoed, bedrijven, locaties en evenementen, in de " +
-      "Zaanstreek en de rest van Noord-Holland. Van eerste gesprek tot " +
-      "oplevering heb je één aanspreekpunt: ik.",
-    heroWork: "Bekijk mijn werk",
-    heroNote: "Voorbeeldbeeld — vervang public/images/hero.jpg door je eigen dronefoto.",
+      "Luchtfoto's en korte films van vastgoed, bedrijfsterreinen en bouw in " +
+      "de Zaanstreek. Eén aanspreekpunt, oplevering binnen vijf werkdagen.",
+    heroWork: "Bekijk het werk",
+    /** Harde feiten onder de hero. Kort, controleerbaar, geen marketing. */
+    heroFacts: ["50 MP, 1-inch sensor", "4K HDR video", "Zaanstreek en Noord-Holland"],
 
     servicesEyebrow: "Wat ik doe",
-    servicesTitle: "Dronebeelden die laten zien wat er op de grond niet past.",
+    servicesTitle: "Beeld dat op de grond niet past.",
     highlights: [
       {
         title: "Vastgoed",
-        body:
-          "Woningen, bedrijfspanden en nieuwbouw vanuit de lucht. Beelden die " +
-          "laten zien hoe een pand in zijn omgeving ligt.",
+        body: "Woningen en bedrijfspanden in hun omgeving. Voor Funda, website en verkoopbrochure.",
       },
       {
-        title: "Bedrijven",
-        body:
-          "Sfeerbeelden van je terrein, productie of project. Bruikbaar voor je " +
-          "website, socials en presentaties.",
+        title: "Bedrijfsterrein",
+        body: "Overzicht van terrein, opslag en logistiek. Bruikbaar voor site, socials en presentaties.",
+      },
+      {
+        title: "Bouwvordering",
+        body: "Dezelfde route, elke maand opnieuw. Vaste beeldhoeken die de voortgang zichtbaar maken.",
       },
       {
         title: "Locaties en natuur",
-        body:
-          "Landschappen, recreatieterreinen en bijzondere plekken, opgenomen op " +
-          "het juiste moment van de dag.",
-      },
-      {
-        title: "Evenementen",
-        body:
-          "Een overzichtsbeeld van je evenement, in overleg en binnen de regels " +
-          "die op de locatie gelden.",
+        body: "Recreatieterreinen, jachthavens en polder, opgenomen op het juiste uur van de dag.",
       },
     ],
 
@@ -117,61 +128,119 @@ export const nl = {
     introDuration: (minuten: number) => `kennismaking van ${minuten} min`,
     chooseMoment: "Een moment kiezen →",
 
-    workEyebrow: "Voorbeeldprojecten",
-    workTitle: "Een selectie uit mijn werk.",
-    workAll: "Alle projecten",
-    workEmpty: "Er zijn nog geen projecten gepubliceerd.",
-    workEmptyHint: "Voeg projecten toe via de beheeromgeving.",
+    workEyebrow: "Werk",
+    workTitle: "Een selectie.",
+    workAll: "Alles bekijken",
+    workEmpty: "De eerste cases staan er binnenkort.",
+    workEmptyHint: "Projecten voeg je toe via de beheeromgeving.",
 
     processEyebrow: "Zo werkt het",
-    processTitle: "Van eerste gesprek tot opgeleverde beelden.",
+    processTitle: "Van gesprek tot bestand.",
     process: [
       {
         title: "Kennismaken",
-        body:
-          "In een kort gesprek bespreken we wat je nodig hebt, waar de locatie " +
-          "ligt en welk beeld je voor ogen hebt.",
+        body: "Kort gesprek over de locatie en het beeld dat je zoekt.",
       },
       {
-        title: "Plannen",
-        body:
-          "Ik controleer de locatie, de regels voor het luchtruim en de weers" +
-          "verwachting en bevestig daarna een datum en tijd.",
+        title: "Toetsen",
+        body: "Ik check luchtruim, vergunning en weer, en bevestig een datum.",
       },
       {
-        title: "Filmen",
-        body:
-          "Op locatie maak ik de opnames. Je kunt erbij zijn en meekijken, maar " +
-          "dat hoeft niet.",
+        title: "Vliegen",
+        body: "Zestig tot negentig minuten op locatie. Je hoeft er niet bij te zijn.",
       },
       {
         title: "Opleveren",
-        body:
-          "Je ontvangt de bewerkte foto's en video's via een downloadlink, " +
-          "meestal binnen vijf werkdagen.",
+        body: "Bewerkte beelden via een downloadlink, binnen vijf werkdagen.",
       },
     ],
 
     bookingEyebrow: "Plan een afspraak",
-    bookingTitle: "Kies een moment dat jou uitkomt.",
+    bookingTitle: "Kies een moment.",
     bookingDisclaimer:
-      "Een opnamesessie is altijd eerst een aanvraag. Ik controleer de locatie, " +
-      "de luchtruimregels en de weersverwachting en bevestig daarna per e-mail. " +
-      "Je zit dus nergens aan vast tot je die bevestiging hebt.",
-    timezoneNote: "Alle tijden staan in de Nederlandse tijdzone (Europe/Amsterdam).",
+      "Een aanvraag is nog geen afspraak. Ik toets de locatie in GoDrone, kijk " +
+      "naar het weer en bevestig daarna per e-mail.",
+    timezoneNote: "Alle tijden in de Nederlandse tijdzone.",
     timezoneAsk: "Liever eerst overleggen?",
-    timezoneLink: "Stuur me een bericht",
+    timezoneLink: "Stuur een bericht",
 
     aboutEyebrow: "Over mij",
-    aboutTitle: "Eén aanspreekpunt, van plan tot oplevering.",
-    aboutImageAlt: "Voorbeeldbeeld van een dronevlucht boven een landschap",
+    aboutTitle: "Eén aanspreekpunt.",
+    aboutImageAlt: "Dronevlucht boven het Noord-Hollandse landschap",
+    /* -- Tarieven en vragen ------------------------------------------- */
+    pricingEyebrow: "Tarieven",
+    pricingTitle: "Indicaties, met de inhoud erbij.",
+    pricingNote:
+      "Prijzen zijn indicaties, exclusief btw. Wat je precies nodig hebt, " +
+      "spreken we vooraf af.",
+    includedTitle: "Wat je krijgt",
+    included: [
+      "Voorbereiding: luchtruimcheck, weer en route",
+      "Zestig tot negentig minuten op locatie",
+      "Selectie en nabewerking van de beelden",
+      "Levering binnen vijf werkdagen",
+      "Gebruiksrecht voor je eigen website en socials",
+    ],
+    excludedTitle: "Apart afgerekend",
+    excluded: [
+      "Voorrijden buiten 25 km: € 0,45 per kilometer",
+      "Wachttijd op locatie: € 65 per uur",
+      "Gebruik voor print, advertenties of campagnes: in overleg",
+      "Vluchten die alleen met een Specific-vergunning mogen",
+    ],
+
+    faqEyebrow: "Vragen",
+    faqTitle: "Wat mag wel, en wat niet.",
+    faq: [
+      {
+        question: "Mag je overal vliegen?",
+        answer:
+          "Nee. Ik toets elke locatie vooraf in GoDrone. Rond Schiphol, boven " +
+          "Natura 2000-gebied en op sommige industrieterreinen mag het niet of " +
+          "alleen met toestemming. Ik vlieg tot 120 meter en altijd in zicht.",
+      },
+      {
+        question: "Vlieg je boven evenementen of drukte?",
+        answer:
+          "Niet boven publiek. Ik vlieg in de open categorie met een drone van " +
+          "onder de 250 gram; daarmee mag ik niet over mensenmenigten. Een " +
+          "evenement kan alleen als de locatie leeg is of met een " +
+          "Specific-vergunning, en die heb ik nu niet.",
+      },
+      {
+        question: "Hoe zit het met de privacy van de buren?",
+        answer:
+          "Ik richt op het pand en het terrein van de opdrachtgever, niet op " +
+          "tuinen of ramen van anderen. Bij lage opnames in een woonwijk vlieg " +
+          "ik liever tien meter hoger dan dat iemand zich bekeken voelt.",
+      },
+      {
+        question: "En als het weer tegenzit?",
+        answer:
+          "Dan boeken we om, zonder kosten. Een lichte drone waait bij harde " +
+          "wind weg van waar hij moet zijn; dat levert geen beeld op waar je " +
+          "iets aan hebt. Ik beslis dat uiterlijk de avond ervoor.",
+      },
+      {
+        question: "Wanneer heb ik de beelden?",
+        answer:
+          "Binnen vijf werkdagen, via een downloadlink. Heb je ze eerder nodig, " +
+          "zeg het bij de aanvraag; vaak lukt de volgende dag ook.",
+      },
+      {
+        question: "Wat mag ik met de beelden doen?",
+        answer:
+          "Je krijgt het recht ze te gebruiken op je eigen website en socials. " +
+          "Het auteursrecht blijft bij mij. Wil je ze op een billboard, in een " +
+          "advertentie of in een campagne, dan spreken we dat apart af.",
+      },
+    ],
+
     aboutBody: (regio: string, apparatuur: string) => [
-      `Ik werk als zelfstandig dronepiloot in ${regio}. Je hebt dus geen ` +
-        "tussenpersonen: we bespreken samen wat je nodig hebt, ik vlieg zelf " +
-        "en ik lever de beelden zelf op.",
-      `Ik vlieg met een ${apparatuur}. Dat is een compacte drone, waardoor ik ` +
-        "ook op krappere locaties kan werken en snel kan inspelen op het licht " +
-        "en het weer van dat moment.",
+      `Ik ben Kai, zelfstandig dronepiloot in ${regio}. Geen tussenpersonen: ` +
+        "ik plan, ik vlieg en ik lever op.",
+      `Ik vlieg met een ${apparatuur} — compact genoeg voor krappe locaties, ` +
+        "met een sensor die ook in de schemering scherp blijft.",
     ],
   },
 
@@ -209,7 +278,7 @@ export const nl = {
     categories: {
       vastgoed: "Vastgoed",
       bedrijven: "Bedrijven",
-      evenementen: "Evenementen",
+      bouw: "Bouwvordering",
       natuur: "Natuur en locaties",
     } as Record<string, string>,
   },
@@ -247,18 +316,19 @@ export const nl = {
   /* -- Contact ------------------------------------------------------------- */
   contact: {
     metaTitle: "Contact",
-    metaDescription: `Neem contact op met ${site.name} voor dronefoto's en dronevideo's in Zaandam en Noord-Holland.`,
+    metaDescription: `Neem contact op met ${site.name} voor dronefoto's en korte films in Zaandam en Noord-Holland.`,
     eyebrow: "Contact",
     title: "Even sparren?",
     intro:
-      "Heb je een locatie, een gebouw of een evenement dat vanuit de lucht beter " +
-      "tot zijn recht komt? Stuur me gerust een bericht. Ik denk graag mee over " +
-      "wat er mogelijk is, en ik antwoord meestal binnen één werkdag.",
+      "Een pand, terrein of project dat vanuit de lucht beter tot zijn recht " +
+      "komt? Stuur een bericht. Ik antwoord meestal binnen één werkdag.",
     emailLabel: "E-mail",
     phoneLabel: "Telefoon",
     areaLabel: "Werkgebied",
     bookLabel: "Liever meteen een moment prikken?",
-    privacyBefore: "Alle gegevens op deze pagina zijn voorbeelden. Lees in de",
+    whatsappLabel: "WhatsApp",
+    whatsappLink: "Stuur een bericht",
+    privacyBefore: "Lees in de",
     privacyLink: "privacyverklaring",
     privacyAfter: "hoe met je gegevens wordt omgegaan.",
     formTitle: "Stuur een bericht",

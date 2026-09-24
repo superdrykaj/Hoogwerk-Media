@@ -3,6 +3,7 @@ import Link from "next/link";
 import { copy } from "@/content/copy";
 import { site } from "@/content/site";
 import { href, type Locale } from "@/lib/locale";
+import { requireOpenSite } from "@/lib/site-status";
 
 /** Plek die je zelf nog moet invullen. */
 function Fill({ locale, children }: { locale: Locale; children: React.ReactNode }) {
@@ -13,7 +14,9 @@ function Fill({ locale, children }: { locale: Locale; children: React.ReactNode 
   );
 }
 
-export function PrivacyPage({ locale }: { locale: Locale }) {
+export async function PrivacyPage({ locale }: { locale: Locale }) {
+  await requireOpenSite();
+
   const t = copy(locale);
   return (
     <div className="container-page py-20">
@@ -67,7 +70,7 @@ function DutchBody() {
             <p>
               KvK-nummer: <Fill locale="nl">KvK-nummer</Fill>. Btw-nummer:{" "}
               <Fill locale="nl">btw-identificatienummer</Fill>. Contact:{" "}
-              <a href={`mailto:${site.email}`} className="text-azure-300 hover:underline">
+              <a href={`mailto:${site.email}`} className="text-haze-300 hover:underline">
                 {site.email}
               </a>
               .
@@ -152,7 +155,7 @@ function DutchBody() {
               Je mag je gegevens inzien, laten corrigeren of laten verwijderen, en
               je kunt bezwaar maken tegen de verwerking. Stuur daarvoor een mail
               naar{" "}
-              <a href={`mailto:${site.email}`} className="text-azure-300 hover:underline">
+              <a href={`mailto:${site.email}`} className="text-haze-300 hover:underline">
                 {site.email}
               </a>
               . Kom je er samen niet uit, dan kun je een klacht indienen bij de
@@ -184,7 +187,7 @@ function EnglishBody() {
         <p>
           Chamber of Commerce number: <Fill locale="en">KvK number</Fill>. VAT
           number: <Fill locale="en">VAT identification number</Fill>. Contact:{" "}
-          <a href={`mailto:${site.email}`} className="text-azure-300 hover:underline">
+          <a href={`mailto:${site.email}`} className="text-haze-300 hover:underline">
             {site.email}
           </a>
           .
@@ -265,7 +268,7 @@ function EnglishBody() {
         <p>
           You may view your data, have it corrected or deleted, and you can
           object to the processing. Send an e-mail to{" "}
-          <a href={`mailto:${site.email}`} className="text-azure-300 hover:underline">
+          <a href={`mailto:${site.email}`} className="text-haze-300 hover:underline">
             {site.email}
           </a>
           . If we cannot work it out together, you can file a complaint with the

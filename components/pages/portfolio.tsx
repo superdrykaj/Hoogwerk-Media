@@ -3,9 +3,12 @@ import Link from "next/link";
 import { PortfolioGrid } from "@/components/portfolio-grid";
 import { copy } from "@/content/copy";
 import { href, type Locale } from "@/lib/locale";
+import { requireOpenSite } from "@/lib/site-status";
 import { listProjects } from "@/lib/projects";
 
-export function PortfolioPage({ locale }: { locale: Locale }) {
+export async function PortfolioPage({ locale }: { locale: Locale }) {
+  await requireOpenSite();
+
   const t = copy(locale);
   const projects = listProjects({ onlyPublished: true, featuredFirst: true });
 

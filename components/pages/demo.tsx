@@ -3,6 +3,7 @@ import Link from "next/link";
 import { copy } from "@/content/copy";
 import { site } from "@/content/site";
 import { href, type Locale } from "@/lib/locale";
+import { requireOpenSite } from "@/lib/site-status";
 
 /** Wat er op deze voorbeeldwebsite verzonnen is en wat er echt werkt. */
 const TEKST = {
@@ -84,7 +85,9 @@ export function demoMeta(locale: Locale) {
   return TEKST[locale];
 }
 
-export function DemoPage({ locale }: { locale: Locale }) {
+export async function DemoPage({ locale }: { locale: Locale }) {
+  await requireOpenSite();
+
   const t = copy(locale);
   const d = TEKST[locale];
 

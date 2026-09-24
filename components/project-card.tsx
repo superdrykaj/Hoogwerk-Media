@@ -57,7 +57,7 @@ export function ProjectCard({
             {tekst.summary}
           </p>
         )}
-        <p className="mt-4 text-sm font-semibold text-azure-300">
+        <p className="mt-4 text-sm font-semibold text-haze-300">
           {t.project.cardLink}
           <span aria-hidden="true" className="ml-1 inline-block transition-transform group-hover:translate-x-1">
             →

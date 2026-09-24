@@ -5,13 +5,16 @@ import { copy } from "@/content/copy";
 import { site } from "@/content/site";
 import { href, type Locale } from "@/lib/locale";
 import { isMailConfigured } from "@/lib/mail";
+import { requireOpenSite } from "@/lib/site-status";
 
-export function ContactPage({ locale }: { locale: Locale }) {
+export async function ContactPage({ locale }: { locale: Locale }) {
+  await requireOpenSite();
+
   const t = copy(locale);
   const mailReady = isMailConfigured();
 
   return (
-    <div className="container-page py-20">
+    <div className="container-page section">
       <div className="grid gap-16 lg:grid-cols-[1fr_1.15fr]">
         <div>
           <p className="eyebrow">{t.contact.eyebrow}</p>
@@ -24,7 +27,7 @@ export function ContactPage({ locale }: { locale: Locale }) {
               <dd className="mt-1">
                 <a
                   href={`mailto:${site.email}`}
-                  className="text-lg font-medium text-azure-300 hover:underline"
+                  className="text-lg font-medium text-haze-300 hover:underline"
                 >
                   {site.email}
                 </a>
@@ -39,6 +42,19 @@ export function ContactPage({ locale }: { locale: Locale }) {
                     className="text-lg font-medium hover:underline"
                   >
                     {site.phone}
+                  </a>
+                </dd>
+              </div>
+            )}
+            {site.whatsapp && (
+              <div>
+                <dt className="text-sm text-mist-500">{t.contact.whatsappLabel}</dt>
+                <dd className="mt-1">
+                  <a
+                    href={`https://wa.me/${site.whatsapp}`}
+                    className="text-lg font-medium text-haze-300 hover:underline"
+                  >
+                    {t.contact.whatsappLink}
                   </a>
                 </dd>
               </div>

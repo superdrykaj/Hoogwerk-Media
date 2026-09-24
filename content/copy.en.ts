@@ -16,28 +16,35 @@ export const en: Dictionary = {
   taalknop: "View this page in Dutch",
   taalknopKort: "NL",
 
+  motto: "A higher perspective",
+
+  soonLine:
+    "Drone photography in Zaandam and North Holland. The site is being built " +
+    "and opens shortly.",
+  soonBadge: "Coming soon",
+
   meta: {
-    tagline: "Drone photography and video in Zaandam and North Holland",
+    tagline: "Drone photography in Zaandam and North Holland",
     description:
-      `${site.name} makes aerial photos and video for property, business, ` +
-      `locations and events in Zaandam and North Holland. Book a slot online.`,
+      `${site.name} makes aerial photos and short films of property, business ` +
+      `sites and construction in Zaandam and North Holland. Book a slot online.`,
     ogDescription:
-      "Aerial photography and video for property, business, locations and " +
-      "events in Zaandam and North Holland.",
+      "Aerial photos and short films of property, business sites and " +
+      "construction in Zaandam and North Holland.",
   },
 
   region: {
     short: "Zaandam and North Holland",
     detail:
-      "Zaandam and the wider Zaan region, and across North Holland: Amsterdam, " +
-      "Purmerend, Haarlem, Alkmaar, Hoorn, Beverwijk and everything in between. " +
-      "Outside the province by arrangement.",
+      "Zaandam and the Zaan region, and across North Holland: Amsterdam, " +
+      "Purmerend, Haarlem, Alkmaar, Hoorn and Beverwijk. Beyond that by " +
+      "arrangement.",
   },
 
   /* -- Header and footer --------------------------------------------------- */
   nav: {
-    home: "Home",
-    portfolio: "Portfolio",
+    home: "Start",
+    portfolio: "Work",
     contact: "Contact",
     privacy: "Privacy",
     book: "Book a slot",
@@ -54,14 +61,26 @@ export const en: Dictionary = {
   },
 
   footer: {
-    note: "Freelance drone pilot. Every shoot is discussed and confirmed beforehand.",
+    note:
+      "Freelance drone pilot in Zaandam. Every flight is checked and confirmed " +
+      "beforehand.",
     workArea: "Working area:",
+    complianceNote:
+      "Registered as a drone operator and insured for liability. Proof sent on " +
+      "request.",
+    kvk: "Chamber of Commerce",
+    vat: "VAT",
+    operator: "Operator number",
+    insurer: "Insured with",
+    whatsapp: "WhatsApp",
+    instagram: "Instagram",
     rights: (year: number) =>
       `© ${year} ${site.name}. All company details and projects on this site are examples.`,
   },
 
   demoBanner: {
     label: "Demo",
+    short: "Projects and photos are still examples.",
     text: "The projects, prices and photos on this site are still",
     emphasis: "examples",
     link: "What does that mean?",
@@ -69,41 +88,32 @@ export const en: Dictionary = {
 
   /* -- Home ---------------------------------------------------------------- */
   home: {
-    heroTitle: "A new perspective on your story.",
+    heroTitle: "A higher perspective on your property.",
     heroIntro:
-      "I'm Kai, a freelance drone pilot based in Zaandam. I shoot aerial photos " +
-      "and video for property, business, locations and events, across the Zaan " +
-      "region and the rest of North Holland. From the first conversation to the " +
-      "finished files, you deal with one person: me.",
-    heroWork: "See my work",
-    heroNote: "Placeholder image — replace public/images/hero.jpg with your own aerial photo.",
+      "Aerial photos and short films of property, business sites and " +
+      "construction in the Zaan region. One point of contact, delivered within " +
+      "five working days.",
+    heroWork: "See the work",
+    heroFacts: ["50 MP, 1-inch sensor", "4K HDR video", "Zaan region and North Holland"],
 
     servicesEyebrow: "What I do",
-    servicesTitle: "Aerial images that show what won't fit from the ground.",
+    servicesTitle: "Images that won't fit from the ground.",
     highlights: [
       {
         title: "Property",
-        body:
-          "Homes, commercial buildings and new developments from above. Images " +
-          "that show how a building sits in its surroundings.",
+        body: "Homes and commercial buildings in their surroundings. For listings, website and brochure.",
       },
       {
-        title: "Business",
-        body:
-          "Your site, production or project in its best light. Ready for your " +
-          "website, social channels and presentations.",
+        title: "Business sites",
+        body: "An overview of the grounds, storage and logistics. Ready for your site, socials and presentations.",
+      },
+      {
+        title: "Construction progress",
+        body: "The same route, every month. Fixed angles that make the progress visible.",
       },
       {
         title: "Locations and nature",
-        body:
-          "Landscapes, recreation areas and places worth seeing, shot at the " +
-          "right time of day.",
-      },
-      {
-        title: "Events",
-        body:
-          "An overview shot of your event, agreed in advance and within the " +
-          "rules that apply at the venue.",
+        body: "Recreation areas, marinas and polder, shot at the right hour of the day.",
       },
     ],
 
@@ -114,59 +124,119 @@ export const en: Dictionary = {
     introDuration: (minutes: number) => `${minutes} min intro call`,
     chooseMoment: "Pick a time →",
 
-    workEyebrow: "Example projects",
-    workTitle: "A selection of my work.",
-    workAll: "All projects",
-    workEmpty: "No projects have been published yet.",
-    workEmptyHint: "Add projects in the admin area.",
+    workEyebrow: "Work",
+    workTitle: "A selection.",
+    workAll: "See everything",
+    workEmpty: "The first cases are coming soon.",
+    workEmptyHint: "You add projects in the admin area.",
 
     processEyebrow: "How it works",
-    processTitle: "From first conversation to finished images.",
+    processTitle: "From conversation to file.",
     process: [
       {
         title: "Get acquainted",
-        body:
-          "A short call to go through what you need, where the location is and " +
-          "what you have in mind.",
+        body: "A short call about the location and the images you're after.",
       },
       {
-        title: "Plan",
-        body:
-          "I check the location, the airspace rules and the forecast, and then " +
-          "confirm a date and time.",
+        title: "Check",
+        body: "I check airspace, permits and weather, and confirm a date.",
       },
       {
-        title: "Shoot",
-        body:
-          "I fly and record on location. You're welcome to join and watch, but " +
-          "you don't have to.",
+        title: "Fly",
+        body: "Sixty to ninety minutes on location. You don't have to be there.",
       },
       {
         title: "Deliver",
-        body:
-          "You get the edited photos and video through a download link, usually " +
-          "within five working days.",
+        body: "Edited images through a download link, within five working days.",
       },
     ],
 
     bookingEyebrow: "Book a slot",
-    bookingTitle: "Pick a moment that suits you.",
+    bookingTitle: "Pick a moment.",
     bookingDisclaimer:
-      "A shoot always starts as a request. I check the location, the airspace " +
-      "rules and the forecast, and then confirm by e-mail. Nothing is fixed " +
-      "until you have that confirmation.",
-    timezoneNote: "All times are in Dutch local time (Europe/Amsterdam).",
+      "A request is not an appointment yet. I check the location in GoDrone, " +
+      "look at the weather and then confirm by e-mail.",
+    timezoneNote: "All times in Dutch local time.",
     timezoneAsk: "Rather talk it through first?",
-    timezoneLink: "Send me a message",
+    timezoneLink: "Send a message",
 
     aboutEyebrow: "About me",
-    aboutTitle: "One point of contact, from plan to delivery.",
-    aboutImageAlt: "Placeholder image of a drone flight over a landscape",
+    aboutTitle: "One point of contact.",
+    aboutImageAlt: "Drone flight over the North Holland landscape",
+    pricingEyebrow: "Rates",
+    pricingTitle: "Indications, with what's included.",
+    pricingNote:
+      "Prices are indications, excluding VAT. We agree exactly what you need " +
+      "beforehand.",
+    includedTitle: "What you get",
+    included: [
+      "Preparation: airspace check, weather and route",
+      "Sixty to ninety minutes on location",
+      "Selection and editing of the images",
+      "Delivery within five working days",
+      "Usage rights for your own website and social channels",
+    ],
+    excludedTitle: "Billed separately",
+    excluded: [
+      "Travel beyond 25 km: € 0.45 per kilometre",
+      "Waiting time on location: € 65 per hour",
+      "Use in print, advertising or campaigns: by arrangement",
+      "Flights that require a Specific permit",
+    ],
+
+    faqEyebrow: "Questions",
+    faqTitle: "What's allowed, and what isn't.",
+    faq: [
+      {
+        question: "Can you fly anywhere?",
+        answer:
+          "No. I check every location beforehand in GoDrone. Around Schiphol, " +
+          "over Natura 2000 areas and on some industrial estates it is not " +
+          "allowed, or only with permission. I fly up to 120 metres and always " +
+          "within sight.",
+      },
+      {
+        question: "Do you fly over events or crowds?",
+        answer:
+          "Not over people. I fly in the open category with a drone under 250 " +
+          "grams, which means I may not fly over crowds. An event is only " +
+          "possible if the site is empty, or with a Specific permit, which I do " +
+          "not hold at the moment.",
+      },
+      {
+        question: "What about the neighbours' privacy?",
+        answer:
+          "I aim at the client's building and grounds, not at other people's " +
+          "gardens or windows. For low shots in a residential street I would " +
+          "rather fly ten metres higher than have someone feel watched.",
+      },
+      {
+        question: "And if the weather is bad?",
+        answer:
+          "Then we rebook, at no cost. A light drone gets pushed off course in " +
+          "strong wind, and that produces images you cannot use. I decide the " +
+          "evening before at the latest.",
+      },
+      {
+        question: "When do I get the images?",
+        answer:
+          "Within five working days, through a download link. Need them sooner? " +
+          "Say so with your request; next-day often works.",
+      },
+      {
+        question: "What may I do with the images?",
+        answer:
+          "You get the right to use them on your own website and social " +
+          "channels. The copyright stays with me. For a billboard, an advert or " +
+          "a campaign we agree that separately.",
+      },
+    ],
+
     aboutBody: (region: string, equipment: string) => [
-      `I work as a freelance drone pilot in ${region}. No middlemen: we discuss ` +
-        "what you need together, I fly it myself and I deliver the files myself.",
-      `I fly a ${equipment}. It's a compact drone, so I can work in tighter ` +
-        "spots and respond quickly to the light and the weather on the day.",
+      `I'm Kai, a freelance drone pilot in ${region}. No middlemen: I plan, I ` +
+        "fly and I deliver.",
+      `I fly a ${equipment} — compact enough for tight locations, with a sensor ` +
+        "that stays sharp at dusk too.",
     ],
   },
 
@@ -201,7 +271,7 @@ export const en: Dictionary = {
     categories: {
       vastgoed: "Property",
       bedrijven: "Business",
-      evenementen: "Events",
+      bouw: "Construction progress",
       natuur: "Nature and locations",
     },
   },
@@ -237,18 +307,19 @@ export const en: Dictionary = {
   /* -- Contact ------------------------------------------------------------- */
   contact: {
     metaTitle: "Contact",
-    metaDescription: `Get in touch with ${site.name} for aerial photography and video in Zaandam and North Holland.`,
+    metaDescription: `Get in touch with ${site.name} for aerial photos and short films in Zaandam and North Holland.`,
     eyebrow: "Contact",
     title: "Let's talk it through",
     intro:
-      "Got a location, a building or an event that comes into its own from the " +
-      "air? Send me a message. I'm happy to think along about what's possible, " +
-      "and I usually reply within one working day.",
+      "A building, site or project that comes into its own from the air? Send a " +
+      "message. I usually reply within one working day.",
     emailLabel: "E-mail",
     phoneLabel: "Phone",
     areaLabel: "Working area",
     bookLabel: "Rather pick a time straight away?",
-    privacyBefore: "All details on this page are examples. The",
+    whatsappLabel: "WhatsApp",
+    whatsappLink: "Send a message",
+    privacyBefore: "The",
     privacyLink: "privacy statement",
     privacyAfter: "explains how your data is handled.",
     formTitle: "Send a message",
