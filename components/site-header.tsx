@@ -48,7 +48,21 @@ export function SiteHeader({ locale }: { locale: Locale }) {
           : "border-b border-transparent bg-transparent"
       }`}
     >
-      <div className="container-page flex h-[4.5rem] items-center justify-between gap-4">
+      {/*
+        Bovenaan de pagina staat de kop doorzichtig over de hero-video. Die
+        video heeft een lichte lucht, en daar haalt zelfs witte tekst maar zo'n
+        2:1 aan contrast — ruim onder wat leesbaar is. Deze sluier loopt van
+        donker naar niets en zit alleen in beeld zolang er niet gescrold is;
+        daarna neemt de achtergrond van de kop het over.
+      */}
+      {!scrolled && !open && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[9rem] bg-gradient-to-b from-ink-950/80 via-ink-950/45 to-transparent"
+        />
+      )}
+
+      <div className="container-page relative flex h-[4.5rem] items-center justify-between gap-4">
         <Link
           href={home}
           className="group flex items-center gap-2.5"
@@ -71,10 +85,16 @@ export function SiteHeader({ locale }: { locale: Locale }) {
                 key={item.href}
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                /*
+                  Alle links zijn even licht. Bovenaan de pagina staat de kop
+                  doorzichtig over de hero-video, en een grijze link is daar
+                  niet te lezen. De actieve pagina herken je aan de streep
+                  eronder, niet aan een lichtere kleur.
+                */
+                className={`rounded-full px-4 py-2 text-sm font-medium text-mist-100 underline-offset-8 transition-colors ${
                   active
-                    ? "text-mist-100"
-                    : "text-mist-500 hover:text-mist-100"
+                    ? "underline decoration-2"
+                    : "decoration-mist-500/0 hover:underline hover:decoration-mist-500/70"
                 }`}
               >
                 {item.label}
@@ -104,7 +124,7 @@ export function SiteHeader({ locale }: { locale: Locale }) {
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-controls="mobiel-menu"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-ink-600 text-mist-300"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-mist-500/45 text-mist-100"
           >
             <span className="sr-only">
               {open ? t.nav.menuClose : t.nav.menuOpen}
@@ -133,16 +153,25 @@ export function SiteHeader({ locale }: { locale: Locale }) {
       {open && (
         <div id="mobiel-menu" className="border-t border-ink-700 bg-ink-950 md:hidden">
           <nav aria-label={t.nav.mobileMenu} className="container-page flex flex-col py-3">
-            {nav.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setOpen(false)}
-                className="rounded-lg px-2 py-3 text-base text-mist-300 hover:bg-ink-800 hover:text-mist-100"
-              >
-                {item.label}
-              </Link>
-            ))}
+            {nav.map((item) => {
+              const active =
+                item.href === home
+                  ? pathname === home
+                  : pathname?.startsWith(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  aria-current={active ? "page" : undefined}
+                  className={`rounded-lg px-2 py-3 text-base text-mist-100 underline-offset-8 hover:bg-ink-800 ${
+                    active ? "underline decoration-2" : ""
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
             <Link
               href={bookingHref}
               onClick={() => setOpen(false)}
@@ -175,7 +204,7 @@ function LanguageSwitch({
       hrefLang={lang}
       lang={lang}
       title={label}
-      className="rounded-full border border-ink-600 px-3 py-1.5 text-xs font-semibold text-mist-300 transition-colors hover:border-haze-500/60 hover:text-mist-100"
+      className="rounded-full border border-mist-500/45 px-3 py-1.5 text-xs font-semibold text-mist-100 transition-colors hover:border-haze-300/70 hover:text-haze-300"
     >
       <span aria-hidden="true">{short}</span>
       <span className="sr-only">{label}</span>
