@@ -19,6 +19,10 @@ export const EXAMPLE_SERVICES = [
       "Een kort videogesprek of telefoongesprek waarin we je plannen doornemen. Vrijblijvend.",
     duration_minutes: 20,
     price_label: "Gratis",
+    name_en: "Intro call",
+    description_en:
+      "A short video or phone call to go through your plans. No obligation.",
+    price_label_en: "Free",
     buffer_minutes: 15,
     bookable: 1,
     intro_only: 0,
@@ -32,6 +36,10 @@ export const EXAMPLE_SERVICES = [
       "Een fotosessie op locatie. Je ontvangt een selectie bewerkte foto's in hoge resolutie.",
     duration_minutes: 60,
     price_label: "Indicatie vanaf € 149",
+    name_en: "Drone photography",
+    description_en:
+      "A photo session on location. You receive a selection of edited photos in high resolution.",
+    price_label_en: "From € 149",
     buffer_minutes: 45,
     bookable: 1,
     intro_only: 0,
@@ -45,6 +53,10 @@ export const EXAMPLE_SERVICES = [
       "Videobeelden op locatie, inclusief montage tot een korte film voor je website of socials.",
     duration_minutes: 90,
     price_label: "Indicatie vanaf € 249",
+    name_en: "Drone video",
+    description_en:
+      "Video on location, including editing into a short film for your website or social channels.",
+    price_label_en: "From € 249",
     buffer_minutes: 45,
     bookable: 1,
     intro_only: 0,
@@ -58,6 +70,10 @@ export const EXAMPLE_SERVICES = [
       "Meerdere locaties, meerdere dagen of een combinatie van foto en video. Je plant een kennismaking; in het formulier vraag ik alvast naar de locaties en de gewenste periode.",
     duration_minutes: 20,
     price_label: "Prijs in overleg",
+    name_en: "Custom project",
+    description_en:
+      "Several locations, several days or a mix of photo and video. You book an intro call; the form asks up front about the locations and the preferred period.",
+    price_label_en: "Price on request",
     buffer_minutes: 15,
     bookable: 1,
     intro_only: 1,
@@ -94,6 +110,14 @@ export const EXAMPLE_PROJECTS = [
     cover_url: "/images/project-vastgoed-1.jpg",
     cover_alt:
       "Voorbeeldbeeld: luchtfoto van een vrijstaand huis met tuin aan het water",
+    title_en: "Townhouse on the river Zaan",
+    location_en: "Zaandam (example)",
+    summary_en:
+      "Aerial photos of a detached townhouse, made for an estate agent's brochure.",
+    body_en:
+      "The estate agent wanted to show how the house sits on the water and how far the garden runs back. You can't capture that from the ground.\n\nI flew in the last hour before sunset, so the water lies still and the façade catches warm light. Twelve photos were delivered: a series of overviews and a few detail shots of the roof and the extension.\n\nThe images were used in the brochure, on the property portal and in the social media ads.",
+    cover_alt_en:
+      "Example image: aerial photo of a detached house with a garden by the water",
     video_url: "",
     featured: 1,
     sort_order: 1,
@@ -113,6 +137,14 @@ export const EXAMPLE_PROJECTS = [
       "Een ontwikkelaar wilde de bouw van 48 woningen vastleggen, zodat kopers de voortgang konden volgen.\n\nElke maand vloog ik dezelfde route op dezelfde hoogte. Daardoor zijn de beelden onderling goed te vergelijken en ontstaat er vanzelf een reeks.\n\nDe foto's stonden op de projectwebsite en zijn aan het eind gebruikt voor een korte terugblikvideo.",
     cover_url: "/images/project-vastgoed-2.jpg",
     cover_alt: "Voorbeeldbeeld: luchtfoto van een nieuwbouwwijk in aanbouw",
+    title_en: "New housing estate under construction",
+    location_en: "Purmerend (example)",
+    summary_en:
+      "Monthly progress shots of a new-build project, always from the same point.",
+    body_en:
+      "A developer wanted the construction of 48 homes recorded, so buyers could follow the progress.\n\nEvery month I flew the same route at the same altitude. That makes the images easy to compare and a series builds up by itself.\n\nThe photos were on the project website and were used at the end for a short look-back video.",
+    cover_alt_en:
+      "Example image: aerial photo of a housing estate under construction",
     video_url: "",
     featured: 0,
     sort_order: 2,
@@ -129,6 +161,14 @@ export const EXAMPLE_PROJECTS = [
       "Het bedrijf verhuisde naar een groter pand en wilde daar beelden van voor de website en een investeerderspresentatie.\n\nWe hebben gevlogen op een rustige zaterdagochtend, zodat er geen vrachtverkeer op het terrein stond. Naast overzichten heb ik een paar lagere passages gemaakt langs de gevel.\n\nOpgeleverd: acht foto's en een montage van veertig seconden.",
     cover_url: "/images/project-bedrijven-1.jpg",
     cover_alt: "Voorbeeldbeeld: luchtfoto van een bedrijventerrein",
+    title_en: "Achtersluispolder business park",
+    location_en: "Zaandam (example)",
+    summary_en:
+      "Atmosphere and overview shots of a logistics site for the new company website.",
+    body_en:
+      "The company moved to a larger building and wanted images of it for the website and an investor presentation.\n\nWe flew on a quiet Saturday morning, so there was no lorry traffic on the site. Besides overviews I made a few lower passes along the façade.\n\nDelivered: eight photos and a forty-second edit.",
+    cover_alt_en:
+      "Example image: aerial photo of a business park",
     video_url: "",
     featured: 1,
     sort_order: 3,
@@ -145,6 +185,14 @@ export const EXAMPLE_PROJECTS = [
       "Voor een wervingscampagne waren beelden nodig die laten zien hoe groot de locatie is en hoe er gewerkt wordt.\n\nWe hebben vooraf met de bedrijfsleiding afgestemd welke delen wel en niet in beeld mochten komen. Tijdens de vlucht hield een collega toezicht op de begane grond.\n\nDe beelden zijn gebruikt op de vacaturepagina en in korte video's voor sociale media.",
     cover_url: "/images/project-bedrijven-2.jpg",
     cover_alt: "Voorbeeldbeeld: luchtfoto van een productielocatie",
+    title_en: "Production site at work",
+    location_en: "Wormerveer (example)",
+    summary_en:
+      "Images of a production site, used in a recruitment campaign for new colleagues.",
+    body_en:
+      "A recruitment campaign needed images showing how large the site is and how the work is done.\n\nWe agreed in advance with management which parts could and could not be shown. During the flight a colleague kept watch on the ground.\n\nThe images were used on the vacancies page and in short videos for social media.",
+    cover_alt_en:
+      "Example image: aerial photo of a production site",
     video_url: "",
     featured: 0,
     sort_order: 4,
@@ -161,6 +209,14 @@ export const EXAMPLE_PROJECTS = [
       "De organisatie wilde één goed overzichtsbeeld voor de aftermovie en de verantwoording richting de gemeente.\n\nEr is vooraf afgestemd wanneer er gevlogen mocht worden en over welke delen van het terrein. Tijdens de vlucht is er op veilige afstand van het publiek gebleven.\n\nOpgeleverd: drie overzichtsfoto's en ruw videomateriaal voor de montage van de organisatie.",
     cover_url: "/images/project-evenementen-1.jpg",
     cover_alt: "Voorbeeldbeeld: luchtfoto van een festivalterrein in een park",
+    title_en: "Summer festival in the park",
+    location_en: "Zaandam (example)",
+    summary_en:
+      "An overview shot of a one-day festival, agreed with the organisers and the site manager.",
+    body_en:
+      "The organisers wanted one good overview shot for the aftermovie and for their report to the council.\n\nWe agreed beforehand when flying was allowed and over which parts of the site. During the flight I kept a safe distance from the public.\n\nDelivered: three overview photos and raw video material for the organisers' own edit.",
+    cover_alt_en:
+      "Example image: aerial photo of a festival site in a park",
     video_url: "",
     featured: 0,
     sort_order: 5,
@@ -177,6 +233,14 @@ export const EXAMPLE_PROJECTS = [
       "Dit is eigen werk, gemaakt om te oefenen met licht en compositie in het open landschap.\n\nDe beelden zijn gemaakt in het half uur na zonsopkomst, als er nog mist boven het water hangt. Ik vloog laag en langzaam, zodat de lijnen van de sloten goed uitkomen.\n\nEen deel van deze reeks hangt als print in mijn werkruimte.",
     cover_url: "/images/project-natuur-1.jpg",
     cover_alt: "Voorbeeldbeeld: luchtfoto van veenweidegebied in de ochtendmist",
+    title_en: "Peat meadows at sunrise",
+    location_en: "Wormer- en Jisperveld (example)",
+    summary_en:
+      "Personal work: a series of landscape images of the peat meadows in the early morning.",
+    body_en:
+      "This is my own work, made to practise with light and composition in open landscape.\n\nThe images were made in the half hour after sunrise, when mist still hangs over the water. I flew low and slow, so the lines of the ditches come out well.\n\nPart of this series hangs as prints in my workspace.",
+    cover_alt_en:
+      "Example image: aerial photo of peat meadows in the morning mist",
     video_url: "",
     featured: 1,
     sort_order: 6,
@@ -200,18 +264,22 @@ export function installExampleData(db: Database): {
 } {
   const insertService = db.prepare(
     `INSERT INTO services
-      (slug, name, description, duration_minutes, price_label, buffer_minutes,
+      (slug, name, description, name_en, description_en, price_label_en,
+       duration_minutes, price_label, buffer_minutes,
        bookable, intro_only, sort_order, active)
-     VALUES (@slug, @name, @description, @duration_minutes, @price_label,
+     VALUES (@slug, @name, @description, @name_en, @description_en,
+             @price_label_en, @duration_minutes, @price_label,
              @buffer_minutes, @bookable, @intro_only, @sort_order, @active)
      ON CONFLICT(slug) DO NOTHING`,
   );
   const insertProject = db.prepare(
     `INSERT INTO projects
       (slug, title, category, location, summary, body, cover_url, cover_alt,
+       title_en, location_en, summary_en, body_en, cover_alt_en,
        video_url, published, featured, sort_order, created_utc)
      VALUES (@slug, @title, @category, @location, @summary, @body, @cover_url,
-             @cover_alt, @video_url, 1, @featured, @sort_order, @created_utc)
+             @cover_alt, @title_en, @location_en, @summary_en, @body_en,
+             @cover_alt_en, @video_url, 1, @featured, @sort_order, @created_utc)
      ON CONFLICT(slug) DO NOTHING`,
   );
   const insertImage = db.prepare(

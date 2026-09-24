@@ -13,8 +13,9 @@ en een boekingsmodule op de homepage, met een beveiligde beheeromgeving op
 2. [Toegang tot de beheeromgeving](#2-toegang-tot-de-beheeromgeving)
 3. [Beschikbaarheid aanpassen](#3-beschikbaarheid-aanpassen)
 4. [Fictieve inhoud vervangen](#4-fictieve-inhoud-vervangen)
-5. [Koppelingen die je nog moet instellen](#5-koppelingen-die-je-nog-moet-instellen)
-6. [Technische opzet](#technische-opzet)
+5. [Nederlands en Engels](#5-nederlands-en-engels)
+6. [Koppelingen die je nog moet instellen](#6-koppelingen-die-je-nog-moet-instellen)
+7. [Technische opzet](#technische-opzet)
 
 ---
 
@@ -310,14 +311,22 @@ Goed om te weten:
 
 ### Teksten en bedrijfsgegevens
 
-Alles staat in één bestand: **`content/site.ts`**. Daarin vind je de bedrijfsnaam,
-het e-mailadres, het werkgebied, de hero-titel, het dienstenoverzicht, de
-werkwijze en de categorieën van het portfolio. Pas het bestand aan en de
-wijziging is overal op de site zichtbaar.
+De teksten en de bedrijfsgegevens staan uit elkaar, omdat de site twee talen
+heeft:
 
-Het werkgebied staat er twee keer in: `region` is de korte versie (kop, footer,
-zoekresultaten) en `regionDetail` de uitgeschreven versie met plaatsnamen, die
-alleen op de contactpagina staat.
+| Bestand | Wat erin staat |
+| --- | --- |
+| `content/site.ts` | Wat in beide talen hetzelfde is: bedrijfsnaam, e-mailadressen, apparatuur, logo, categoriesleutels |
+| `content/copy.nl.ts` | Alle Nederlandse tekst van de site |
+| `content/copy.en.ts` | Alle Engelse tekst, met precies dezelfde sleutels |
+
+Zoek je een zin die op de site staat, dan staat die in een van de twee
+`copy`-bestanden. Vergeet je een Engelse tekst, dan zegt `npm run typecheck`
+dat meteen: de Engelse versie moet dezelfde sleutels hebben als de Nederlandse.
+
+Het werkgebied staat er twee keer in: `region.short` is de korte versie (kop,
+footer, zoekresultaten) en `region.detail` de uitgeschreven versie met
+plaatsnamen, die alleen op de contactpagina staat.
 
 ### Voorbeeldprojecten in een bestaande database bijwerken
 
@@ -340,6 +349,10 @@ fly ssh console -C "node scripts/onderhoud/werkgebied-noord-holland.cjs"
 
 Het script noemt per project wat het heeft gedaan. Je kunt hetzelfde met de hand
 doen via **Beheer → Projecten**.
+
+Hetzelfde script vult ook de **Engelse voorbeeldteksten** aan, en ook daar
+alleen waar het Engelse veld nog leeg is. Heb je zelf al iets ingevuld, dan
+blijft dat staan.
 
 ### E-mailadressen
 
@@ -467,7 +480,60 @@ npm run seed -- --reset   # verwijdert álles, ook de demoboekingen, en zet
 
 ---
 
-## 5. Koppelingen die je nog moet instellen
+## 5. Nederlands en Engels
+
+De site staat in twee talen online:
+
+| | Adres |
+| --- | --- |
+| Nederlands | `/`, `/portfolio`, `/contact`, `/privacy` |
+| Engels | `/en`, `/en/portfolio`, `/en/contact`, `/en/privacy` |
+
+Nederlands staat bewust zonder voorvoegsel, zodat bestaande links en
+zoekresultaten blijven werken. Er wordt **niet** automatisch omgeleid op de taal
+van de browser: de bezoeker kiest zelf met de knop `EN` / `NL` in de kop. Dat is
+voorspelbaarder, en een gedeelde link opent bij iedereen dezelfde pagina.
+
+Zoekmachines krijgen via `hreflang` te horen welke Nederlandse en Engelse pagina
+bij elkaar horen. Dat staat in de `<head>` van elke pagina én in de sitemap.
+
+### Wat er meevertaald is
+
+- Alle pagina's, knoppen en formulieren.
+- De boekingsmodule, inclusief de foutmeldingen die de server teruggeeft.
+- De datums: "za 26 september" wordt "Sat 26 September".
+- De bevestigingsmails aan de klant. Boekt iemand via `/en`, dan is de
+  bevestiging Engels, en ook een latere bevestigings- of annuleringsmail. De
+  taal wordt bij de boeking opgeslagen.
+- De meldingen aan jóú blijven Nederlands, met de regel "(De aanvraag is gedaan
+  op de Engelse versie van de site.)" erbij. In **Beheer → Boekingen** staat een
+  `EN`-merkteken bij zo'n aanvraag.
+- De beheeromgeving zelf is en blijft Nederlands.
+
+### Diensten en projecten vertalen
+
+Die teksten staan in de database, dus die vertaal je zelf in de
+beheeromgeving. Bij **Diensten** en bij **Projecten** staat een kader *Engelse
+versie*:
+
+| Onderdeel | Engelse velden |
+| --- | --- |
+| Dienst | Naam, omschrijving, prijsindicatie |
+| Project | Titel, locatie, korte beschrijving, uitgebreide tekst, alt-tekst |
+| Galerijfoto | Alternatieve tekst |
+
+**Laat je een veld leeg, dan toont de Engelse site de Nederlandse tekst.** Er
+ontstaat dus nooit een gat; je kunt rustig stap voor stap vertalen. In de
+dienstenlijst staat een `EN`-merkteken bij de diensten die al een Engelse naam
+hebben.
+
+De zes voorbeeldprojecten en de vier voorbeelddiensten zijn al vertaald. Staat
+je database er al (zoals op de server), dan vul je die vertalingen aan met het
+onderhoudsscript uit hoofdstuk 4; dat raakt alleen velden aan die nog leeg zijn.
+
+---
+
+## 6. Koppelingen die je nog moet instellen
 
 ### E-mail (nodig voor bevestigingsmails)
 
@@ -630,14 +696,29 @@ animaties worden uitgezet als het systeem om minder beweging vraagt.
 
 ```
 app/
-  (site)/        publieke pagina's: home, portfolio, contact, privacy
-  admin/         inlogpagina en beveiligde beheeromgeving
-  actions/       server actions (publiek en beheer)
-  api/           tijdsloten en het serveren van uploads
-components/      onderdelen van de interface
-content/site.ts  ← alle teksten en bedrijfsgegevens
-lib/             database, beschikbaarheid, boekingen, tijdzone, validatie
-scripts/         seed, wachtwoord-hash, voorbeeldafbeeldingen
-public/images/   tijdelijke voorbeeldafbeeldingen
-data/            database en uploads (niet in de repository)
+  (site)/
+    (nl)/          Nederlandse pagina's op /, /portfolio, /contact …
+    en/            dezelfde pagina's op /en, /en/portfolio …
+  admin/           inlogpagina en beveiligde beheeromgeving (Nederlands)
+  actions/         server actions (publiek en beheer)
+  api/             tijdsloten en het serveren van uploads
+proxy.ts           geeft het pad door, zodat <html lang> klopt
+components/
+  pages/           de pagina's zelf; de routes hierboven zijn drie regels
+  booking/         de boekingsmodule
+  admin/           schermen van de beheeromgeving
+content/
+  site.ts          ← bedrijfsgegevens (beide talen hetzelfde)
+  copy.nl.ts       ← alle Nederlandse tekst
+  copy.en.ts       ← alle Engelse tekst
+lib/               database, beschikbaarheid, boekingen, tijdzone, validatie
+  locale.ts        de twee talen en de paden erbij
+scripts/           seed, wachtwoord-hash, voorbeeldafbeeldingen
+  onderhoud/       eenmalige scripts voor een bestaande database
+public/images/     tijdelijke voorbeeldafbeeldingen
+data/              database en uploads (niet in de repository)
 ```
+
+Elke pagina bestaat één keer, in `components/pages/`, en krijgt de taal als
+`locale`-eigenschap mee. De bestanden onder `app/` zijn alleen nog de route en
+de metadata. Zo kan de Engelse versie niet achterlopen op de Nederlandse.

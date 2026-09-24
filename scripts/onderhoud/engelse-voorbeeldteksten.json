@@ -1,0 +1,68 @@
+{
+  "services": {
+    "kennismaking": {
+      "name_en": "Intro call",
+      "description_en": "A short video or phone call to go through your plans. No obligation.",
+      "price_label_en": "Free"
+    },
+    "dronefotografie": {
+      "name_en": "Drone photography",
+      "description_en": "A photo session on location. You receive a selection of edited photos in high resolution.",
+      "price_label_en": "From € 149"
+    },
+    "dronevideo": {
+      "name_en": "Drone video",
+      "description_en": "Video on location, including editing into a short film for your website or social channels.",
+      "price_label_en": "From € 249"
+    },
+    "project-op-maat": {
+      "name_en": "Custom project",
+      "description_en": "Several locations, several days or a mix of photo and video. You book an intro call; the form asks up front about the locations and the preferred period.",
+      "price_label_en": "Price on request"
+    }
+  },
+  "projects": {
+    "herenhuis-aan-de-zaan": {
+      "title_en": "Townhouse on the river Zaan",
+      "location_en": "Zaandam (example)",
+      "summary_en": "Aerial photos of a detached townhouse, made for an estate agent's brochure.",
+      "body_en": "The estate agent wanted to show how the house sits on the water and how far the garden runs back. You can't capture that from the ground.\n\nI flew in the last hour before sunset, so the water lies still and the façade catches warm light. Twelve photos were delivered: a series of overviews and a few detail shots of the roof and the extension.\n\nThe images were used in the brochure, on the property portal and in the social media ads.",
+      "cover_alt_en": "Example image: aerial photo of a detached house with a garden by the water"
+    },
+    "nieuwbouwwijk-in-aanbouw": {
+      "title_en": "New housing estate under construction",
+      "location_en": "Purmerend (example)",
+      "summary_en": "Monthly progress shots of a new-build project, always from the same point.",
+      "body_en": "A developer wanted the construction of 48 homes recorded, so buyers could follow the progress.\n\nEvery month I flew the same route at the same altitude. That makes the images easy to compare and a series builds up by itself.\n\nThe photos were on the project website and were used at the end for a short look-back video.",
+      "cover_alt_en": "Example image: aerial photo of a housing estate under construction"
+    },
+    "bedrijventerrein-achtersluispolder": {
+      "title_en": "Achtersluispolder business park",
+      "location_en": "Zaandam (example)",
+      "summary_en": "Atmosphere and overview shots of a logistics site for the new company website.",
+      "body_en": "The company moved to a larger building and wanted images of it for the website and an investor presentation.\n\nWe flew on a quiet Saturday morning, so there was no lorry traffic on the site. Besides overviews I made a few lower passes along the façade.\n\nDelivered: eight photos and a forty-second edit.",
+      "cover_alt_en": "Example image: aerial photo of a business park"
+    },
+    "productielocatie-in-bedrijf": {
+      "title_en": "Production site at work",
+      "location_en": "Wormerveer (example)",
+      "summary_en": "Images of a production site, used in a recruitment campaign for new colleagues.",
+      "body_en": "A recruitment campaign needed images showing how large the site is and how the work is done.\n\nWe agreed in advance with management which parts could and could not be shown. During the flight a colleague kept watch on the ground.\n\nThe images were used on the vacancies page and in short videos for social media.",
+      "cover_alt_en": "Example image: aerial photo of a production site"
+    },
+    "zomerfestival-in-het-park": {
+      "title_en": "Summer festival in the park",
+      "location_en": "Zaandam (example)",
+      "summary_en": "An overview shot of a one-day festival, agreed with the organisers and the site manager.",
+      "body_en": "The organisers wanted one good overview shot for the aftermovie and for their report to the council.\n\nWe agreed beforehand when flying was allowed and over which parts of the site. During the flight I kept a safe distance from the public.\n\nDelivered: three overview photos and raw video material for the organisers' own edit.",
+      "cover_alt_en": "Example image: aerial photo of a festival site in a park"
+    },
+    "veenweide-bij-zonsopkomst": {
+      "title_en": "Peat meadows at sunrise",
+      "location_en": "Wormer- en Jisperveld (example)",
+      "summary_en": "Personal work: a series of landscape images of the peat meadows in the early morning.",
+      "body_en": "This is my own work, made to practise with light and composition in open landscape.\n\nThe images were made in the half hour after sunrise, when mist still hangs over the water. I flew low and slow, so the lines of the ditches come out well.\n\nPart of this series hangs as prints in my workspace.",
+      "cover_alt_en": "Example image: aerial photo of peat meadows in the morning mist"
+    }
+  }
+}

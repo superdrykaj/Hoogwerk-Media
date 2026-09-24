@@ -11,6 +11,9 @@
  *  oorspronkelijke voorbeeldtekst bevatten. Heb je een project zelf al
  *  aangepast, dan blijft het ongemoeid en zegt het script dat erbij.
  *
+ *  Hetzelfde script vult ook de Engelse voorbeeldteksten aan, voor de tweetalige
+ *  versie van de site: alleen waar het Engelse veld nog leeg is.
+ *
  *  Lokaal draaien:
  *      node scripts/onderhoud/werkgebied-noord-holland.cjs
  *
@@ -102,6 +105,9 @@ const DIENST = {
     "Meerdere locaties, meerdere dagen of een combinatie van foto en video. Je plant een kennismaking; in het formulier vraag ik alvast naar de locaties en de gewenste periode.",
 };
 
+/** Engelse voorbeeldteksten, één op één uit lib/example-data.ts. */
+const ENGELS = require("./engelse-voorbeeldteksten.json");
+
 const db = new Database(dbPath);
 let gewijzigd = 0;
 let overgeslagen = 0;
@@ -161,7 +167,43 @@ if (dienst && dienst.description === DIENST.was) {
   overgeslagen++;
 }
 
+/* -------------------------------------------------------------------------- */
+/* Engelse teksten aanvullen                                                   */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Vult lege Engelse velden. Staat er al iets, dan blijft dat staan: dat heb je
+ * dan zelf in de beheeromgeving ingevuld.
+ */
+function vulEngels(tabel, sleutel, velden) {
+  const rij = db
+    .prepare(`SELECT * FROM ${tabel} WHERE slug = ?`)
+    .get(sleutel);
+  if (!rij) return 0;
+
+  const teVullen = Object.entries(velden).filter(
+    ([kolom]) => !String(rij[kolom] ?? "").trim(),
+  );
+  if (teVullen.length === 0) return 0;
+
+  const zetten = teVullen.map(([kolom]) => `${kolom} = ?`).join(", ");
+  const waarden = teVullen.map(([, waarde]) => waarde);
+  db.prepare(`UPDATE ${tabel} SET ${zetten} WHERE id = ?`).run(...waarden, rij.id);
+  console.log(`- ${sleutel}: ${teVullen.length} Engels veld(en) ingevuld`);
+  return 1;
+}
+
+console.log("");
+let engels = 0;
+for (const [slug, velden] of Object.entries(ENGELS.services)) {
+  engels += vulEngels("services", slug, velden);
+}
+for (const [slug, velden] of Object.entries(ENGELS.projects)) {
+  engels += vulEngels("projects", slug, velden);
+}
+if (engels === 0) console.log("- Engelse teksten: niets aan te vullen");
+
 db.close();
 console.log(
-  `\nKlaar: ${gewijzigd} bijgewerkt, ${overgeslagen} met rust gelaten (${dbPath}).`,
+  `\nKlaar: ${gewijzigd} bijgewerkt, ${engels} vertaald, ${overgeslagen} met rust gelaten (${dbPath}).`,
 );

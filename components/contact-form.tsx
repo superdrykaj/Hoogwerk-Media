@@ -3,9 +3,18 @@
 import { useActionState } from "react";
 
 import { sendContactAction } from "@/app/actions/public";
+import { copy, type Dictionary } from "@/content/copy";
 import { emptyFormState, type FormState } from "@/lib/form-state";
+import type { Locale } from "@/lib/locale";
 
-export function ContactForm({ mailReady }: { mailReady: boolean }) {
+export function ContactForm({
+  mailReady,
+  locale,
+}: {
+  mailReady: boolean;
+  locale: Locale;
+}) {
+  const t = copy(locale);
   const [state, formAction, pending] = useActionState<FormState, FormData>(
     sendContactAction,
     emptyFormState,
@@ -25,17 +34,16 @@ export function ContactForm({ mailReady }: { mailReady: boolean }) {
             />
           </svg>
         </div>
-        <p className="display-3 mt-4 text-base">Bedankt voor je bericht</p>
+        <p className="display-3 mt-4 text-base">{t.contactForm.doneTitle}</p>
         <p className="mt-3 text-sm leading-relaxed text-mist-500">
-          Je bericht is opgeslagen en staat klaar in mijn beheeromgeving. Ik
-          reageer meestal binnen één werkdag.
+          {t.contactForm.doneStored}
         </p>
         <p className="mt-4 text-xs text-mist-600">
           {state.result?.mailSent
-            ? "Je ontvangt ook een bevestiging per e-mail."
+            ? t.contactForm.doneMailSent
             : state.result?.mailConfigured
-              ? "Het versturen van de bevestigingsmail is niet gelukt. Je bericht is wél opgeslagen en wordt gelezen."
-              : "Let op: e-mail is op deze site nog niet ingesteld, dus je krijgt nu geen bevestigingsmail."}
+              ? t.contactForm.doneMailFailed
+              : t.contactForm.doneMailOff}
         </p>
       </div>
     );
@@ -44,11 +52,10 @@ export function ContactForm({ mailReady }: { mailReady: boolean }) {
   return (
     <form action={formAction} noValidate className="space-y-5">
       {!mailReady && (
-        <p className="notice notice-warning">
-          E-mail is nog niet ingesteld. Berichten worden wél opgeslagen en zijn
-          zichtbaar in de beheeromgeving, maar er gaat nog geen e-mail uit.
-        </p>
+        <p className="notice notice-warning">{t.contactForm.mailOffNotice}</p>
       )}
+
+      <input type="hidden" name="locale" value={locale} />
 
       {state.status === "error" && (
         <p className="notice notice-error" role="alert">
@@ -57,23 +64,39 @@ export function ContactForm({ mailReady }: { mailReady: boolean }) {
       )}
 
       <div className="grid gap-5 sm:grid-cols-2">
-        <Field id="contact-name" name="name" label="Naam" required error={state.errors.name} autoComplete="name" />
         <Field
+          t={t}
+          id="contact-name"
+          name="name"
+          label={t.forms.name}
+          required
+          error={state.errors.name}
+          autoComplete="name"
+        />
+        <Field
+          t={t}
           id="contact-email"
           name="email"
           type="email"
-          label="E-mailadres"
+          label={t.forms.email}
           required
           error={state.errors.email}
           autoComplete="email"
         />
       </div>
 
-      <Field id="contact-subject" name="subject" label="Onderwerp" required error={state.errors.subject} />
+      <Field
+        t={t}
+        id="contact-subject"
+        name="subject"
+        label={t.forms.subject}
+        required
+        error={state.errors.subject}
+      />
 
       <div>
         <label htmlFor="contact-message" className="field-label">
-          Bericht <Required />
+          {t.forms.message} <Required t={t} />
         </label>
         <textarea
           id="contact-message"
@@ -92,7 +115,7 @@ export function ContactForm({ mailReady }: { mailReady: boolean }) {
           </p>
         ) : (
           <p id="contact-message-hint" className="field-hint">
-            Vertel kort waar het om gaat en waar de locatie ligt.
+            {t.contactForm.messageHint}
           </p>
         )}
       </div>
@@ -108,18 +131,18 @@ export function ContactForm({ mailReady }: { mailReady: boolean }) {
       />
 
       <button type="submit" className="btn btn-primary w-full" disabled={pending}>
-        {pending ? "Bezig met versturen…" : "Bericht versturen"}
+        {pending ? t.contactForm.sending : t.contactForm.submit}
       </button>
 
       <p className="text-xs leading-relaxed text-mist-600">
-        Je gegevens worden alleen gebruikt om op je bericht te reageren en zijn
-        niet zichtbaar voor andere bezoekers.
+        {t.contactForm.privacyNote}
       </p>
     </form>
   );
 }
 
 function Field({
+  t,
   id,
   name,
   label,
@@ -128,6 +151,7 @@ function Field({
   error,
   autoComplete,
 }: {
+  t: Dictionary;
   id: string;
   name: string;
   label: string;
@@ -139,7 +163,7 @@ function Field({
   return (
     <div>
       <label htmlFor={id} className="field-label">
-        {label} {required && <Required />}
+        {label} {required && <Required t={t} />}
       </label>
       <input
         id={id}
@@ -160,11 +184,11 @@ function Field({
   );
 }
 
-function Required() {
+function Required({ t }: { t: Dictionary }) {
   return (
     <span className="text-azure-300">
       <span aria-hidden="true">*</span>
-      <span className="sr-only">(verplicht)</span>
+      <span className="sr-only">{t.forms.required}</span>
     </span>
   );
 }

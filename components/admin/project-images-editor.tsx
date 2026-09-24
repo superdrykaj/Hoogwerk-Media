@@ -76,6 +76,22 @@ export function ProjectImagesEditor({
               Beschrijf kort wat er op de foto staat.
             </p>
           </div>
+          <div className="sm:col-span-2">
+            <label htmlFor="gallery-alt-en" className="field-label">
+              Alternatieve tekst (EN)
+            </label>
+            <input
+              id="gallery-alt-en"
+              name="altEn"
+              type="text"
+              className="field-input"
+              aria-describedby="gallery-alt-en-hint"
+            />
+            <p id="gallery-alt-en-hint" className="field-hint">
+              Voor de Engelse site. Leeg laten mag: dan wordt de Nederlandse
+              tekst gebruikt.
+            </p>
+          </div>
         </div>
 
         <button type="submit" className="btn btn-ghost" disabled={pending}>
@@ -110,6 +126,18 @@ export function ProjectImagesEditor({
                     name="alt"
                     type="text"
                     defaultValue={image.alt}
+                    className="field-input"
+                  />
+                </div>
+                <div>
+                  <label htmlFor={`alt-en-${image.id}`} className="field-label">
+                    Alternatieve tekst (EN)
+                  </label>
+                  <input
+                    id={`alt-en-${image.id}`}
+                    name="altEn"
+                    type="text"
+                    defaultValue={image.altEn}
                     className="field-input"
                   />
                 </div>

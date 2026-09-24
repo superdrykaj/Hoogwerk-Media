@@ -7,6 +7,9 @@ type Row = {
   slug: string;
   name: string;
   description: string;
+  name_en: string;
+  description_en: string;
+  price_label_en: string;
   duration_minutes: number;
   price_label: string;
   buffer_minutes: number;
@@ -22,6 +25,9 @@ function map(row: Row): Service {
     slug: row.slug,
     name: row.name,
     description: row.description,
+    nameEn: row.name_en ?? "",
+    descriptionEn: row.description_en ?? "",
+    priceLabelEn: row.price_label_en ?? "",
     durationMinutes: row.duration_minutes,
     priceLabel: row.price_label,
     bufferMinutes: row.buffer_minutes,
@@ -53,13 +59,17 @@ export function updateService(
 ): void {
   getDb()
     .prepare(
-      `UPDATE services SET name = ?, description = ?, duration_minutes = ?,
+      `UPDATE services SET name = ?, description = ?, name_en = ?,
+       description_en = ?, price_label_en = ?, duration_minutes = ?,
        price_label = ?, buffer_minutes = ?, bookable = ?, intro_only = ?,
        sort_order = ?, active = ? WHERE id = ?`,
     )
     .run(
       values.name,
       values.description,
+      values.nameEn,
+      values.descriptionEn,
+      values.priceLabelEn,
       values.durationMinutes,
       values.priceLabel,
       values.bufferMinutes,
@@ -75,14 +85,18 @@ export function createService(values: Omit<Service, "id">): number {
   const result = getDb()
     .prepare(
       `INSERT INTO services
-        (slug, name, description, duration_minutes, price_label, buffer_minutes,
+        (slug, name, description, name_en, description_en, price_label_en,
+         duration_minutes, price_label, buffer_minutes,
          bookable, intro_only, sort_order, active)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .run(
       values.slug,
       values.name,
       values.description,
+      values.nameEn,
+      values.descriptionEn,
+      values.priceLabelEn,
       values.durationMinutes,
       values.priceLabel,
       values.bufferMinutes,

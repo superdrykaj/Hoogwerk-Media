@@ -1,5 +1,8 @@
 import Link from "next/link";
 
+import { copy } from "@/content/copy";
+import { href, type Locale } from "@/lib/locale";
+
 /**
  * Melding boven aan elke publieke pagina dat de inhoud fictief is.
  *
@@ -10,7 +13,8 @@ export function isDemoMode(): boolean {
   return process.env.DEMO_MODE !== "false";
 }
 
-export function DemoBanner() {
+export function DemoBanner({ locale }: { locale: Locale }) {
+  const t = copy(locale).demoBanner;
   if (!isDemoMode()) return null;
 
   return (
@@ -20,14 +24,16 @@ export function DemoBanner() {
           aria-hidden="true"
           className="inline-flex items-center rounded-full border border-amber-500/40 px-2 py-0.5 font-semibold uppercase tracking-wider"
         >
-          Demo
+          {t.label}
         </span>
         <span>
-          De projecten, prijzen en foto&apos;s op deze site zijn nog{" "}
-          <strong className="font-semibold">voorbeelden</strong>.
+          {t.text} <strong className="font-semibold">{t.emphasis}</strong>.
         </span>
-        <Link href="/demo" className="underline underline-offset-2 hover:text-amber-100">
-          Wat betekent dat?
+        <Link
+          href={href("/demo", locale)}
+          className="underline underline-offset-2 hover:text-amber-100"
+        >
+          {t.link}
         </Link>
       </p>
     </div>

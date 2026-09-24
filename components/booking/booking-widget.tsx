@@ -7,15 +7,10 @@ import {
   requestBookingAction,
 } from "@/app/actions/public";
 import { emptyFormState, type FormState } from "@/lib/form-state";
+import { copy, type Dictionary } from "@/content/copy";
 import { site } from "@/content/site";
-import {
-  MAX_LOCATIES,
-  OPNAMEMOMENTEN,
-  PERIODE_VERPLICHT,
-  TIJDVOORKEUREN,
-  opnamemomentLabel,
-  tijdvoorkeurLabel,
-} from "@/lib/project-scope";
+import { href, type Locale } from "@/lib/locale";
+import { MAX_LOCATIES, OPNAMEMOMENTEN, TIJDVOORKEUREN } from "@/lib/project-scope";
 import {
   addDays,
   formatDateLong,
@@ -68,9 +63,14 @@ const LEGE_DETAILS: Details = {
   timePreferences: [],
 };
 
-const STEPS = ["Dienst", "Datum", "Tijd", "Gegevens", "Controle"] as const;
-
-export function BookingWidget({ services }: { services: PublicService[] }) {
+export function BookingWidget({
+  services,
+  locale,
+}: {
+  services: PublicService[];
+  locale: Locale;
+}) {
+  const t = copy(locale);
   const [state, formAction, pending] = useActionState<FormState, FormData>(
     requestBookingAction,
     emptyFormState,
@@ -110,14 +110,12 @@ export function BookingWidget({ services }: { services: PublicService[] }) {
         setDays(data.days);
       } catch {
         setDays(null);
-        setLoadError(
-          "De beschikbare tijden konden niet worden geladen. Probeer het opnieuw.",
-        );
+        setLoadError(t.booking.loadError);
       } finally {
         setLoading(false);
       }
     },
-    [],
+    [t.booking.loadError],
   );
 
   // Na een stapwissel de focus naar de nieuwe stap brengen.
@@ -157,37 +155,33 @@ export function BookingWidget({ services }: { services: PublicService[] }) {
 
   function validateDetails(): boolean {
     const errors: Record<string, string> = {};
-    if (details.name.trim().length < 2) errors.name = "Vul je naam in.";
+    if (details.name.trim().length < 2) errors.name = t.forms.errName;
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(details.email.trim())) {
-      errors.email = "Vul een geldig e-mailadres in.";
+      errors.email = t.forms.errEmail;
     }
     if ((details.locations[0] ?? "").trim().length < 3) {
-      errors.location = opMaat
-        ? "Vul minstens één locatie in."
-        : "Vul de opnamelocatie in.";
+      errors.location = opMaat ? t.forms.errLocationCustom : t.forms.errLocation;
     }
     if (details.description.trim().length < 10) {
-      errors.description = "Beschrijf je project in minimaal 10 tekens.";
+      errors.description = t.forms.errDescription;
     }
     if (opMaat && details.periodWish.trim().length < 2) {
-      errors.periodWish = PERIODE_VERPLICHT;
+      errors.periodWish = t.scope.periodRequired;
     }
     setLocalErrors(errors);
     return Object.keys(errors).length === 0;
   }
 
   if (state.status === "success" && state.result) {
-    return <BookingConfirmation result={state.result} />;
+    return <BookingConfirmation result={state.result} t={t} locale={locale} />;
   }
 
   if (bookable.length === 0) {
     return (
       <div className="card p-8 text-center">
-        <p className="text-mist-300">
-          Er zijn op dit moment geen diensten beschikbaar om online te boeken.
-        </p>
+        <p className="text-mist-300">{t.booking.noServices}</p>
         <a href={`mailto:${site.email}`} className="btn btn-ghost mt-5">
-          Mail me rechtstreeks
+          {t.booking.mailDirect}
         </a>
       </div>
     );
@@ -195,7 +189,7 @@ export function BookingWidget({ services }: { services: PublicService[] }) {
 
   return (
     <div className="card overflow-hidden">
-      <Stepper current={step} onBack={(target) => setStep(target)} />
+      <Stepper current={step} onBack={(target) => setStep(target)} steps={t.booking.steps} />
 
       <div className="p-5 sm:p-8">
         <p
@@ -204,24 +198,19 @@ export function BookingWidget({ services }: { services: PublicService[] }) {
           aria-live="polite"
           className="display-3 mb-1 outline-none"
         >
-          {step === 0 && "Wat wil je laten maken?"}
-          {step === 1 && "Kies een datum"}
-          {step === 2 && "Kies een tijd"}
-          {step === 3 && "Jouw gegevens"}
-          {step === 4 && "Controleer je aanvraag"}
+          {step === 0 && t.booking.stepService}
+          {step === 1 && t.booking.stepDate}
+          {step === 2 && t.booking.stepTime}
+          {step === 3 && t.booking.stepDetails}
+          {step === 4 && t.booking.stepReview}
         </p>
         <p className="mb-6 text-sm text-mist-500">
-          {step === 0 && "Kies de dienst die het beste past. Twijfel je? Begin met een gratis kennismaking."}
-          {step === 1 &&
-            (opMaat
-              ? "Kies een dag voor de kennismaking. De opnamedagen zelf plannen we in dat gesprek."
-              : `Alleen dagen met vrije tijden zijn te kiezen. Tijden in ${"Europe/Amsterdam"}.`)}
-          {step === 2 && dateKey && formatDateLong(dateKey)}
+          {step === 0 && t.booking.introService}
+          {step === 1 && (opMaat ? t.booking.introDateCustom : t.booking.introDate)}
+          {step === 2 && dateKey && formatDateLong(dateKey, locale)}
           {step === 3 &&
-            (opMaat
-              ? "Vertel me kort waar het project uit bestaat, dan kan ik me op het gesprek voorbereiden."
-              : "Ik gebruik deze gegevens alleen om contact met je op te nemen over deze aanvraag.")}
-          {step === 4 && "Klopt alles? Dan kun je de aanvraag versturen."}
+            (opMaat ? t.booking.introDetailsCustom : t.booking.introDetails)}
+          {step === 4 && t.booking.introReview}
         </p>
 
         {/* Stap 1 — dienst -------------------------------------------------- */}
@@ -243,12 +232,12 @@ export function BookingWidget({ services }: { services: PublicService[] }) {
                       {item.name}
                     </span>
                     <span className="shrink-0 text-xs text-mist-500">
-                      {item.durationMinutes} min
+                      {t.booking.minutes(item.durationMinutes)}
                     </span>
                   </span>
                   {item.introOnly && (
                     <span className="mt-2 inline-block rounded-full border border-ink-600 px-2 py-0.5 text-[11px] text-mist-400">
-                      Begint met een kennismaking
+                      {t.booking.introChip}
                     </span>
                   )}
                   {item.description && (
@@ -268,6 +257,8 @@ export function BookingWidget({ services }: { services: PublicService[] }) {
         {/* Stap 2 — datum --------------------------------------------------- */}
         {step === 1 && (
           <DatePicker
+            t={t}
+            locale={locale}
             days={days}
             loading={loading}
             error={loadError}
@@ -287,11 +278,11 @@ export function BookingWidget({ services }: { services: PublicService[] }) {
           <div>
             {!selectedDay || selectedDay.slots.length === 0 ? (
               <EmptyState
-                title="Geen vrije tijden op deze dag"
-                body="Kies een andere datum."
+                title={t.booking.noTimes}
+                body={t.booking.noTimesBody}
                 action={
                   <button type="button" className="btn btn-ghost" onClick={() => setStep(1)}>
-                    Terug naar de datums
+                    {t.booking.backToDates}
                   </button>
                 }
               />
@@ -320,6 +311,7 @@ export function BookingWidget({ services }: { services: PublicService[] }) {
         {/* Stap 4 — gegevens ------------------------------------------------ */}
         {step === 3 && (
           <DetailsForm
+            t={t}
             values={details}
             opMaat={opMaat}
             errors={{ ...localErrors, ...state.errors }}
@@ -334,6 +326,7 @@ export function BookingWidget({ services }: { services: PublicService[] }) {
         {/* Stap 5 — controle en versturen ---------------------------------- */}
         {step === 4 && service && startUtc && (
           <form action={formAction} className="space-y-6">
+            <input type="hidden" name="locale" value={locale} />
             <input type="hidden" name="serviceId" value={service.id} />
             <input type="hidden" name="startUtc" value={startUtc} />
             <input type="hidden" name="name" value={details.name} />
@@ -383,45 +376,55 @@ export function BookingWidget({ services }: { services: PublicService[] }) {
             />
 
             <dl className="divide-y divide-ink-700 rounded-xl border border-ink-700 bg-ink-900">
-              <Row label="Dienst" value={service.name} />
+              <Row label={t.booking.rowService} value={service.name} />
               <Row
-                label={opMaat ? "Kennismaking" : "Wanneer"}
-                value={formatTimestamp(startUtc)}
+                label={opMaat ? t.booking.rowIntro : t.booking.rowWhen}
+                value={formatTimestamp(startUtc, locale)}
               />
-              <Row label="Duur" value={`${service.durationMinutes} minuten`} />
-              <Row label="Indicatie" value={service.priceLabel || "In overleg"} />
-              <Row label="Naam" value={details.name} />
-              <Row label="E-mail" value={details.email} />
-              {details.phone && <Row label="Telefoon" value={details.phone} />}
               <Row
-                label={locaties.length > 1 ? `Locaties (${locaties.length})` : "Opnamelocatie"}
+                label={t.booking.rowDuration}
+                value={t.booking.rowDurationValue(service.durationMinutes)}
+              />
+              <Row
+                label={t.booking.rowPrice}
+                value={service.priceLabel || t.home.priceOnRequest}
+              />
+              <Row label={t.booking.rowName} value={details.name} />
+              <Row label={t.booking.rowEmail} value={details.email} />
+              {details.phone && (
+                <Row label={t.booking.rowPhone} value={details.phone} />
+              )}
+              <Row
+                label={
+                  locaties.length > 1
+                    ? t.booking.rowLocations(locaties.length)
+                    : t.booking.rowLocation
+                }
                 value={locaties.join("\n")}
                 multiline
               />
               {opMaat && details.sessionCount && (
                 <Row
-                  label="Opnamemomenten"
-                  value={opnamemomentLabel(details.sessionCount)}
+                  label={t.booking.rowSessions}
+                  value={t.scope.sessions[details.sessionCount] ?? details.sessionCount}
                 />
               )}
               {opMaat && (
-                <Row label="Gewenste periode" value={details.periodWish} />
+                <Row label={t.booking.rowPeriod} value={details.periodWish} />
               )}
               {opMaat && details.timePreferences.length > 0 && (
                 <Row
-                  label="Voorkeur"
-                  value={details.timePreferences.map(tijdvoorkeurLabel).join(", ")}
+                  label={t.booking.rowPreference}
+                  value={details.timePreferences
+                    .map((key) => t.scope.preferences[key] ?? key)
+                    .join(", ")}
                 />
               )}
-              <Row label="Project" value={details.description} multiline />
+              <Row label={t.booking.rowProject} value={details.description} multiline />
             </dl>
 
             <p className="notice notice-info">
-              {opMaat
-                ? "Je plant hiermee de kennismaking. Daarin bespreken we de " +
-                  "locaties, het aantal opnamedagen en de planning; daarna leg " +
-                  "ik de opnamedagen vast."
-                : site.bookingDisclaimer}
+              {opMaat ? t.booking.customDisclaimer : t.home.bookingDisclaimer}
             </p>
 
             {state.status === "error" && (
@@ -432,7 +435,7 @@ export function BookingWidget({ services }: { services: PublicService[] }) {
 
             <div className="flex flex-wrap gap-3">
               <button type="submit" className="btn btn-primary" disabled={pending}>
-                {pending ? "Bezig met versturen…" : "Aanvraag versturen"}
+                {pending ? t.booking.submitting : t.booking.submit}
               </button>
               <button
                 type="button"
@@ -440,7 +443,7 @@ export function BookingWidget({ services }: { services: PublicService[] }) {
                 onClick={() => setStep(3)}
                 disabled={pending}
               >
-                Gegevens aanpassen
+                {t.booking.editDetails}
               </button>
             </div>
           </form>
@@ -474,13 +477,15 @@ function Row({
 function Stepper({
   current,
   onBack,
+  steps,
 }: {
   current: number;
   onBack: (step: number) => void;
+  steps: string[];
 }) {
   return (
     <ol className="flex flex-wrap items-center gap-x-1 gap-y-2 border-b border-ink-700 bg-ink-900/60 px-4 py-3 text-xs sm:px-8">
-      {STEPS.map((label, index) => {
+      {steps.map((label, index) => {
         const done = index < current;
         const active = index === current;
         return (
@@ -505,7 +510,7 @@ function Stepper({
                 {label}
               </span>
             )}
-            {index < STEPS.length - 1 && (
+            {index < steps.length - 1 && (
               <span aria-hidden="true" className="text-ink-600">
                 ·
               </span>
@@ -529,6 +534,8 @@ function Dot({ done, active }: { done: boolean; active?: boolean }) {
 }
 
 function DatePicker({
+  t,
+  locale,
   days,
   loading,
   error,
@@ -539,6 +546,8 @@ function DatePicker({
   onPick,
   onRetry,
 }: {
+  t: Dictionary;
+  locale: Locale;
   days: DaySlots[] | null;
   loading: boolean;
   error: string | null;
@@ -561,7 +570,7 @@ function DatePicker({
             className="h-[4.5rem] animate-pulse rounded-lg border border-ink-700 bg-ink-800"
           />
         ))}
-        <span className="sr-only">Beschikbare tijden worden geladen…</span>
+        <span className="sr-only">{t.booking.loading}</span>
       </div>
     );
   }
@@ -569,11 +578,11 @@ function DatePicker({
   if (error) {
     return (
       <EmptyState
-        title="Laden mislukt"
+        title={t.booking.loadFailed}
         body={error}
         action={
           <button type="button" className="btn btn-ghost" onClick={onRetry}>
-            Opnieuw proberen
+            {t.booking.retry}
           </button>
         }
       />
@@ -591,21 +600,23 @@ function DatePicker({
           onClick={onPrev}
           disabled={!canGoBack}
         >
-          ← Eerder
+          {t.booking.prev}
         </button>
-        <p className="text-sm font-medium text-mist-300">{monthLabel(rangeStart)}</p>
+        <p className="text-sm font-medium text-mist-300">
+          {monthLabel(rangeStart, locale)}
+        </p>
         <button type="button" className="btn btn-quiet" onClick={onNext}>
-          Later →
+          {t.booking.next}
         </button>
       </div>
 
       {available.length === 0 ? (
         <EmptyState
-          title="Geen vrije dagen in deze periode"
-          body="Kijk verder vooruit met de knop 'Later', of stuur me een bericht als je iets specifieks zoekt."
+          title={t.booking.noDays}
+          body={t.booking.noDaysBody}
           action={
             <button type="button" className="btn btn-ghost" onClick={onNext}>
-              Later kijken →
+              {t.booking.noDaysAction}
             </button>
           }
         />
@@ -629,10 +640,10 @@ function DatePicker({
                   }`}
                 >
                   <span className="block text-sm font-semibold">
-                    {formatDateShort(day.dateKey)}
+                    {formatDateShort(day.dateKey, locale)}
                   </span>
                   <span className="mt-1 block text-xs text-mist-500">
-                    {disabled ? "—" : `${free} ${free === 1 ? "tijd" : "tijden"}`}
+                    {disabled ? "—" : t.booking.times(free)}
                   </span>
                 </button>
               </li>
@@ -645,6 +656,7 @@ function DatePicker({
 }
 
 function DetailsForm({
+  t,
   values,
   opMaat,
   errors,
@@ -652,6 +664,7 @@ function DetailsForm({
   onSubmit,
   onBack,
 }: {
+  t: Dictionary;
   values: Details;
   opMaat: boolean;
   errors: Record<string, string>;
@@ -701,8 +714,9 @@ function DetailsForm({
     >
       <div className="grid gap-5 sm:grid-cols-2">
         <Field
+          t={t}
           id="booking-name"
-          label="Naam"
+          label={t.forms.name}
           required
           error={errors.name}
           value={values.name}
@@ -710,8 +724,9 @@ function DetailsForm({
           autoComplete="name"
         />
         <Field
+          t={t}
           id="booking-email"
-          label="E-mailadres"
+          label={t.forms.email}
           type="email"
           required
           error={errors.email}
@@ -720,9 +735,10 @@ function DetailsForm({
           autoComplete="email"
         />
         <Field
+          t={t}
           id="booking-phone"
-          label="Telefoonnummer"
-          hint="Optioneel. Handig als het weer roet in het eten gooit."
+          label={t.forms.phone}
+          hint={t.forms.phoneHint}
           error={errors.phone}
           value={values.phone}
           onChange={set("phone")}
@@ -730,10 +746,11 @@ function DetailsForm({
         />
         {!opMaat && (
           <Field
+            t={t}
             id="booking-location"
-            label="Opnamelocatie"
+            label={t.forms.location}
             required
-            hint="Adres of omschrijving van de plek."
+            hint={t.forms.locationHint}
             error={errors.location}
             value={values.locations[0] ?? ""}
             onChange={(event) => setLocation(0, event.target.value)}
@@ -745,11 +762,10 @@ function DetailsForm({
       {opMaat && (
         <fieldset>
           <legend className="field-label">
-            Locaties <Required />
+            {t.forms.locations} <Required t={t} />
           </legend>
           <p id="booking-locations-hint" className="field-hint mb-2">
-            Adres of omschrijving per plek. Weet je nog niet alles? Vul in wat
-            je wel weet.
+            {t.forms.locationsHint}
           </p>
           <ul className="space-y-2">
             {values.locations.map((value, index) => {
@@ -759,7 +775,7 @@ function DetailsForm({
                 <li key={id} className="flex items-start gap-2">
                   <div className="min-w-0 flex-1">
                     <label htmlFor={id} className="sr-only">
-                      Locatie {index + 1}
+                      {t.forms.locationNumber(index + 1)}
                     </label>
                     <input
                       id={id}
@@ -767,7 +783,9 @@ function DetailsForm({
                       value={value}
                       onChange={(event) => setLocation(index, event.target.value)}
                       placeholder={
-                        index === 0 ? "Bijvoorbeeld: Gedempte Gracht 12, Zaandam" : "Volgende locatie"
+                        index === 0
+                          ? t.forms.locationPlaceholder
+                          : t.forms.locationNext
                       }
                       aria-invalid={fout ? "true" : undefined}
                       aria-describedby={
@@ -784,14 +802,14 @@ function DetailsForm({
                     <button
                       type="button"
                       onClick={() => removeLocation(index)}
-                      title={`Locatie ${index + 1} verwijderen`}
+                      title={t.forms.locationRemove(index + 1)}
                       className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-ink-600 bg-ink-900 text-mist-500 transition-colors hover:border-red-500/60 hover:text-red-300"
                     >
                       <span aria-hidden="true" className="text-lg leading-none">
                         ×
                       </span>
                       <span className="sr-only">
-                        Locatie {index + 1} verwijderen
+                        {t.forms.locationRemove(index + 1)}
                       </span>
                     </button>
                   )}
@@ -805,7 +823,7 @@ function DetailsForm({
               className="btn btn-quiet mt-2"
               onClick={addLocation}
             >
-              + Locatie toevoegen
+              {t.forms.locationAdd}
             </button>
           )}
         </fieldset>
@@ -814,29 +832,24 @@ function DetailsForm({
       {/* Omvang van het project ------------------------------------------- */}
       {opMaat && (
         <div className="space-y-5 rounded-xl border border-ink-700 bg-ink-900/60 p-4 sm:p-5">
-          <p className="text-sm text-mist-300">
-            Een project op maat beslaat vaak meerdere dagen. Met deze antwoorden
-            kan ik de planning voorbereiden voordat we elkaar spreken.
-          </p>
+          <p className="text-sm text-mist-300">{t.scope.intro}</p>
 
           <fieldset>
-            <legend className="field-label">Aantal opnamemomenten</legend>
+            <legend className="field-label">{t.scope.sessionsLabel}</legend>
             <div className="mt-2 grid gap-2 sm:grid-cols-2">
-              {OPNAMEMOMENTEN.map((optie) => (
+              {OPNAMEMOMENTEN.map((key) => (
                 <label
-                  key={optie.key}
+                  key={key}
                   className="flex items-center gap-2 rounded-lg border border-ink-600 bg-ink-900 px-3 py-2 text-sm"
                 >
                   <input
                     type="radio"
                     name="booking-session-count"
                     className="h-4 w-4 border-ink-600 bg-ink-900"
-                    checked={values.sessionCount === optie.key}
-                    onChange={() =>
-                      onChange({ ...values, sessionCount: optie.key })
-                    }
+                    checked={values.sessionCount === key}
+                    onChange={() => onChange({ ...values, sessionCount: key })}
                   />
-                  {optie.label}
+                  {t.scope.sessions[key]}
                 </label>
               ))}
             </div>
@@ -844,14 +857,14 @@ function DetailsForm({
 
           <div>
             <label htmlFor="booking-period" className="field-label">
-              Gewenste periode <Required />
+              {t.scope.periodLabel} <Required t={t} />
             </label>
             <input
               id="booking-period"
               className="field-input"
               value={values.periodWish}
               onChange={set("periodWish")}
-              placeholder="Bijvoorbeeld: in de tweede helft van mei"
+              placeholder={t.scope.periodPlaceholder}
               aria-invalid={errors.periodWish ? "true" : undefined}
               aria-describedby={
                 errors.periodWish ? "booking-period-error" : "booking-period-hint"
@@ -863,28 +876,27 @@ function DetailsForm({
               </p>
             ) : (
               <p id="booking-period-hint" className="field-hint">
-                Bij benadering mag ook. Een week, een maand of &ldquo;zodra het
-                weer het toelaat&rdquo; is genoeg.
+                {t.scope.periodHint}
               </p>
             )}
           </div>
 
           <fieldset>
-            <legend className="field-label">Voorkeur voor de opnames</legend>
-            <p className="field-hint mb-2">Meerdere antwoorden mogen.</p>
+            <legend className="field-label">{t.scope.preferenceLabel}</legend>
+            <p className="field-hint mb-2">{t.scope.preferenceHint}</p>
             <div className="grid gap-2 sm:grid-cols-2">
-              {TIJDVOORKEUREN.map((optie) => (
+              {TIJDVOORKEUREN.map((key) => (
                 <label
-                  key={optie.key}
+                  key={key}
                   className="flex items-center gap-2 rounded-lg border border-ink-600 bg-ink-900 px-3 py-2 text-sm"
                 >
                   <input
                     type="checkbox"
                     className="h-4 w-4 rounded border-ink-600 bg-ink-900"
-                    checked={values.timePreferences.includes(optie.key)}
-                    onChange={() => toggleVoorkeur(optie.key)}
+                    checked={values.timePreferences.includes(key)}
+                    onChange={() => toggleVoorkeur(key)}
                   />
-                  {optie.label}
+                  {t.scope.preferences[key]}
                 </label>
               ))}
             </div>
@@ -894,7 +906,7 @@ function DetailsForm({
 
       <div>
         <label htmlFor="booking-description" className="field-label">
-          Korte projectomschrijving <Required />
+          {t.forms.description} <Required t={t} />
         </label>
         <textarea
           id="booking-description"
@@ -914,17 +926,17 @@ function DetailsForm({
           </p>
         ) : (
           <p id="booking-description-hint" className="field-hint">
-            Waar gaat het om, en waarvoor ga je de beelden gebruiken?
+            {t.forms.descriptionHint}
           </p>
         )}
       </div>
 
       <div className="flex flex-wrap gap-3">
         <button type="submit" className="btn btn-primary">
-          Naar het overzicht
+          {t.booking.toReview}
         </button>
         <button type="button" className="btn btn-ghost" onClick={onBack}>
-          Terug
+          {t.booking.back}
         </button>
       </div>
     </form>
@@ -932,6 +944,7 @@ function DetailsForm({
 }
 
 function Field({
+  t,
   id,
   label,
   value,
@@ -942,6 +955,7 @@ function Field({
   required,
   autoComplete,
 }: {
+  t: Dictionary;
   id: string;
   label: string;
   value: string;
@@ -956,7 +970,7 @@ function Field({
   return (
     <div>
       <label htmlFor={id} className="field-label">
-        {label} {required && <Required />}
+        {label} {required && <Required t={t} />}
       </label>
       <input
         id={id}
@@ -982,11 +996,11 @@ function Field({
   );
 }
 
-function Required() {
+function Required({ t }: { t: Dictionary }) {
   return (
     <span className="text-azure-300">
       <span aria-hidden="true">*</span>
-      <span className="sr-only">(verplicht)</span>
+      <span className="sr-only">{t.forms.required}</span>
     </span>
   );
 }
@@ -1011,8 +1025,12 @@ function EmptyState({
 
 function BookingConfirmation({
   result,
+  t,
+  locale,
 }: {
   result: NonNullable<FormState["result"]>;
+  t: Dictionary;
+  locale: Locale;
 }) {
   return (
     <div className="card p-8 text-center" role="status">
@@ -1027,29 +1045,27 @@ function BookingConfirmation({
           />
         </svg>
       </div>
-      <h3 className="display-3 mt-5">Je aanvraag is ontvangen</h3>
+      <h3 className="display-3 mt-5">{t.booking.doneTitle}</h3>
       <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-mist-300">
-        Ik heb je aanvraag voor <strong>{result.serviceName}</strong> op{" "}
-        <strong>{result.when}</strong> binnengekregen. Ik controleer de locatie,
-        het luchtruim en het weer en laat je zo snel mogelijk weten of het doorgaat.
+        {t.booking.doneBody(result.serviceName, result.when)}
       </p>
       <p className="mt-5 inline-flex items-center gap-2 rounded-full border border-ink-600 bg-ink-900 px-4 py-2 text-sm">
-        <span className="text-mist-500">Kenmerk</span>
+        <span className="text-mist-500">{t.booking.doneReference}</span>
         <span className="font-semibold tabular-nums">{result.reference}</span>
       </p>
       <p className="mx-auto mt-5 max-w-md text-xs leading-relaxed text-mist-500">
         {result.mailSent
-          ? "Je ontvangt een bevestigingsmail op het opgegeven adres."
+          ? t.booking.doneMailSent
           : result.mailConfigured
-            ? "Het versturen van de bevestigingsmail is niet gelukt. Je aanvraag is wél opgeslagen en ik heb hem gezien; ik neem zelf contact met je op."
-            : "Let op: het versturen van e-mail is op deze site nog niet ingesteld, dus je krijgt nu geen bevestigingsmail. Je aanvraag is wél opgeslagen."}
+            ? t.booking.doneMailFailed
+            : t.booking.doneMailOff}
       </p>
       <div className="mt-7 flex flex-wrap justify-center gap-3">
-        <Link href="/portfolio" className="btn btn-ghost">
-          Bekijk mijn werk
+        <Link href={href("/portfolio", locale)} className="btn btn-ghost">
+          {t.booking.doneWork}
         </Link>
         <a href={`mailto:${site.bookingEmail}`} className="btn btn-quiet">
-          Mail me een aanvulling
+          {t.booking.doneMailMore}
         </a>
       </div>
     </div>

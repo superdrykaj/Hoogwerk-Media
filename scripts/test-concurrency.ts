@@ -19,8 +19,9 @@ const result = createBooking({
   location: "DEMOGEGEVENS: testlocatie",
   description: "DEMOGEGEVENS: gelijktijdigheidstest",
   scope: LEGE_SCOPE,
+  locale: "nl",
 });
 
 console.log(
-  JSON.stringify({ label, ok: result.ok, detail: result.ok ? result.booking.reference : result.error }),
+  JSON.stringify({ label, ok: result.ok, detail: result.ok ? result.booking.reference : JSON.stringify(result.problem) }),
 );

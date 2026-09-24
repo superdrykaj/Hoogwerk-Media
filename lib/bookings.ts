@@ -2,7 +2,9 @@
 import crypto from "node:crypto";
 
 import { validateSlot } from "./availability";
+import type { BookingProblem } from "./booking-problem";
 import { getDb, withWriteTransaction } from "./db";
+import { DEFAULT_LOCALE, isLocale, type Locale } from "./locale";
 import { normaliseScope, type ProjectScope } from "./project-scope";
 import { getService } from "./services";
 import {
@@ -19,6 +21,7 @@ type Row = {
   start_utc: number;
   end_utc: number;
   status: string;
+  locale: string;
   name: string;
   email: string;
   phone: string;
@@ -54,6 +57,7 @@ function map(row: Row): Booking {
     startUtc: row.start_utc,
     endUtc: row.end_utc,
     status: row.status as BookingStatus,
+    locale: isLocale(row.locale ?? "") ? (row.locale as Locale) : DEFAULT_LOCALE,
     name: row.name,
     email: row.email,
     phone: row.phone,
@@ -83,6 +87,8 @@ function makeReference(): string {
 export type NewBooking = {
   serviceId: number;
   startUtc: number;
+  /** Taal van het formulier, zodat de bevestigingsmail in die taal komt. */
+  locale: Locale;
   name: string;
   email: string;
   phone: string;
@@ -94,7 +100,7 @@ export type NewBooking = {
 
 export type CreateResult =
   | { ok: true; booking: Booking }
-  | { ok: false; error: string };
+  | { ok: false; problem: BookingProblem };
 
 /**
  * Maakt een aanvraag aan. De controle op beschikbaarheid gebeurt binnen
@@ -105,13 +111,13 @@ export function createBooking(input: NewBooking): CreateResult {
   return withWriteTransaction((db): CreateResult => {
     const service = getService(input.serviceId);
     if (!service || !service.active || !service.bookable) {
-      return { ok: false, error: "Deze dienst is niet beschikbaar." };
+      return { ok: false, problem: { reason: "service-unavailable" } };
     }
     if (!Number.isFinite(input.startUtc)) {
-      return { ok: false, error: "Kies een geldige datum en tijd." };
+      return { ok: false, problem: { reason: "invalid-moment" } };
     }
     const problem = validateSlot(service, input.startUtc);
-    if (problem) return { ok: false, error: problem };
+    if (problem) return { ok: false, problem };
 
     const now = Date.now();
     const endUtc = input.startUtc + service.durationMinutes * 60000;
@@ -133,16 +139,17 @@ export function createBooking(input: NewBooking): CreateResult {
     const result = db
       .prepare(
         `INSERT INTO bookings
-          (reference, service_id, start_utc, end_utc, status, name, email,
+          (reference, service_id, start_utc, end_utc, status, locale, name, email,
            phone, location, description, extra_locations, session_count,
            period_wish, time_preferences, admin_note, created_utc, updated_utc)
-         VALUES (?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, '', ?, ?)`,
+         VALUES (?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '', ?, ?)`,
       )
       .run(
         reference,
         service.id,
         input.startUtc,
         endUtc,
+        input.locale,
         input.name,
         input.email,
         input.phone,
@@ -213,10 +220,10 @@ export function countBookings(status: BookingStatus): number {
 export function setBookingStatus(
   id: number,
   status: BookingStatus,
-): { ok: boolean; error?: string } {
+): { ok: boolean; problem?: BookingProblem } {
   return withWriteTransaction((db) => {
     const booking = getBooking(id);
-    if (!booking) return { ok: false, error: "Boeking niet gevonden." };
+    if (!booking) return { ok: false, problem: { reason: "booking-not-found" } };
 
     // Van vrijgegeven terug naar bezet? Dan opnieuw op botsingen controleren.
     if (
@@ -228,7 +235,7 @@ export function setBookingStatus(
         const problem = validateSlot(service, booking.startUtc, Date.now(), id, {
           asAdmin: true,
         });
-        if (problem) return { ok: false, error: problem };
+        if (problem) return { ok: false, problem };
       }
     }
 
@@ -250,20 +257,20 @@ export function rescheduleBooking(
   id: number,
   startUtc: number,
   options: { asAdmin?: boolean } = {},
-): { ok: boolean; error?: string } {
+): { ok: boolean; problem?: BookingProblem } {
   return withWriteTransaction((db) => {
     const booking = getBooking(id);
-    if (!booking) return { ok: false, error: "Boeking niet gevonden." };
+    if (!booking) return { ok: false, problem: { reason: "booking-not-found" } };
     const service = getService(booking.serviceId);
-    if (!service) return { ok: false, error: "Dienst niet gevonden." };
+    if (!service) return { ok: false, problem: { reason: "service-not-found" } };
 
     if (!Number.isFinite(startUtc)) {
-      return { ok: false, error: "Kies een geldige datum en tijd." };
+      return { ok: false, problem: { reason: "invalid-moment" } };
     }
     const problem = validateSlot(service, startUtc, Date.now(), id, {
       asAdmin: options.asAdmin,
     });
-    if (problem) return { ok: false, error: problem };
+    if (problem) return { ok: false, problem };
 
     db.prepare(
       "UPDATE bookings SET start_utc = ?, end_utc = ?, updated_utc = ? WHERE id = ?",

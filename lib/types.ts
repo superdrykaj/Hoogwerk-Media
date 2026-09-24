@@ -1,3 +1,4 @@
+import type { Locale } from "./locale";
 import type { ProjectScope } from "./project-scope";
 
 export type BookingStatus = "pending" | "confirmed" | "rejected" | "cancelled";
@@ -17,6 +18,10 @@ export type Service = {
   slug: string;
   name: string;
   description: string;
+  /** Engelse vertalingen; leeg = val terug op het Nederlands. */
+  nameEn: string;
+  descriptionEn: string;
+  priceLabelEn: string;
   durationMinutes: number;
   priceLabel: string;
   bufferMinutes: number;
@@ -34,6 +39,8 @@ export type Booking = {
   startUtc: number;
   endUtc: number;
   status: BookingStatus;
+  /** Taal waarin de aanvraag is gedaan; bepaalt de taal van de mails. */
+  locale: Locale;
   name: string;
   email: string;
   phone: string;
@@ -79,6 +86,12 @@ export type Project = {
   body: string;
   coverUrl: string;
   coverAlt: string;
+  /** Engelse vertalingen; leeg = val terug op het Nederlands. */
+  titleEn: string;
+  locationEn: string;
+  summaryEn: string;
+  bodyEn: string;
+  coverAltEn: string;
   videoUrl: string;
   published: boolean;
   featured: boolean;
@@ -91,6 +104,7 @@ export type ProjectImage = {
   projectId: number;
   url: string;
   alt: string;
+  altEn: string;
   sortOrder: number;
 };
 

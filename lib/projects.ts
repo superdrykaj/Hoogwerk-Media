@@ -13,6 +13,11 @@ type Row = {
   body: string;
   cover_url: string;
   cover_alt: string;
+  title_en: string;
+  location_en: string;
+  summary_en: string;
+  body_en: string;
+  cover_alt_en: string;
   video_url: string;
   published: number;
   featured: number;
@@ -31,6 +36,11 @@ function map(row: Row): Project {
     body: row.body,
     coverUrl: row.cover_url,
     coverAlt: row.cover_alt,
+    titleEn: row.title_en ?? "",
+    locationEn: row.location_en ?? "",
+    summaryEn: row.summary_en ?? "",
+    bodyEn: row.body_en ?? "",
+    coverAltEn: row.cover_alt_en ?? "",
     videoUrl: row.video_url,
     published: row.published === 1,
     featured: row.featured === 1,
@@ -74,8 +84,9 @@ export function createProject(values: ProjectInput): number {
     .prepare(
       `INSERT INTO projects
         (slug, title, category, location, summary, body, cover_url, cover_alt,
+         title_en, location_en, summary_en, body_en, cover_alt_en,
          video_url, published, featured, sort_order, created_utc)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .run(
       values.slug,
@@ -86,6 +97,11 @@ export function createProject(values: ProjectInput): number {
       values.body,
       values.coverUrl,
       values.coverAlt,
+      values.titleEn,
+      values.locationEn,
+      values.summaryEn,
+      values.bodyEn,
+      values.coverAltEn,
       values.videoUrl,
       values.published ? 1 : 0,
       values.featured ? 1 : 0,
@@ -99,7 +115,9 @@ export function updateProject(id: number, values: ProjectInput): void {
   getDb()
     .prepare(
       `UPDATE projects SET slug = ?, title = ?, category = ?, location = ?,
-        summary = ?, body = ?, cover_url = ?, cover_alt = ?, video_url = ?,
+        summary = ?, body = ?, cover_url = ?, cover_alt = ?,
+        title_en = ?, location_en = ?, summary_en = ?, body_en = ?,
+        cover_alt_en = ?, video_url = ?,
         published = ?, featured = ?, sort_order = ? WHERE id = ?`,
     )
     .run(
@@ -111,6 +129,11 @@ export function updateProject(id: number, values: ProjectInput): void {
       values.body,
       values.coverUrl,
       values.coverAlt,
+      values.titleEn,
+      values.locationEn,
+      values.summaryEn,
+      values.bodyEn,
+      values.coverAltEn,
       values.videoUrl,
       values.published ? 1 : 0,
       values.featured ? 1 : 0,
@@ -133,6 +156,7 @@ export function listProjectImages(projectId: number): ProjectImage[] {
     project_id: number;
     url: string;
     alt: string;
+    alt_en: string;
     sort_order: number;
   }[];
   return rows.map((r) => ({
@@ -140,6 +164,7 @@ export function listProjectImages(projectId: number): ProjectImage[] {
     projectId: r.project_id,
     url: r.url,
     alt: r.alt,
+    altEn: r.alt_en ?? "",
     sortOrder: r.sort_order,
   }));
 }
@@ -149,18 +174,24 @@ export function addProjectImage(
   url: string,
   alt: string,
   sortOrder = 0,
+  altEn = "",
 ): void {
   getDb()
     .prepare(
-      "INSERT INTO project_images (project_id, url, alt, sort_order) VALUES (?, ?, ?, ?)",
+      "INSERT INTO project_images (project_id, url, alt, alt_en, sort_order) VALUES (?, ?, ?, ?, ?)",
     )
-    .run(projectId, url, alt, sortOrder);
+    .run(projectId, url, alt, altEn, sortOrder);
 }
 
-export function updateProjectImage(id: number, alt: string, sortOrder: number): void {
+export function updateProjectImage(
+  id: number,
+  alt: string,
+  sortOrder: number,
+  altEn = "",
+): void {
   getDb()
-    .prepare("UPDATE project_images SET alt = ?, sort_order = ? WHERE id = ?")
-    .run(alt, sortOrder, id);
+    .prepare("UPDATE project_images SET alt = ?, alt_en = ?, sort_order = ? WHERE id = ?")
+    .run(alt, altEn, sortOrder, id);
 }
 
 export function deleteProjectImage(id: number): void {

@@ -188,6 +188,19 @@ function migrate(db: Database.Database) {
 
   // Kolommen die later zijn bijgekomen. `CREATE TABLE IF NOT EXISTS` voegt ze
   // niet toe aan een database die al bestaat, dus dat gebeurt hier.
+  // Engelse vertalingen. Leeg betekent: toon de Nederlandse tekst.
+  addColumn(db, "services", "name_en", "TEXT NOT NULL DEFAULT ''");
+  addColumn(db, "services", "description_en", "TEXT NOT NULL DEFAULT ''");
+  addColumn(db, "services", "price_label_en", "TEXT NOT NULL DEFAULT ''");
+  addColumn(db, "projects", "title_en", "TEXT NOT NULL DEFAULT ''");
+  addColumn(db, "projects", "location_en", "TEXT NOT NULL DEFAULT ''");
+  addColumn(db, "projects", "summary_en", "TEXT NOT NULL DEFAULT ''");
+  addColumn(db, "projects", "body_en", "TEXT NOT NULL DEFAULT ''");
+  addColumn(db, "projects", "cover_alt_en", "TEXT NOT NULL DEFAULT ''");
+  addColumn(db, "project_images", "alt_en", "TEXT NOT NULL DEFAULT ''");
+  // Taal waarin de aanvraag is gedaan, zodat ook latere mails kloppen.
+  addColumn(db, "bookings", "locale", "TEXT NOT NULL DEFAULT 'nl'");
+
   addColumn(db, "bookings", "extra_locations", "TEXT NOT NULL DEFAULT ''");
   addColumn(db, "bookings", "session_count", "TEXT NOT NULL DEFAULT ''");
   addColumn(db, "bookings", "period_wish", "TEXT NOT NULL DEFAULT ''");

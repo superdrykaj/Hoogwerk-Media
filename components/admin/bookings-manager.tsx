@@ -9,6 +9,8 @@ import {
   updateBookingStatusAction,
 } from "@/app/actions/admin";
 import { emptyActionState, type ActionState } from "@/lib/form-state";
+import { copy } from "@/content/copy";
+import { DEFAULT_LOCALE } from "@/lib/locale";
 import { scopeLines } from "@/lib/project-scope";
 import { StatusBadge } from "@/components/admin/ui";
 import {
@@ -182,6 +184,11 @@ function BookingRow({
               }`}
           </span>
         </span>
+        {booking.locale !== "nl" && (
+          <span className="chip" title="Aangevraagd op de Engelse versie">
+            EN
+          </span>
+        )}
         <StatusBadge status={booking.status} label={STATUS_LABELS[booking.status]} />
         <span className="font-mono text-xs text-mist-600">{booking.reference}</span>
         <span aria-hidden="true" className="text-mist-600">
@@ -216,7 +223,11 @@ function BookingDetail({ booking }: { booking: Booking }) {
 
   const dateKey = dateKeyOf(booking.startUtc);
   const time = formatMinutes(minutesOfDayOf(booking.startUtc));
-  const scope = scopeLines(booking.scope, booking.location);
+  const scope = scopeLines(
+    booking.scope,
+    booking.location,
+    copy(DEFAULT_LOCALE).scope,
+  );
 
   return (
     <div className="border-t border-ink-700 bg-ink-900/60 p-5">
@@ -243,6 +254,14 @@ function BookingDetail({ booking }: { booking: Booking }) {
             <Row label="Telefoon" value={booking.phone || "—"} />
             <Row label="Locatie" value={booking.location || "—"} />
             <Row label="Aangevraagd op" value={formatTimestamp(booking.createdUtc)} />
+            <Row
+              label="Taal"
+              value={
+                booking.locale === "en"
+                  ? "Engels — bevestigingen gaan in het Engels"
+                  : "Nederlands"
+              }
+            />
           </dl>
 
           {scope.length > 0 && (

@@ -1,7 +1,9 @@
 import "server-only";
 
+import { copy } from "@/content/copy";
 import { site } from "@/content/site";
 import { getDb } from "./db";
+import { DEFAULT_LOCALE, type Locale } from "./locale";
 import { scopeLines } from "./project-scope";
 import { formatTimestamp } from "./time";
 import type { Booking, ContactMessage } from "./types";
@@ -142,22 +144,27 @@ export async function sendTestMail(
   };
 }
 
-function bookingSummary(booking: Booking): string {
-  const scope = scopeLines(booking.scope, booking.location);
+function bookingSummary(booking: Booking, locale: Locale): string {
+  const t = copy(locale).mail;
+  const scope = scopeLines(booking.scope, booking.location, copy(locale).scope);
   return [
-    `Kenmerk: ${booking.reference}`,
-    `Dienst: ${booking.serviceName}`,
-    `Datum en tijd: ${formatTimestamp(booking.startUtc)} (Europe/Amsterdam)`,
-    `Locatie: ${booking.location || "niet opgegeven"}`,
-    `Naam: ${booking.name}`,
-    `E-mail: ${booking.email}`,
-    `Telefoon: ${booking.phone || "niet opgegeven"}`,
+    `${t.summaryReference}: ${booking.reference}`,
+    `${t.summaryService}: ${booking.serviceName}`,
+    `${t.summaryWhen}: ${formatTimestamp(booking.startUtc, locale)} (Europe/Amsterdam)`,
+    `${t.summaryLocation}: ${booking.location || t.summaryNotGiven}`,
+    `${t.summaryName}: ${booking.name}`,
+    `${t.summaryEmail}: ${booking.email}`,
+    `${t.summaryPhone}: ${booking.phone || t.summaryNotGiven}`,
     ...(scope.length > 0
-      ? ["", "Over het project:", ...scope.map(({ label, value }) => `${label}: ${value.replace(/\n/g, ", ")}`)]
+      ? [
+          "",
+          t.summaryProject,
+          ...scope.map(({ label, value }) => `${label}: ${value.replace(/\n/g, ", ")}`),
+        ]
       : []),
     "",
-    "Omschrijving:",
-    booking.description || "(geen omschrijving)",
+    t.summaryDescription,
+    booking.description || t.summaryNoDescription,
   ].join("\n");
 }
 
@@ -166,25 +173,25 @@ export async function sendBookingRequestMails(booking: Booking): Promise<{
   customer: MailStatus;
   owner: MailStatus;
 }> {
+  const locale = booking.locale;
+  const t = copy(locale).mail;
   const naarJou = mailRecipients().bookings;
 
   const customer = await send(
     booking.email,
-    `Aanvraag ontvangen (${booking.reference}) — ${site.name}`,
+    t.requestSubject(booking.reference),
     [
-      `Hoi ${booking.name},`,
+      t.greeting(booking.name),
       "",
-      `Bedankt voor je aanvraag bij ${site.name}. Ik heb hem in goede orde ontvangen.`,
+      t.requestBody,
       "",
-      bookingSummary(booking),
+      bookingSummary(booking, locale),
       "",
-      "Let op: dit is nog geen definitieve afspraak. Ik controleer eerst de",
-      "locatie, de regels voor het luchtruim en de weersverwachting en",
-      "bevestig daarna per e-mail.",
+      ...t.requestNotice,
       "",
-      "Vragen? Antwoord gerust op deze mail.",
+      t.requestReply,
       "",
-      `Groet, Kai — ${site.name}`,
+      t.signature,
       site.bookingEmail,
     ].join("\n"),
     // Antwoorden van de klant horen in de boekingenmap, ook als de site vanaf
@@ -192,13 +199,19 @@ export async function sendBookingRequestMails(booking: Booking): Promise<{
     site.bookingEmail,
   );
 
-  // Melding van een nieuwe aanvraag gaat naar het boekingenadres.
+  // De melding aan de eigenaar is altijd Nederlands: die leest Kai zelf.
+  const eigen = copy(DEFAULT_LOCALE).mail;
   const owner = await send(
     naarJou,
-    `Nieuwe aanvraag ${booking.reference} — ${booking.name}`,
-    ["Er is een nieuwe aanvraag binnengekomen.", "", bookingSummary(booking)].join(
-      "\n",
-    ),
+    eigen.ownerSubject(booking.reference, booking.name),
+    [
+      eigen.ownerBody,
+      ...(locale === DEFAULT_LOCALE
+        ? []
+        : ["", "(De aanvraag is gedaan op de Engelse versie van de site.)"]),
+      "",
+      bookingSummary(booking, DEFAULT_LOCALE),
+    ].join("\n"),
     // Zo kun je rechtstreeks op de melding antwoorden naar de klant.
     booking.email,
   );
@@ -209,19 +222,21 @@ export async function sendBookingRequestMails(booking: Booking): Promise<{
 export async function sendBookingConfirmedMail(
   booking: Booking,
 ): Promise<MailStatus> {
+  const locale = booking.locale;
+  const t = copy(locale).mail;
   return send(
     booking.email,
-    `Afspraak bevestigd (${booking.reference}) — ${site.name}`,
+    t.confirmedSubject(booking.reference),
     [
-      `Hoi ${booking.name},`,
+      t.greeting(booking.name),
       "",
-      "Je afspraak is bevestigd. Tot dan!",
+      t.confirmedBody,
       "",
-      bookingSummary(booking),
+      bookingSummary(booking, locale),
       "",
-      "Verandert er iets aan het weer of de locatie, dan neem ik op tijd contact op.",
+      t.confirmedNotice,
       "",
-      `Groet, Kai — ${site.name}`,
+      t.signature,
       site.bookingEmail,
     ].join("\n"),
     site.bookingEmail,
@@ -232,23 +247,22 @@ export async function sendBookingCancelledMail(
   booking: Booking,
   reason: "rejected" | "cancelled",
 ): Promise<MailStatus> {
-  const what =
-    reason === "rejected"
-      ? "Helaas kan ik deze aanvraag niet inplannen."
-      : "Deze afspraak is geannuleerd.";
+  const locale = booking.locale;
+  const t = copy(locale).mail;
+  const what = reason === "rejected" ? t.rejectedBody : t.cancelledBody;
   return send(
     booking.email,
-    `Afspraak ${booking.reference} — ${site.name}`,
+    t.cancelledSubject(booking.reference),
     [
-      `Hoi ${booking.name},`,
+      t.greeting(booking.name),
       "",
       what,
       "",
-      bookingSummary(booking),
+      bookingSummary(booking, locale),
       "",
-      "Wil je een ander moment proberen? Je kunt een nieuwe aanvraag doen via de website.",
+      t.cancelledNotice,
       "",
-      `Groet, Kai — ${site.name}`,
+      t.signature,
     ].join("\n"),
     site.bookingEmail,
   );
@@ -256,29 +270,34 @@ export async function sendBookingCancelledMail(
 
 export async function sendContactMails(
   message: ContactMessage,
+  locale: Locale = DEFAULT_LOCALE,
 ): Promise<{ customer: MailStatus; owner: MailStatus }> {
+  const t = copy(locale).mail;
   const customer = await send(
     message.email,
-    `Bericht ontvangen — ${site.name}`,
+    t.contactSubject,
     [
-      `Hoi ${message.name},`,
+      t.greeting(message.name),
       "",
-      "Bedankt voor je bericht. Ik lees het en reageer meestal binnen één werkdag.",
+      t.contactBody,
       "",
-      "Je bericht:",
+      t.contactYours,
       message.message,
       "",
-      `Groet, Kai — ${site.name}`,
+      t.signature,
     ].join("\n"),
     site.email,
   );
-  // Een contactbericht is algemeen en gaat naar het algemene adres.
+
+  // Een contactbericht is algemeen en gaat naar het algemene adres. De melding
+  // aan de eigenaar blijft Nederlands.
+  const eigen = copy(DEFAULT_LOCALE).mail;
   const owner = await send(
     mailRecipients().contact,
-    `Contactformulier: ${message.subject}`,
+    eigen.contactOwnerSubject(message.subject),
     [
-      `Van: ${message.name} <${message.email}>`,
-      `Onderwerp: ${message.subject}`,
+      `${eigen.contactFrom} ${message.name} <${message.email}>`,
+      `${eigen.contactRe} ${message.subject}`,
       "",
       message.message,
     ].join("\n"),

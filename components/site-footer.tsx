@@ -1,9 +1,17 @@
 import Link from "next/link";
 
+import { copy } from "@/content/copy";
 import { site } from "@/content/site";
+import { href, type Locale } from "@/lib/locale";
 
-export function SiteFooter() {
+export function SiteFooter({ locale }: { locale: Locale }) {
+  const t = copy(locale);
   const year = new Date().getFullYear();
+  const nav = [
+    { href: href("/", locale), label: t.nav.home },
+    { href: href("/portfolio", locale), label: t.nav.portfolio },
+    { href: href("/contact", locale), label: t.nav.contact },
+  ];
   return (
     <footer className="mt-24 border-t border-ink-700/70 bg-ink-900">
       <div className="container-page grid gap-10 py-14 md:grid-cols-[1.4fr_1fr_1fr]">
@@ -12,17 +20,18 @@ export function SiteFooter() {
             {site.name}
           </p>
           <p className="mt-3 max-w-sm text-sm leading-relaxed text-mist-500">
-            {site.footerNote}
+            {t.footer.note}
           </p>
           <p className="mt-4 text-sm text-mist-500">
-            Werkgebied: <span className="text-mist-300">{site.region}</span>
+            {t.footer.workArea}{" "}
+            <span className="text-mist-300">{t.region.short}</span>
           </p>
         </div>
 
-        <nav aria-label="Footermenu">
-          <h2 className="text-sm font-semibold text-mist-100">Menu</h2>
+        <nav aria-label={t.nav.footerMenu}>
+          <h2 className="text-sm font-semibold text-mist-100">{t.nav.menuHeading}</h2>
           <ul className="mt-3 space-y-2 text-sm">
-            {site.nav.map((item) => (
+            {nav.map((item) => (
               <li key={item.href}>
                 <Link href={item.href} className="text-mist-500 hover:text-mist-100">
                   {item.label}
@@ -30,15 +39,18 @@ export function SiteFooter() {
               </li>
             ))}
             <li>
-              <Link href="/privacy" className="text-mist-500 hover:text-mist-100">
-                Privacy
+              <Link
+                href={href("/privacy", locale)}
+                className="text-mist-500 hover:text-mist-100"
+              >
+                {t.nav.privacy}
               </Link>
             </li>
           </ul>
         </nav>
 
         <div>
-          <h2 className="text-sm font-semibold text-mist-100">Contact</h2>
+          <h2 className="text-sm font-semibold text-mist-100">{t.nav.contactHeading}</h2>
           <ul className="mt-3 space-y-2 text-sm">
             <li>
               <a
@@ -59,8 +71,11 @@ export function SiteFooter() {
               </li>
             )}
             <li>
-              <Link href="/#boeken" className="text-azure-300 hover:text-azure-400">
-                Plan een afspraak
+              <Link
+                href={`${href("/", locale)}#boeken`}
+                className="text-azure-300 hover:text-azure-400"
+              >
+                {t.nav.book}
               </Link>
             </li>
           </ul>
@@ -69,12 +84,9 @@ export function SiteFooter() {
 
       <div className="border-t border-ink-700/70">
         <div className="container-page flex flex-col gap-2 py-5 text-xs text-mist-600 sm:flex-row sm:items-center sm:justify-between">
-          <p>
-            © {year} {site.name}. Alle bedrijfsgegevens en projecten op deze site
-            zijn voorbeelden.
-          </p>
+          <p>{t.footer.rights(year)}</p>
           <Link href="/admin" className="hover:text-mist-300">
-            Beheer
+            {t.nav.admin}
           </Link>
         </div>
       </div>

@@ -1,47 +1,25 @@
-import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ProjectGallery } from "@/components/project-gallery";
-import { categoryLabel, site } from "@/content/site";
+import { copy } from "@/content/copy";
+import { href, type Locale } from "@/lib/locale";
+import { projectText } from "@/lib/localised";
 import { getProjectBySlug, listProjectImages, listProjects } from "@/lib/projects";
 
-export const dynamic = "force-dynamic";
-
-export async function generateMetadata({
-  params,
+export function ProjectPage({
+  slug,
+  locale,
 }: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
-  const { slug } = await params;
-  const project = getProjectBySlug(slug);
-  if (!project || !project.published) {
-    return { title: "Project niet gevonden" };
-  }
-  return {
-    title: project.title,
-    description:
-      project.summary ||
-      `Voorbeeldproject van ${site.name} in ${project.location || site.region}.`,
-    alternates: { canonical: `/portfolio/${project.slug}` },
-    openGraph: {
-      title: project.title,
-      description: project.summary,
-      images: project.coverUrl ? [{ url: project.coverUrl }] : undefined,
-    },
-  };
-}
-
-export default async function ProjectPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
+  slug: string;
+  locale: Locale;
 }) {
-  const { slug } = await params;
+  const t = copy(locale);
   const project = getProjectBySlug(slug);
   if (!project || !project.published) notFound();
 
+  const tekst = projectText(project, locale);
   const images = listProjectImages(project.id);
   const others = listProjects({ onlyPublished: true })
     .filter((p) => p.id !== project.id)
@@ -55,7 +33,7 @@ export default async function ProjectPage({
         {project.coverUrl && (
           <Image
             src={project.coverUrl}
-            alt={project.coverAlt || `Voorbeeldbeeld van ${project.title}`}
+            alt={tekst.coverAlt || t.project.coverAlt(tekst.title)}
             fill
             priority
             sizes="100vw"
@@ -67,21 +45,25 @@ export default async function ProjectPage({
           className="absolute inset-0 -z-10 bg-gradient-to-b from-ink-950/80 via-ink-950/50 to-ink-950"
         />
         <div className="container-page pb-14 pt-24">
-          <nav aria-label="Kruimelpad" className="mb-6 text-sm text-mist-500">
-            <Link href="/portfolio" className="hover:text-mist-100">
-              Portfolio
+          <nav aria-label={t.project.breadcrumb} className="mb-6 text-sm text-mist-500">
+            <Link href={href("/portfolio", locale)} className="hover:text-mist-100">
+              {t.nav.portfolio}
             </Link>
             <span aria-hidden="true" className="mx-2 text-ink-600">
               /
             </span>
-            <span className="text-mist-300">{categoryLabel(project.category)}</span>
+            <span className="text-mist-300">
+              {t.portfolio.categories[project.category] ?? project.category}
+            </span>
           </nav>
-          <h1 className="display-1 max-w-4xl text-balance">{project.title}</h1>
+          <h1 className="display-1 max-w-4xl text-balance">{tekst.title}</h1>
           <div className="mt-6 flex flex-wrap items-center gap-3">
-            <span className="chip">{categoryLabel(project.category)}</span>
-            {project.location && <span className="chip">{project.location}</span>}
+            <span className="chip">
+              {t.portfolio.categories[project.category] ?? project.category}
+            </span>
+            {tekst.location && <span className="chip">{tekst.location}</span>}
             <span className="chip border-azure-500/40 text-azure-300">
-              Voorbeeldproject
+              {t.project.exampleChip}
             </span>
           </div>
         </div>
@@ -90,10 +72,10 @@ export default async function ProjectPage({
       <div className="container-page">
         <div className="grid gap-14 py-16 lg:grid-cols-[1.6fr_1fr]">
           <div>
-            {project.summary && <p className="lede">{project.summary}</p>}
-            {project.body && (
+            {tekst.summary && <p className="lede">{tekst.summary}</p>}
+            {tekst.body && (
               <div className="prose-body mt-8">
-                {project.body.split(/\n{2,}/).map((paragraph, index) => (
+                {tekst.body.split(/\n{2,}/).map((paragraph, index) => (
                   <p key={index}>{paragraph}</p>
                 ))}
               </div>
@@ -101,15 +83,21 @@ export default async function ProjectPage({
           </div>
 
           <aside className="h-fit rounded-2xl border border-ink-700 bg-ink-900 p-6">
-            <h2 className="display-3 text-base">Ook zo&apos;n project laten maken?</h2>
+            <h2 className="display-3 text-base">{t.project.asideTitle}</h2>
             <p className="mt-3 text-sm leading-relaxed text-mist-500">
-              Vertel me over je locatie en je plannen. Ik denk graag mee.
+              {t.project.asideBody}
             </p>
-            <Link href="/#boeken" className="btn btn-primary mt-6 w-full">
-              Ook zo&apos;n project laten maken?
+            <Link
+              href={`${href("/", locale)}#boeken`}
+              className="btn btn-primary mt-6 w-full"
+            >
+              {t.nav.book}
             </Link>
-            <Link href="/contact" className="btn btn-quiet mt-3 w-full">
-              Eerst een vraag stellen
+            <Link
+              href={href("/contact", locale)}
+              className="btn btn-quiet mt-3 w-full"
+            >
+              {t.project.asideAsk}
             </Link>
           </aside>
         </div>
@@ -117,13 +105,13 @@ export default async function ProjectPage({
         {/* Video ------------------------------------------------------------ */}
         <section aria-labelledby="video-titel" className="pb-4">
           <h2 id="video-titel" className="display-2 mb-6">
-            Video
+            {t.project.videoTitle}
           </h2>
           {videoEmbed ? (
             <div className="aspect-video overflow-hidden rounded-2xl border border-ink-700 bg-ink-900">
               <iframe
                 src={videoEmbed}
-                title={`Video van ${project.title}`}
+                title={t.project.videoOf(tekst.title)}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
                 loading="lazy"
@@ -133,10 +121,9 @@ export default async function ProjectPage({
           ) : (
             <div className="flex aspect-video items-center justify-center rounded-2xl border border-dashed border-ink-600 bg-ink-900/50 px-6 text-center">
               <div>
-                <p className="text-mist-300">Hier komt de video van dit project.</p>
+                <p className="text-mist-300">{t.project.videoEmpty}</p>
                 <p className="mt-2 text-sm text-mist-500">
-                  Voeg in de beheeromgeving een YouTube- of Vimeo-link toe bij dit
-                  project.
+                  {t.project.videoEmptyHint}
                 </p>
               </div>
             </div>
@@ -146,14 +133,14 @@ export default async function ProjectPage({
         {/* Galerij ---------------------------------------------------------- */}
         <section aria-labelledby="galerij-titel" className="py-16">
           <h2 id="galerij-titel" className="display-2 mb-6">
-            Fotogalerij
+            {t.project.galleryTitle}
           </h2>
           {images.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-ink-600 px-6 py-16 text-center">
-              <p className="text-mist-300">Nog geen foto&apos;s bij dit project.</p>
+              <p className="text-mist-300">{t.project.galleryEmpty}</p>
             </div>
           ) : (
-            <ProjectGallery images={images} title={project.title} />
+            <ProjectGallery images={images} title={tekst.title} locale={locale} />
           )}
         </section>
 
@@ -161,13 +148,13 @@ export default async function ProjectPage({
         {others.length > 0 && (
           <section aria-labelledby="meer-titel" className="border-t border-ink-700 py-16">
             <h2 id="meer-titel" className="display-2 mb-8">
-              Meer werk
+              {t.project.moreTitle}
             </h2>
             <ul className="grid gap-4 sm:grid-cols-3">
               {others.map((other) => (
                 <li key={other.id}>
                   <Link
-                    href={`/portfolio/${other.slug}`}
+                    href={href(`/portfolio/${other.slug}`, locale)}
                     className="group flex items-center gap-4 rounded-xl border border-ink-700 bg-ink-900 p-4 transition-colors hover:border-azure-500/60"
                   >
                     {other.coverUrl && (
@@ -183,10 +170,10 @@ export default async function ProjectPage({
                     )}
                     <span>
                       <span className="block text-sm font-semibold group-hover:text-azure-300">
-                        {other.title}
+                        {projectText(other, locale).title}
                       </span>
                       <span className="mt-1 block text-xs text-mist-500">
-                        {categoryLabel(other.category)}
+                        {t.portfolio.categories[other.category] ?? other.category}
                       </span>
                     </span>
                   </Link>

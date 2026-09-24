@@ -2,11 +2,14 @@
 
 import { headers } from "next/headers";
 
+import { copy } from "@/content/copy";
 import { createBooking } from "@/lib/bookings";
+import { describeProblem } from "@/lib/booking-problem";
 import { isMailConfigured, sendBookingRequestMails, sendContactMails } from "@/lib/mail";
 import { createMessage } from "@/lib/messages";
 import type { FormState } from "@/lib/form-state";
-import { normaliseScope, PERIODE_VERPLICHT } from "@/lib/project-scope";
+import { DEFAULT_LOCALE, isLocale, type Locale } from "@/lib/locale";
+import { normaliseScope } from "@/lib/project-scope";
 import { rateLimit } from "@/lib/rate-limit";
 import { getService } from "@/lib/services";
 import { formatTimestamp } from "@/lib/time";
@@ -23,6 +26,16 @@ async function clientKey(prefix: string): Promise<string> {
   return `${prefix}:${ip}`;
 }
 
+/**
+ * De taal waarin het formulier is ingevuld. Het formulier stuurt hem mee,
+ * zodat de meldingen en de bevestigingsmail in dezelfde taal zijn als de
+ * pagina waarop de bezoeker stond.
+ */
+function localeOf(formData: FormData): Locale {
+  const value = String(formData.get("locale") ?? "");
+  return isLocale(value) ? value : DEFAULT_LOCALE;
+}
+
 /* -------------------------------------------------------------------------- */
 /* Afspraak aanvragen                                                          */
 /* -------------------------------------------------------------------------- */
@@ -31,17 +44,15 @@ export async function requestBookingAction(
   _prev: FormState,
   formData: FormData,
 ): Promise<FormState> {
+  const locale = localeOf(formData);
+  const t = copy(locale);
+
   const limit = rateLimit(await clientKey("boeking"), 5, 10 * 60 * 1000);
   if (!limit.allowed) {
-    return {
-      status: "error",
-      message:
-        "Er zijn net te veel aanvragen vanaf dit adres verstuurd. Probeer het over een paar minuten opnieuw.",
-      errors: {},
-    };
+    return { status: "error", message: t.forms.errTooMany, errors: {} };
   }
 
-  const parsed = bookingFormSchema.safeParse({
+  const parsed = bookingFormSchema(t.forms).safeParse({
     serviceId: formData.get("serviceId"),
     startUtc: formData.get("startUtc"),
     name: formData.get("name") ?? "",
@@ -59,7 +70,7 @@ export async function requestBookingAction(
   if (!parsed.success) {
     return {
       status: "error",
-      message: "Controleer de gemarkeerde velden.",
+      message: t.forms.errCheck,
       errors: fieldErrors(parsed.error),
     };
   }
@@ -73,14 +84,15 @@ export async function requestBookingAction(
   if (service?.introOnly && scope.periodWish.length < 2) {
     return {
       status: "error",
-      message: "Controleer de gemarkeerde velden.",
-      errors: { periodWish: PERIODE_VERPLICHT },
+      message: t.forms.errCheck,
+      errors: { periodWish: t.scope.periodRequired },
     };
   }
 
   const created = createBooking({
     serviceId: parsed.data.serviceId,
     startUtc: parsed.data.startUtc,
+    locale,
     name: parsed.data.name,
     email: parsed.data.email,
     phone: parsed.data.phone ?? "",
@@ -90,18 +102,22 @@ export async function requestBookingAction(
   });
 
   if (!created.ok) {
-    return { status: "error", message: created.error, errors: {} };
+    return {
+      status: "error",
+      message: describeProblem(created.problem, t.slots),
+      errors: {},
+    };
   }
 
   const mail = await sendBookingRequestMails(created.booking);
 
   return {
     status: "success",
-    message: "Je aanvraag is ontvangen.",
+    message: t.booking.doneTitle,
     errors: {},
     result: {
       reference: created.booking.reference,
-      when: formatTimestamp(created.booking.startUtc),
+      when: formatTimestamp(created.booking.startUtc, locale),
       serviceName: created.booking.serviceName,
       mailSent: mail.customer === "sent",
       mailConfigured: isMailConfigured(),
@@ -117,17 +133,15 @@ export async function sendContactAction(
   _prev: FormState,
   formData: FormData,
 ): Promise<FormState> {
+  const locale = localeOf(formData);
+  const t = copy(locale);
+
   const limit = rateLimit(await clientKey("contact"), 5, 10 * 60 * 1000);
   if (!limit.allowed) {
-    return {
-      status: "error",
-      message:
-        "Er zijn net te veel berichten vanaf dit adres verstuurd. Probeer het over een paar minuten opnieuw.",
-      errors: {},
-    };
+    return { status: "error", message: t.forms.errTooManyMessages, errors: {} };
   }
 
-  const parsed = contactFormSchema.safeParse({
+  const parsed = contactFormSchema(t.forms).safeParse({
     name: formData.get("name") ?? "",
     email: formData.get("email") ?? "",
     subject: formData.get("subject") ?? "",
@@ -138,7 +152,7 @@ export async function sendContactAction(
   if (!parsed.success) {
     return {
       status: "error",
-      message: "Controleer de gemarkeerde velden.",
+      message: t.forms.errCheck,
       errors: fieldErrors(parsed.error),
     };
   }
@@ -150,19 +164,22 @@ export async function sendContactAction(
     message: parsed.data.message,
   });
 
-  const mail = await sendContactMails({
-    id,
-    name: parsed.data.name,
-    email: parsed.data.email,
-    subject: parsed.data.subject,
-    message: parsed.data.message,
-    handled: false,
-    createdUtc: Date.now(),
-  });
+  const mail = await sendContactMails(
+    {
+      id,
+      name: parsed.data.name,
+      email: parsed.data.email,
+      subject: parsed.data.subject,
+      message: parsed.data.message,
+      handled: false,
+      createdUtc: Date.now(),
+    },
+    locale,
+  );
 
   return {
     status: "success",
-    message: "Je bericht is opgeslagen en staat klaar voor Kai.",
+    message: t.contactForm.doneTitle,
     errors: {},
     result: {
       reference: "",

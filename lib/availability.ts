@@ -1,4 +1,5 @@
 // Let op: dit bestand draait alleen op de server (leest de database).
+import type { BookingProblem } from "./booking-problem";
 import { getDb } from "./db";
 import {
   candidateStarts,
@@ -241,19 +242,19 @@ export function validateSlot(
   now: number = Date.now(),
   ignoreBookingId?: number,
   options: SlotCheckOptions = {},
-): string | null {
+): BookingProblem | null {
   const settings = getSettings();
   const endUtc = startUtc + service.durationMinutes * 60000;
   const dateKey = dateKeyOf(startUtc);
 
   if (!options.asAdmin && startUtc < now + settings.minLeadHours * 3600000) {
-    return `Dit tijdstip ligt te dichtbij. Boek minimaal ${settings.minLeadHours} uur van tevoren.`;
+    return { reason: "lead", hours: settings.minLeadHours };
   }
   if (
     !options.asAdmin &&
     daysBetween(dateKey, addDays(todayKey(now), settings.maxAdvanceDays)) < 0
   ) {
-    return `Je kunt maximaal ${settings.maxAdvanceDays} dagen vooruit boeken.`;
+    return { reason: "advance", days: settings.maxAdvanceDays };
   }
 
   const windows = windowsForDate(dateKey, listWeeklyWindows(), listOverrides(dateKey));
@@ -266,7 +267,7 @@ export function validateSlot(
       startMinutes + service.durationMinutes <= w.end,
   );
   if (!fits && !options.asAdmin) {
-    return "Dit tijdstip valt buiten de beschikbare tijden.";
+    return { reason: "outside" };
   }
 
   const buffer =
@@ -280,7 +281,7 @@ export function validateSlot(
     conflictsWithBooking({ start: startUtc, end: endUtc }, b, buffer),
   );
   if (clash) {
-    return "Dit tijdslot is net bezet geraakt. Kies een ander moment.";
+    return { reason: "taken" };
   }
   return null;
 }

@@ -13,23 +13,22 @@
  *  Het draait aan beide kanten: gebruik hier geen database of node-modules.
  * ============================================================================
  */
+import type { Dictionary } from "@/content/copy";
 
-/** Hoeveel losse opnamemomenten iemand verwacht. */
-export const OPNAMEMOMENTEN = [
-  { key: "1", label: "Eén opnamemoment" },
-  { key: "2", label: "Twee opnamemomenten" },
-  { key: "3plus", label: "Drie of meer opnamemomenten" },
-  { key: "onbekend", label: "Weet ik nog niet" },
-] as const;
+/**
+ * Hoeveel losse opnamemomenten iemand verwacht, en de voorkeuren voor wanneer
+ * er gevlogen wordt. Hier staan alleen de sleutels; de woorden erbij staan per
+ * taal in content/copy.nl.ts en content/copy.en.ts.
+ */
+export const OPNAMEMOMENTEN = ["1", "2", "3plus", "onbekend"] as const;
 
-/** Voorkeuren voor wanneer er gevlogen wordt. Meerdere antwoorden mogen. */
 export const TIJDVOORKEUREN = [
-  { key: "ochtend", label: "Ochtend" },
-  { key: "middag", label: "Middag" },
-  { key: "gouden-uur", label: "Laatste uur voor zonsondergang" },
-  { key: "doordeweeks", label: "Liefst doordeweeks" },
-  { key: "weekend", label: "Liefst in het weekend" },
-  { key: "flexibel", label: "Maakt niet uit" },
+  "ochtend",
+  "middag",
+  "gouden-uur",
+  "doordeweeks",
+  "weekend",
+  "flexibel",
 ] as const;
 
 /** Hoeveel locaties iemand in het formulier kwijt kan. */
@@ -62,21 +61,6 @@ export function isLegeScope(scope: ProjectScope): boolean {
   );
 }
 
-function label(
-  list: readonly { key: string; label: string }[],
-  key: string,
-): string {
-  return list.find((item) => item.key === key)?.label ?? key;
-}
-
-export function opnamemomentLabel(key: string): string {
-  return label(OPNAMEMOMENTEN, key);
-}
-
-export function tijdvoorkeurLabel(key: string): string {
-  return label(TIJDVOORKEUREN, key);
-}
-
 /**
  * Houdt alleen antwoorden over die we kennen en die ergens op slaan.
  * Onbekende sleutels (bijvoorbeeld van een oud formulier of een bot) worden
@@ -93,14 +77,14 @@ export function normaliseScope(input: {
     .filter((value) => value.length > 0)
     .slice(0, MAX_LOCATIES - 1);
 
-  const sessionCount = OPNAMEMOMENTEN.some((o) => o.key === input.sessionCount)
+  const sessionCount = (OPNAMEMOMENTEN as readonly string[]).includes(
+    input.sessionCount ?? "",
+  )
     ? (input.sessionCount as string)
     : "";
 
   const gekozen = new Set(input.timePreferences ?? []);
-  const timePreferences = TIJDVOORKEUREN.filter((t) => gekozen.has(t.key)).map(
-    (t) => t.key,
-  );
+  const timePreferences = TIJDVOORKEUREN.filter((key) => gekozen.has(key));
 
   return {
     extraLocations,
@@ -117,35 +101,34 @@ export function normaliseScope(input: {
 export function scopeLines(
   scope: ProjectScope,
   primaryLocation: string,
+  t: Dictionary["scope"],
 ): { label: string; value: string }[] {
   const lines: { label: string; value: string }[] = [];
 
   if (scope.extraLocations.length > 0) {
     const alle = [primaryLocation, ...scope.extraLocations].filter(Boolean);
     lines.push({
-      label: `Locaties (${alle.length})`,
+      label: t.summaryLocations(alle.length),
       value: alle.join("\n"),
     });
   }
   if (scope.sessionCount) {
     lines.push({
-      label: "Opnamemomenten",
-      value: opnamemomentLabel(scope.sessionCount),
+      label: t.summarySessions,
+      value: t.sessions[scope.sessionCount] ?? scope.sessionCount,
     });
   }
   if (scope.periodWish) {
-    lines.push({ label: "Gewenste periode", value: scope.periodWish });
+    lines.push({ label: t.summaryPeriod, value: scope.periodWish });
   }
   if (scope.timePreferences.length > 0) {
     lines.push({
-      label: "Voorkeur",
-      value: scope.timePreferences.map(tijdvoorkeurLabel).join(", "),
+      label: t.summaryPreference,
+      value: scope.timePreferences
+        .map((key) => t.preferences[key] ?? key)
+        .join(", "),
     });
   }
 
   return lines;
 }
-
-/** Melding bij een project op maat zonder gewenste periode. */
-export const PERIODE_VERPLICHT =
-  "Geef aan in welke periode het project zou moeten vallen. Bij benadering mag ook.";

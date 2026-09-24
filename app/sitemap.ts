@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 
 import { site } from "@/content/site";
+import { href } from "@/lib/locale";
 import { listProjects } from "@/lib/projects";
 
 export const dynamic = "force-dynamic";
@@ -9,15 +10,43 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const base = site.url.replace(/\/$/, "");
   const projects = listProjects({ onlyPublished: true });
 
+  /** Elke pagina staat er in beide talen in, met een verwijzing naar elkaar. */
+  function beideTalen(
+    path: string,
+    changeFrequency: "weekly" | "monthly",
+    priority: number,
+    lastModified?: Date,
+  ): MetadataRoute.Sitemap {
+    const languages = { nl: `${base}${path}`, en: `${base}${href(path, "en")}` };
+    return [
+      {
+        url: languages.nl,
+        lastModified,
+        changeFrequency,
+        priority,
+        alternates: { languages },
+      },
+      {
+        url: languages.en,
+        lastModified,
+        changeFrequency,
+        priority,
+        alternates: { languages },
+      },
+    ];
+  }
+
   return [
-    { url: `${base}/`, changeFrequency: "weekly", priority: 1 },
-    { url: `${base}/portfolio`, changeFrequency: "weekly", priority: 0.8 },
-    { url: `${base}/contact`, changeFrequency: "monthly", priority: 0.6 },
-    ...projects.map((project) => ({
-      url: `${base}/portfolio/${project.slug}`,
-      lastModified: new Date(project.createdUtc),
-      changeFrequency: "monthly" as const,
-      priority: 0.7,
-    })),
+    ...beideTalen("/", "weekly", 1),
+    ...beideTalen("/portfolio", "weekly", 0.8),
+    ...beideTalen("/contact", "monthly", 0.6),
+    ...projects.flatMap((project) =>
+      beideTalen(
+        `/portfolio/${project.slug}`,
+        "monthly",
+        0.7,
+        new Date(project.createdUtc),
+      ),
+    ),
   ];
 }

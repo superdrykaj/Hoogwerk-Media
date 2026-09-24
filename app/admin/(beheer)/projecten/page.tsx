@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { EmptyState, PageHeading } from "@/components/admin/ui";
-import { categoryLabel } from "@/content/site";
+import { copy } from "@/content/copy";
+import { DEFAULT_LOCALE } from "@/lib/locale";
 import { listProjects } from "@/lib/projects";
 
 export const dynamic = "force-dynamic";
@@ -51,7 +52,7 @@ export default function ProjectsPage() {
                 </div>
                 <div className="p-4">
                   <div className="flex items-center gap-2">
-                    <span className="chip">{categoryLabel(project.category)}</span>
+                    <span className="chip">{copy(DEFAULT_LOCALE).portfolio.categories[project.category] ?? project.category}</span>
                     {project.published ? (
                       <span className="chip border-emerald-500/40 text-emerald-300">
                         Gepubliceerd

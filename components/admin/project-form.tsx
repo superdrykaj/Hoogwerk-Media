@@ -7,7 +7,9 @@ import {
   saveProjectAction,
 } from "@/app/actions/admin";
 import { emptyActionState, type ActionState } from "@/lib/form-state";
+import { copy } from "@/content/copy";
 import { site } from "@/content/site";
+import { DEFAULT_LOCALE } from "@/lib/locale";
 import type { Project } from "@/lib/types";
 
 export function ProjectForm({ project }: { project?: Project }) {
@@ -50,7 +52,7 @@ export function ProjectForm({ project }: { project?: Project }) {
           >
             {site.categories.map((category) => (
               <option key={category.key} value={category.key}>
-                {category.label}
+                {copy(DEFAULT_LOCALE).portfolio.categories[category.key] ?? category.key}
               </option>
             ))}
           </select>
@@ -106,6 +108,68 @@ export function ProjectForm({ project }: { project?: Project }) {
           alinea.
         </p>
       </div>
+
+      {/* Engelse versie ---------------------------------------------------- */}
+      <fieldset className="rounded-xl border border-ink-700 bg-ink-900/60 p-4 sm:p-5">
+        <legend className="px-2 text-sm font-semibold text-mist-100">
+          Engelse versie
+        </legend>
+        <p className="field-hint mt-0">
+          Voor de Engelse site op <code>/en</code>. Laat je een veld leeg, dan
+          staat daar de Nederlandse tekst.
+        </p>
+
+        <div className="mt-4 grid gap-5 sm:grid-cols-2">
+          <Text
+            id="titleEn"
+            name="titleEn"
+            label="Titel (EN)"
+            defaultValue={project?.titleEn ?? ""}
+          />
+          <Text
+            id="locationEn"
+            name="locationEn"
+            label="Locatie (EN)"
+            defaultValue={project?.locationEn ?? ""}
+            hint="Bijvoorbeeld: Zaandam"
+          />
+        </div>
+
+        <div className="mt-5">
+          <label htmlFor="summaryEn" className="field-label">
+            Korte beschrijving (EN)
+          </label>
+          <textarea
+            id="summaryEn"
+            name="summaryEn"
+            rows={2}
+            defaultValue={project?.summaryEn ?? ""}
+            className="field-input"
+          />
+        </div>
+
+        <div className="mt-5">
+          <label htmlFor="bodyEn" className="field-label">
+            Uitgebreide tekst (EN)
+          </label>
+          <textarea
+            id="bodyEn"
+            name="bodyEn"
+            rows={7}
+            defaultValue={project?.bodyEn ?? ""}
+            className="field-input"
+          />
+        </div>
+
+        <div className="mt-5">
+          <Text
+            id="coverAltEn"
+            name="coverAltEn"
+            label="Alternatieve tekst omslagbeeld (EN)"
+            defaultValue={project?.coverAltEn ?? ""}
+          />
+        </div>
+      </fieldset>
 
       {/* Omslagbeeld ------------------------------------------------------- */}
       <fieldset className="rounded-xl border border-ink-700 p-5">

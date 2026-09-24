@@ -5,10 +5,19 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useState, useSyncExternalStore } from "react";
 
+import { copy } from "@/content/copy";
 import { site } from "@/content/site";
+import { href, otherLocale, switchPath, type Locale } from "@/lib/locale";
 
-export function SiteHeader() {
+export function SiteHeader({ locale }: { locale: Locale }) {
+  const t = copy(locale);
   const pathname = usePathname();
+  const andereTaal = otherLocale(locale);
+  const nav = [
+    { href: href("/", locale), label: t.nav.home },
+    { href: href("/portfolio", locale), label: t.nav.portfolio },
+    { href: href("/contact", locale), label: t.nav.contact },
+  ];
   const [open, setOpen] = useState(false);
 
   const subscribe = useCallback((notify: () => void) => {
@@ -28,7 +37,8 @@ export function SiteHeader() {
     setOpen(false);
   }
 
-  const bookingHref = pathname === "/" ? "#boeken" : "/#boeken";
+  const home = href("/", locale);
+  const bookingHref = pathname === home ? "#boeken" : `${home}#boeken`;
 
   return (
     <header
@@ -40,9 +50,9 @@ export function SiteHeader() {
     >
       <div className="container-page flex h-[4.5rem] items-center justify-between gap-4">
         <Link
-          href="/"
+          href={home}
           className="group flex items-center gap-2.5"
-          aria-label={`${site.name} — naar de homepage`}
+          aria-label={t.nav.homeAria}
         >
           <Mark />
           <span className="font-[family-name:var(--font-display)] text-lg font-semibold tracking-tight">
@@ -50,11 +60,11 @@ export function SiteHeader() {
           </span>
         </Link>
 
-        <nav aria-label="Hoofdmenu" className="hidden items-center gap-1 md:flex">
-          {site.nav.map((item) => {
+        <nav aria-label={t.nav.mainMenu} className="hidden items-center gap-1 md:flex">
+          {nav.map((item) => {
             const active =
-              item.href === "/"
-                ? pathname === "/"
+              item.href === home
+                ? pathname === home
                 : pathname?.startsWith(item.href);
             return (
               <Link
@@ -71,43 +81,59 @@ export function SiteHeader() {
               </Link>
             );
           })}
+          <LanguageSwitch
+            href={switchPath(pathname ?? "/", andereTaal)}
+            label={t.taalknop}
+            short={t.taalknopKort}
+            lang={andereTaal}
+          />
           <Link href={bookingHref} className="btn btn-primary ml-2">
-            Plan een afspraak
+            {t.nav.book}
           </Link>
         </nav>
 
-        <button
-          type="button"
-          onClick={() => setOpen((v) => !v)}
-          aria-expanded={open}
-          aria-controls="mobiel-menu"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-ink-600 text-mist-300 md:hidden"
-        >
-          <span className="sr-only">{open ? "Menu sluiten" : "Menu openen"}</span>
-          <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
-            {open ? (
-              <path
-                d="M4 4l12 12M16 4L4 16"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-              />
-            ) : (
-              <path
-                d="M3 6h14M3 10h14M3 14h14"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-              />
-            )}
-          </svg>
-        </button>
+        <div className="flex items-center gap-2 md:hidden">
+          <LanguageSwitch
+            href={switchPath(pathname ?? "/", andereTaal)}
+            label={t.taalknop}
+            short={t.taalknopKort}
+            lang={andereTaal}
+          />
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+            aria-controls="mobiel-menu"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-ink-600 text-mist-300"
+          >
+            <span className="sr-only">
+              {open ? t.nav.menuClose : t.nav.menuOpen}
+            </span>
+            <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+              {open ? (
+                <path
+                  d="M4 4l12 12M16 4L4 16"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                />
+              ) : (
+                <path
+                  d="M3 6h14M3 10h14M3 14h14"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                />
+              )}
+            </svg>
+          </button>
+        </div>
       </div>
 
       {open && (
         <div id="mobiel-menu" className="border-t border-ink-700 bg-ink-950 md:hidden">
-          <nav aria-label="Mobiel menu" className="container-page flex flex-col py-3">
-            {site.nav.map((item) => (
+          <nav aria-label={t.nav.mobileMenu} className="container-page flex flex-col py-3">
+            {nav.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -122,12 +148,38 @@ export function SiteHeader() {
               onClick={() => setOpen(false)}
               className="btn btn-primary mt-3"
             >
-              Plan een afspraak
+              {t.nav.book}
             </Link>
           </nav>
         </div>
       )}
     </header>
+  );
+}
+
+/** Knop naar dezelfde pagina in de andere taal. */
+function LanguageSwitch({
+  href: to,
+  label,
+  short,
+  lang,
+}: {
+  href: string;
+  label: string;
+  short: string;
+  lang: Locale;
+}) {
+  return (
+    <Link
+      href={to}
+      hrefLang={lang}
+      lang={lang}
+      title={label}
+      className="rounded-full border border-ink-600 px-3 py-1.5 text-xs font-semibold text-mist-300 transition-colors hover:border-azure-500/60 hover:text-mist-100"
+    >
+      <span aria-hidden="true">{short}</span>
+      <span className="sr-only">{label}</span>
+    </Link>
   );
 }
 

@@ -1,9 +1,13 @@
 /**
  * ============================================================================
- *  BEDRIJFSGEGEVENS EN WEBSITETEKSTEN
+ *  BEDRIJFSGEGEVENS
  * ============================================================================
- *  Dit bestand bevat alle vaste teksten en bedrijfsgegevens van de website.
- *  Pas hier aan en de wijziging is direct overal zichtbaar.
+ *  Hier staan de gegevens die in beide talen hetzelfde zijn: de bedrijfsnaam,
+ *  de e-mailadressen, de apparatuur, het logo en de categorieën.
+ *
+ *  De teksten van de website staan per taal in content/copy.nl.ts en
+ *  content/copy.en.ts. Zoek je een zin die op de site staat, dan staat die
+ *  daar en niet hier.
  *
  *  LET OP: alle gegevens hieronder zijn FICTIEF en bedoeld als voorbeeld.
  *  Vervang ze door je echte gegevens voordat je de site publiceert.
@@ -13,21 +17,6 @@
 export const site = {
   /** Naam van het bedrijf, staat in het logo, de titels en de footer. */
   name: "Hoogbeeld Media",
-
-  /** Korte zin onder het logo en in de zoekresultaten. */
-  tagline: "Dronefotografie en dronevideo in Zaandam en Noord-Holland",
-
-  /** Werkgebied, kort. Staat in de kop, de footer en de zoekresultaten. */
-  region: "Zaandam en Noord-Holland",
-
-  /**
-   * Werkgebied, uitgeschreven. Staat op de contactpagina, zodat bezoekers uit
-   * de rest van de provincie zien dat ze ook bij je terechtkunnen.
-   */
-  regionDetail:
-    "Zaandam en de hele Zaanstreek, en verder in Noord-Holland: Amsterdam, " +
-    "Purmerend, Haarlem, Alkmaar, Hoorn, Beverwijk en alles daartussen. " +
-    "Buiten de provincie in overleg.",
 
   /**
    * Algemeen e-mailadres. Dit staat op de site: in de footer, op de
@@ -75,33 +64,6 @@ export const site = {
   /** Apparatuur, genoemd op de over-sectie. */
   equipment: "DJI Mini 5 Pro",
 
-  /** Korte introductie op de homepage, onder de titel. */
-  heroTitle: "Een nieuw perspectief op jouw verhaal.",
-  heroIntro:
-    "Ik ben Kai, zelfstandig dronepiloot in Zaandam. Ik maak luchtfoto's en " +
-    "luchtvideo's voor vastgoed, bedrijven, locaties en evenementen, in de " +
-    "Zaanstreek en de rest van Noord-Holland. Van eerste gesprek tot " +
-    "oplevering heb je één aanspreekpunt: ik.",
-
-  /** Persoonlijke introductie op de contactpagina. */
-  contactIntro:
-    "Heb je een locatie, een gebouw of een evenement dat vanuit de lucht beter " +
-    "tot zijn recht komt? Stuur me gerust een bericht. Ik denk graag mee over " +
-    "wat er mogelijk is, en ik antwoord meestal binnen één werkdag.",
-
-  /** Korte tekst in de footer. */
-  footerNote:
-    "Zelfstandig dronepiloot. Elke opname wordt vooraf besproken en bevestigd.",
-
-  /**
-   * Tekst die bezoekers uitlegt dat een boeking een aanvraag is.
-   * Staat boven en onder de boekingsmodule.
-   */
-  bookingDisclaimer:
-    "Een opnamesessie is altijd eerst een aanvraag. Ik controleer de locatie, " +
-    "de luchtruimregels en de weersverwachting en bevestig daarna per e-mail. " +
-    "Je zit dus nergens aan vast tot je die bevestiging hebt.",
-
   /**
    * Logo in de kop van de site.
    *
@@ -118,80 +80,17 @@ export const site = {
     | { src: string; width: number; height: number }
     | null,
 
-  /** Navigatie in de kop van de site. */
-  nav: [
-    { href: "/", label: "Home" },
-    { href: "/portfolio", label: "Portfolio" },
-    { href: "/contact", label: "Contact" },
-  ],
-
-  /** Dienstenoverzicht op de homepage (alleen tekst; prijzen staan bij de diensten). */
-  serviceHighlights: [
-    {
-      title: "Vastgoed",
-      body:
-        "Woningen, bedrijfspanden en nieuwbouw vanuit de lucht. Beelden die " +
-        "laten zien hoe een pand in zijn omgeving ligt.",
-    },
-    {
-      title: "Bedrijven",
-      body:
-        "Sfeerbeelden van je terrein, productie of project. Bruikbaar voor je " +
-        "website, socials en presentaties.",
-    },
-    {
-      title: "Locaties en natuur",
-      body:
-        "Landschappen, recreatieterreinen en bijzondere plekken, opgenomen op " +
-        "het juiste moment van de dag.",
-    },
-    {
-      title: "Evenementen",
-      body:
-        "Een overzichtsbeeld van je evenement, in overleg en binnen de regels " +
-        "die op de locatie gelden.",
-    },
-  ],
-
-  /** Uitleg van de werkwijze op de homepage. */
-  process: [
-    {
-      title: "Kennismaken",
-      body:
-        "In een kort gesprek bespreken we wat je nodig hebt, waar de locatie " +
-        "ligt en welk beeld je voor ogen hebt.",
-    },
-    {
-      title: "Plannen",
-      body:
-        "Ik controleer de locatie, de regels voor het luchtruim en de weers" +
-        "verwachting en bevestig daarna een datum en tijd.",
-    },
-    {
-      title: "Filmen",
-      body:
-        "Op locatie maak ik de opnames. Je kunt erbij zijn en meekijken, maar " +
-        "dat hoeft niet.",
-    },
-    {
-      title: "Opleveren",
-      body:
-        "Je ontvangt de bewerkte foto's en video's via een downloadlink, " +
-        "meestal binnen vijf werkdagen.",
-    },
-  ],
-
-  /** Categorieën in het portfolio. De sleutel wordt in de database opgeslagen. */
+  /**
+   * Categorieën in het portfolio. De sleutel wordt in de database opgeslagen
+   * en verandert dus niet mee met de taal; de woorden erbij staan per taal in
+   * content/copy.nl.ts en content/copy.en.ts onder `portfolio.categories`.
+   */
   categories: [
-    { key: "vastgoed", label: "Vastgoed" },
-    { key: "bedrijven", label: "Bedrijven" },
-    { key: "evenementen", label: "Evenementen" },
-    { key: "natuur", label: "Natuur en locaties" },
+    { key: "vastgoed" },
+    { key: "bedrijven" },
+    { key: "evenementen" },
+    { key: "natuur" },
   ],
 } as const;
 
 export type CategoryKey = (typeof site.categories)[number]["key"];
-
-export function categoryLabel(key: string): string {
-  return site.categories.find((c) => c.key === key)?.label ?? key;
-}

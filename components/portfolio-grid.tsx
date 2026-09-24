@@ -3,12 +3,21 @@
 import { useMemo, useState } from "react";
 
 import { ProjectCard } from "@/components/project-card";
+import { copy } from "@/content/copy";
 import { site } from "@/content/site";
+import type { Locale } from "@/lib/locale";
 import type { Project } from "@/lib/types";
 
 const ALL = "alle";
 
-export function PortfolioGrid({ projects }: { projects: Project[] }) {
+export function PortfolioGrid({
+  projects,
+  locale,
+}: {
+  projects: Project[];
+  locale: Locale;
+}) {
+  const t = copy(locale);
   const [filter, setFilter] = useState<string>(ALL);
 
   const counts = useMemo(() => {
@@ -26,13 +35,13 @@ export function PortfolioGrid({ projects }: { projects: Project[] }) {
     <div>
       <div
         role="group"
-        aria-label="Filter projecten op categorie"
+        aria-label={t.portfolio.filterLabel}
         className="flex flex-wrap gap-2"
       >
         <FilterButton
           active={filter === ALL}
           onClick={() => setFilter(ALL)}
-          label="Alles"
+          label={t.portfolio.filterAll}
           count={projects.length}
         />
         {site.categories.map((category) => (
@@ -40,7 +49,7 @@ export function PortfolioGrid({ projects }: { projects: Project[] }) {
             key={category.key}
             active={filter === category.key}
             onClick={() => setFilter(category.key)}
-            label={category.label}
+            label={t.portfolio.categories[category.key] ?? category.key}
             count={counts.get(category.key) ?? 0}
           />
         ))}
@@ -48,25 +57,30 @@ export function PortfolioGrid({ projects }: { projects: Project[] }) {
 
       <p aria-live="polite" className="mt-5 text-sm text-mist-500">
         {shown.length === 0
-          ? "Geen projecten in deze categorie."
-          : `${shown.length} ${shown.length === 1 ? "project" : "projecten"}`}
+          ? t.portfolio.countEmpty
+          : t.portfolio.count(shown.length)}
       </p>
 
       {shown.length === 0 ? (
         <div className="mt-6 rounded-2xl border border-dashed border-ink-600 px-6 py-16 text-center">
-          <p className="text-mist-300">Nog niets in deze categorie.</p>
+          <p className="text-mist-300">{t.portfolio.categoryEmpty}</p>
           <button
             type="button"
             className="btn btn-ghost mt-5"
             onClick={() => setFilter(ALL)}
           >
-            Toon alle projecten
+            {t.portfolio.showAll}
           </button>
         </div>
       ) : (
         <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {shown.map((project, index) => (
-            <ProjectCard key={project.id} project={project} priority={index < 3} />
+            <ProjectCard
+              key={project.id}
+              project={project}
+              locale={locale}
+              priority={index < 3}
+            />
           ))}
         </div>
       )}

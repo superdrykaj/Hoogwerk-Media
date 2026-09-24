@@ -1,3 +1,5 @@
+import type { Locale } from "./locale";
+
 /**
  * Tijdzonehulpmiddelen voor Europe/Amsterdam.
  *
@@ -199,39 +201,78 @@ const MONTHS_NL = [
 
 const DAYS_NL_SHORT = ["zo", "ma", "di", "wo", "do", "vr", "za"];
 
-/** "maandag 4 mei 2026" */
-export function formatDateLong(dateKey: string): string {
+const MONTHS_EN = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+const DAYS_EN_LONG = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+
+const DAYS_EN_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+const DAYS_NL_LONG = [
+  "zondag",
+  "maandag",
+  "dinsdag",
+  "woensdag",
+  "donderdag",
+  "vrijdag",
+  "zaterdag",
+];
+
+/**
+ * De datumnamen staan hier uitgeschreven in plaats van via Intl, zodat de
+ * server en de browser gegarandeerd hetzelfde tonen: een browser kan een
+ * andere taalinstelling hebben dan de pagina en dan gaat de opmaak schuiven.
+ *
+ * "maandag 4 mei 2026" / "Monday 4 May 2026"
+ */
+export function formatDateLong(dateKey: string, locale: Locale = "nl"): string {
   const [y, m, d] = dateKey.split("-").map(Number);
   const weekday = weekdayOf(dateKey);
-  const long = [
-    "zondag",
-    "maandag",
-    "dinsdag",
-    "woensdag",
-    "donderdag",
-    "vrijdag",
-    "zaterdag",
-  ][weekday];
-  return `${long} ${d} ${MONTHS_NL[m - 1]} ${y}`;
+  return locale === "en"
+    ? `${DAYS_EN_LONG[weekday]} ${d} ${MONTHS_EN[m - 1]} ${y}`
+    : `${DAYS_NL_LONG[weekday]} ${d} ${MONTHS_NL[m - 1]} ${y}`;
 }
 
-/** "ma 4 mei" */
-export function formatDateShort(dateKey: string): string {
+/** "ma 4 mei" / "Mon 4 May" */
+export function formatDateShort(dateKey: string, locale: Locale = "nl"): string {
   const [, m, d] = dateKey.split("-").map(Number);
-  return `${DAYS_NL_SHORT[weekdayOf(dateKey)]} ${d} ${MONTHS_NL[m - 1]}`;
+  const weekday = weekdayOf(dateKey);
+  return locale === "en"
+    ? `${DAYS_EN_SHORT[weekday]} ${d} ${MONTHS_EN[m - 1]}`
+    : `${DAYS_NL_SHORT[weekday]} ${d} ${MONTHS_NL[m - 1]}`;
 }
 
 /** "ma 4 mei 2026, 09:30" van een UTC-tijdstip. */
-export function formatTimestamp(timestamp: number): string {
+export function formatTimestamp(timestamp: number, locale: Locale = "nl"): string {
   const key = dateKeyOf(timestamp);
-  return `${formatDateShort(key)} ${toZonedParts(timestamp).year}, ${formatMinutes(
+  return `${formatDateShort(key, locale)} ${toZonedParts(timestamp).year}, ${formatMinutes(
     minutesOfDayOf(timestamp),
   )}`;
 }
 
-export function monthLabel(dateKey: string): string {
+export function monthLabel(dateKey: string, locale: Locale = "nl"): string {
   const [y, m] = dateKey.split("-").map(Number);
-  return `${MONTHS_NL[m - 1]} ${y}`;
+  return locale === "en" ? `${MONTHS_EN[m - 1]} ${y}` : `${MONTHS_NL[m - 1]} ${y}`;
 }
 
 /** Datumsleutel van vandaag in Europe/Amsterdam. */

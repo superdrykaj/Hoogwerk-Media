@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+
 import { redirect } from "next/navigation";
 
 import {
@@ -16,6 +17,9 @@ import {
   setAdminNote,
   setBookingStatus,
 } from "@/lib/bookings";
+import { copy } from "@/content/copy";
+import { describeProblem } from "@/lib/booking-problem";
+import { DEFAULT_LOCALE } from "@/lib/locale";
 import {
   AuthNotConfiguredError,
   isAuthConfigured,
@@ -116,7 +120,7 @@ export async function updateBookingStatusAction(
 
   const result = setBookingStatus(id, status);
   if (!result.ok) {
-    return { status: "error", message: result.error ?? "Wijzigen is niet gelukt." };
+    return { status: "error", message: describeProblem(result.problem!, copy(DEFAULT_LOCALE).slots) ?? "Wijzigen is niet gelukt." };
   }
 
   const booking = getBooking(id);
@@ -160,7 +164,7 @@ export async function rescheduleBookingAction(
     asAdmin: true,
   });
   if (!result.ok) {
-    return { status: "error", message: result.error ?? "Verplaatsen is niet gelukt." };
+    return { status: "error", message: describeProblem(result.problem!, copy(DEFAULT_LOCALE).slots) ?? "Verplaatsen is niet gelukt." };
   }
 
   revalidatePath("/admin/boekingen");
@@ -293,6 +297,9 @@ export async function saveServiceAction(
     priceLabel: formData.get("priceLabel") ?? "",
     bufferMinutes: formData.get("bufferMinutes") || 0,
     bookable: formData.get("bookable") === "on",
+    nameEn: formData.get("nameEn") ?? "",
+    descriptionEn: formData.get("descriptionEn") ?? "",
+    priceLabelEn: formData.get("priceLabelEn") ?? "",
     introOnly: formData.get("introOnly") === "on",
     sortOrder: formData.get("sortOrder") || 0,
     active: formData.get("active") === "on",
@@ -310,6 +317,9 @@ export async function saveServiceAction(
   const values = {
     name: parsed.data.name,
     description: parsed.data.description ?? "",
+    nameEn: parsed.data.nameEn ?? "",
+    descriptionEn: parsed.data.descriptionEn ?? "",
+    priceLabelEn: parsed.data.priceLabelEn ?? "",
     durationMinutes: parsed.data.durationMinutes,
     priceLabel: parsed.data.priceLabel ?? "",
     bufferMinutes: parsed.data.bufferMinutes ?? 0,
@@ -333,6 +343,7 @@ export async function saveServiceAction(
 
   revalidatePath("/admin/diensten");
   revalidatePath("/");
+  revalidatePath("/en");
   return { status: "success", message: "De dienst is opgeslagen." };
 }
 
@@ -341,6 +352,7 @@ export async function deleteServiceAction(formData: FormData): Promise<void> {
   deleteService(Number(formData.get("id")));
   revalidatePath("/admin/diensten");
   revalidatePath("/");
+  revalidatePath("/en");
 }
 
 export async function saveSettingsAction(
@@ -474,6 +486,11 @@ export async function saveProjectAction(
     body: parsed.data.body ?? "",
     coverUrl,
     coverAlt: parsed.data.coverAlt ?? "",
+    titleEn: parsed.data.titleEn ?? "",
+    locationEn: parsed.data.locationEn ?? "",
+    summaryEn: parsed.data.summaryEn ?? "",
+    bodyEn: parsed.data.bodyEn ?? "",
+    coverAltEn: parsed.data.coverAltEn ?? "",
     videoUrl: parsed.data.videoUrl ?? "",
     published: parsed.data.published ?? false,
     featured: parsed.data.featured ?? false,
@@ -490,7 +507,9 @@ export async function saveProjectAction(
 
   revalidatePath("/admin/projecten");
   revalidatePath("/portfolio");
+  revalidatePath("/en/portfolio");
   revalidatePath("/");
+  revalidatePath("/en");
 
   if (!id) {
     redirect(`/admin/projecten/${projectId}`);
@@ -503,7 +522,9 @@ export async function deleteProjectAction(formData: FormData): Promise<void> {
   deleteProject(Number(formData.get("id")));
   revalidatePath("/admin/projecten");
   revalidatePath("/portfolio");
+  revalidatePath("/en/portfolio");
   revalidatePath("/");
+  revalidatePath("/en");
   redirect("/admin/projecten");
 }
 
@@ -514,6 +535,7 @@ export async function addProjectImageAction(
   await requireAdmin();
   const projectId = Number(formData.get("projectId"));
   const alt = String(formData.get("alt") ?? "").slice(0, 300);
+  const altEn = String(formData.get("altEn") ?? "").slice(0, 300);
   const sortOrder = Number(formData.get("sortOrder") ?? 0) || 0;
 
   const file = formData.get("file");
@@ -522,9 +544,9 @@ export async function addProjectImageAction(
   if (file instanceof File && file.size > 0) {
     const upload = await saveUpload(file);
     if (!upload.ok) return { status: "error", message: upload.error };
-    addProjectImage(projectId, upload.url, alt, sortOrder);
+    addProjectImage(projectId, upload.url, alt, sortOrder, altEn);
   } else if (url) {
-    addProjectImage(projectId, url, alt, sortOrder);
+    addProjectImage(projectId, url, alt, sortOrder, altEn);
   } else {
     return { status: "error", message: "Kies een bestand of vul een pad in." };
   }
@@ -540,9 +562,11 @@ export async function updateProjectImageAction(formData: FormData): Promise<void
     Number(formData.get("id")),
     String(formData.get("alt") ?? "").slice(0, 300),
     Number(formData.get("sortOrder") ?? 0) || 0,
+    String(formData.get("altEn") ?? "").slice(0, 300),
   );
   revalidatePath(`/admin/projecten/${formData.get("projectId")}`);
   revalidatePath("/portfolio");
+  revalidatePath("/en/portfolio");
 }
 
 export async function deleteProjectImageAction(formData: FormData): Promise<void> {

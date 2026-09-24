@@ -59,6 +59,7 @@ export function ServicesEditor({
                       <span className="chip">Niet online boekbaar</span>
                     )}
                     {service.introOnly && <span className="chip">Via kennismaking</span>}
+                    {service.nameEn && <span className="chip">EN</span>}
                   </div>
                   <p className="mt-1 text-sm text-mist-500">
                     {service.durationMinutes} min
@@ -195,6 +196,47 @@ function ServiceForm({
           className="field-input"
         />
       </div>
+
+      {/* Engelse versie -------------------------------------------------- */}
+      <fieldset className="rounded-xl border border-ink-700 bg-ink-900/60 p-4 sm:p-5">
+        <legend className="px-2 text-sm font-semibold text-mist-100">
+          Engelse versie
+        </legend>
+        <p className="field-hint mt-0">
+          Voor de Engelse site op <code>/en</code>. Laat je een veld leeg, dan
+          staat daar de Nederlandse tekst.
+        </p>
+
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <Field
+            id={`${prefix}-name-en`}
+            name="nameEn"
+            label="Naam (EN)"
+            defaultValue={service?.nameEn ?? ""}
+            error={state.errors?.nameEn}
+          />
+          <Field
+            id={`${prefix}-price-en`}
+            name="priceLabelEn"
+            label="Prijsindicatie (EN)"
+            defaultValue={service?.priceLabelEn ?? ""}
+            hint="Bijvoorbeeld: from € 149, of: free"
+          />
+        </div>
+
+        <div className="mt-4">
+          <label htmlFor={`${prefix}-description-en`} className="field-label">
+            Omschrijving (EN)
+          </label>
+          <textarea
+            id={`${prefix}-description-en`}
+            name="descriptionEn"
+            rows={3}
+            defaultValue={service?.descriptionEn ?? ""}
+            className="field-input"
+          />
+        </div>
+      </fieldset>
 
       <div className="flex flex-wrap gap-6">
         <Check id={`${prefix}-active`} name="active" label="Zichtbaar op de site" defaultChecked={service?.active ?? true} />

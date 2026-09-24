@@ -60,9 +60,10 @@ for (const item of items) {
     location: item.location,
     description: item.description,
     scope: item.scope ?? LEGE_SCOPE,
+    locale: "nl" as const,
   });
   if (result.ok && item.confirm) setBookingStatus(result.booking.id, "confirmed");
-  console.log(item.name, result.ok ? "aangemaakt" : `mislukt: ${result.error}`);
+  console.log(item.name, result.ok ? "aangemaakt" : `mislukt: ${JSON.stringify(result.problem)}`);
 }
 
 createMessage({
