@@ -78,14 +78,6 @@ export const en: Dictionary = {
       `© ${year} ${site.name}. All company details and projects on this site are examples.`,
   },
 
-  demoBanner: {
-    label: "Demo",
-    short: "Projects and photos are still examples.",
-    text: "The projects, prices and photos on this site are still",
-    emphasis: "examples",
-    link: "What does that mean?",
-  },
-
   /* -- Home ---------------------------------------------------------------- */
   home: {
     heroTitle: "Your location, professionally filmed from the air",

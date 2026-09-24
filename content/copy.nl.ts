@@ -82,14 +82,6 @@ export const nl = {
       `© ${jaar} ${site.name}. Alle bedrijfsgegevens en projecten op deze site zijn voorbeelden.`,
   },
 
-  demoBanner: {
-    label: "Demo",
-    short: "Projecten en foto's zijn nog voorbeelden.",
-    text: "De projecten, prijzen en foto's op deze site zijn nog",
-    emphasis: "voorbeelden",
-    link: "Wat betekent dat?",
-  },
-
   /* -- Homepage ------------------------------------------------------------ */
   home: {
     heroTitle: "Uw locatie professioneel vanuit de lucht",

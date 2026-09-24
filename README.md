@@ -200,7 +200,6 @@ herstart van de server vanzelf weer opkomt.
 | `NEXT_PUBLIC_SITE_URL` | ja | Paginatitels, deelbeeld, `robots.txt` en `sitemap.xml`. |
 | `DATA_DIR` | in productie | Map voor de database en de uploads. In Docker staat die al op `/data`. |
 | `SITE_STATUS` | nee | Staat standaard op `"soon"`: bezoekers zien alleen de pagina "binnenkort online". Zet op `"live"` om de site te openen. |
-| `DEMO_MODE` | nee | Staat standaard aan en toont de demobalk. Zet op `"false"` zodra je eigen inhoud erin staat. |
 | `SEED_ON_EMPTY` | nee | Staat standaard aan: een lege database wordt bij de eerste start met de voorbeelden gevuld. Zet op `"false"` als je leeg wilt beginnen. |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `MAIL_FROM`, `MAIL_TO` | nee | Nodig voor bevestigingsmails. Zonder deze gegevens gaat er geen mail uit, en zegt de site dat er ook bij. |
 
@@ -238,16 +237,18 @@ Doe dat pas als de lijst onder *Voor je opengaat* hieronder afgevinkt is.
 - Privacyverklaring en algemene voorwaarden nagelopen.
 - Tarieven kloppen met wat je daadwerkelijk rekent.
 - Contactformulier getest: er komt echt een mailtje binnen.
-- `DEMO_MODE="false"`, daarna pas `SITE_STATUS="live"`.
+- Geen voorbeeldprojecten meer in het portfolio; die waarschuwden bezoekers
+  voorheen via een balk bovenaan, en die balk is er niet meer.
+- Als sluitstuk `SITE_STATUS="live"`.
 
 ### Wat er na publicatie gebeurt
 
 De eerste keer dat de site opstart met een lege database, worden de fictieve
 diensten, beschikbaarheid en voorbeeldprojecten geplaatst. Dat gebeurt alleen
 als er nog geen enkele dienst bestaat, dus bestaande gegevens raak je nooit
-kwijt. Boven aan elke publieke pagina staat een balk die bezoekers vertelt dat
-het om voorbeeldgegevens gaat, met een link naar `/demo` waar precies staat wat
-verzonnen is en wat wel echt werkt.
+kwijt. Vervang ze via de beheeromgeving door je eigen werk voordat je de site
+openzet: er staat geen waarschuwing meer boven de pagina die bezoekers vertelt
+dat het voorbeelden zijn.
 
 Controleer na het publiceren zelf even deze punten:
 

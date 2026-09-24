@@ -1,4 +1,3 @@
-import { DemoBanner } from "@/components/demo-banner";
 import { PreviewBar } from "@/components/preview-bar";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -20,7 +19,6 @@ export async function SiteShell({
   return (
     <div className="flex min-h-dvh flex-col">
       <PreviewBar />
-      <DemoBanner locale={locale} />
       <SiteHeader locale={locale} />
       <main id="hoofdinhoud" className="flex-1">
         {children}

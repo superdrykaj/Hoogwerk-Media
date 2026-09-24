@@ -1,8 +1,11 @@
+import { headers } from "next/headers";
 import Link from "next/link";
 
 import { copy } from "@/content/copy";
 import { site } from "@/content/site";
 import { href, type Locale } from "@/lib/locale";
+
+import { Arrow } from "@/components/arrow";
 
 /**
  * Regel met een bedrijfsgegeven. Is de waarde nog niet ingevuld, dan valt de
@@ -18,8 +21,10 @@ function Detail({ label, value }: { label: string; value: string }) {
   );
 }
 
-export function SiteFooter({ locale }: { locale: Locale }) {
+export async function SiteFooter({ locale }: { locale: Locale }) {
   const t = copy(locale);
+  // Het pad komt uit proxy.ts; een server component kan het zelf niet opvragen.
+  const pathname = (await headers()).get("x-pathname") ?? "/";
   const year = new Date().getFullYear();
   const { business } = site;
   const home = href("/", locale);
@@ -54,13 +59,32 @@ export function SiteFooter({ locale }: { locale: Locale }) {
         <nav aria-label={t.nav.footerMenu}>
           <h2 className="text-sm font-medium text-mist-100">{t.nav.menuHeading}</h2>
           <ul className="mt-3 space-y-2 text-sm">
-            {nav.map((item) => (
-              <li key={item.href}>
-                <Link href={item.href} className="text-mist-500 hover:text-mist-100">
-                  {item.label}
-                </Link>
-              </li>
-            ))}
+            {/*
+              De pagina waar je al bent, krijgt een streep en geen linkkleur.
+              Zonder die markering lijkt hij kapot: je klikt erop en er gebeurt
+              niets zichtbaars, want je stond er al.
+            */}
+            {nav.map((item) => {
+              const active =
+                item.href === home
+                  ? pathname === home
+                  : pathname.startsWith(item.href);
+              return (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    aria-current={active ? "page" : undefined}
+                    className={
+                      active
+                        ? "text-mist-100 underline decoration-2 underline-offset-4"
+                        : "text-mist-500 hover:text-mist-100"
+                    }
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              );
+            })}
             <li>
               <Link
                 href={`${home}#tarieven`}
@@ -124,6 +148,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
             <li>
               <Link href={`${home}#boeken`} className="link-quiet">
                 {t.nav.book}
+                <Arrow />
               </Link>
             </li>
           </ul>

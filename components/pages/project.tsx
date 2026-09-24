@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { Arrow } from "@/components/arrow";
 import { ProjectGallery } from "@/components/project-gallery";
 import { copy } from "@/content/copy";
 import { href, type Locale } from "@/lib/locale";
@@ -95,6 +96,7 @@ export async function ProjectPage({
               className="btn btn-primary mt-6 w-full"
             >
               {t.nav.book}
+              <Arrow />
             </Link>
             <Link
               href={href("/contact", locale)}

@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { Arrow } from "@/components/arrow";
 import { PortfolioGrid } from "@/components/portfolio-grid";
 import { copy } from "@/content/copy";
 import { href, type Locale } from "@/lib/locale";
@@ -43,6 +44,7 @@ export async function PortfolioPage({ locale }: { locale: Locale }) {
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link href={`${href("/", locale)}#boeken`} className="btn btn-primary">
             {t.nav.book}
+            <Arrow />
           </Link>
           <Link href={href("/contact", locale)} className="btn btn-ghost">
             {t.portfolio.ctaAsk}

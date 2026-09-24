@@ -1,5 +1,27 @@
 # Wijzigingen
 
+## September 2026 — knoppen en navigatie
+
+- Een pijltje bij "Plan een afspraak" en bij de knop in de hero, dat een klein
+  stukje meeschuift als je erover zweeft. Alleen bij die twee: als elke knop
+  een pijl heeft, zegt de pijl niets meer.
+- De taalknop heeft een wereldbol gekregen naast EN/NL.
+- **De footer markeert nu de pagina waar je al bent.** De link leidde wel
+  degelijk ergens heen, maar stond je al op die pagina, dan gebeurde er niets
+  zichtbaars en leek hij kapot. Nu staat er een streep onder en heeft hij geen
+  linkkleur meer, net als in de kop.
+
+## September 2026 — demomelding weg, wereldbol bij de taalknop
+
+- De balk "Projecten en foto's zijn nog voorbeelden" is verdwenen, net als de
+  uitlegpagina `/demo` waar hij naartoe wees. Daarmee vervalt ook de
+  omgevingsvariabele `DEMO_MODE`.
+- De taalknop heeft een wereldbol gekregen naast de EN/NL-aanduiding.
+
+**Let op:** er staat nu niets meer op de site dat bezoekers vertelt dat het
+portfolio nog voorbeeldprojecten bevat. Vervang die door eigen werk voordat je
+de site openzet.
+
 ## September 2026 — vindbaarheid en beveiligingsheaders
 
 Naar aanleiding van een crawl met Screaming Frog.

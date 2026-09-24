@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useState, useSyncExternalStore } from "react";
 
+import { Arrow } from "@/components/arrow";
 import { copy } from "@/content/copy";
 import { site } from "@/content/site";
 import { href, otherLocale, switchPath, type Locale } from "@/lib/locale";
@@ -109,6 +110,7 @@ export function SiteHeader({ locale }: { locale: Locale }) {
           />
           <Link href={bookingHref} className="btn btn-primary ml-2">
             {t.nav.book}
+            <Arrow />
           </Link>
         </nav>
 
@@ -178,6 +180,7 @@ export function SiteHeader({ locale }: { locale: Locale }) {
               className="btn btn-primary mt-3"
             >
               {t.nav.book}
+              <Arrow />
             </Link>
           </nav>
         </div>
@@ -204,11 +207,36 @@ function LanguageSwitch({
       hrefLang={lang}
       lang={lang}
       title={label}
-      className="rounded-full border border-mist-500/45 px-3 py-1.5 text-xs font-semibold text-mist-100 transition-colors hover:border-haze-300/70 hover:text-haze-300"
+      className="inline-flex items-center gap-1.5 rounded-full border border-mist-500/45 px-2.5 py-1.5 text-xs font-semibold text-mist-100 transition-colors hover:border-haze-300/70 hover:text-haze-300"
     >
+      <Globe />
       <span aria-hidden="true">{short}</span>
       <span className="sr-only">{label}</span>
     </Link>
+  );
+}
+
+/** Wereldbol bij de taalknop. Neemt de kleur van de knop over. */
+function Globe() {
+  return (
+    <svg
+      width="13"
+      height="13"
+      viewBox="0 0 16 16"
+      fill="none"
+      aria-hidden="true"
+      className="shrink-0"
+    >
+      <circle cx="8" cy="8" r="6.25" stroke="currentColor" strokeWidth="1.3" />
+      {/* Evenaar en meridiaan: genoeg om een bol te suggereren op 13 pixels. */}
+      <path d="M1.75 8h12.5" stroke="currentColor" strokeWidth="1.3" />
+      <path
+        d="M8 1.75c1.6 1.7 2.5 3.9 2.5 6.25S9.6 12.55 8 14.25C6.4 12.55 5.5 10.35 5.5 8S6.4 3.45 8 1.75Z"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }
 
