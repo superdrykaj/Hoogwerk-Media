@@ -1,5 +1,28 @@
 # Wijzigingen
 
+## September 2026 — correcties Engelse vertaling
+
+- "short films of property" werd "short films for real estate, commercial sites
+  and construction projects"; ook in de zoekresultaten en het deelbeeld.
+- "Specific permit" was niet de officiële term. Nu "operational authorisation
+  for the ‘specific’ category", conform EASA. Staat op twee plekken: bij de
+  uitzonderingen op het tarief en in de vraag over evenementen.
+- "shoot moments" overal vervangen door "shoot sessions".
+- Losse verbeteringen: "For listings" → "For property listings, websites and
+  sales brochures", "polder" → "polders", een sensor die nu "produces sharp
+  images even at dusk" in plaats van "stays sharp", "Request refused" →
+  "Request rejected", en het anglicisme "received it in good order" eruit.
+- Natuurlijker Engels: Start → Home, Get acquainted → Introduction, From
+  conversation to file → From first conversation to final files, en nog drie.
+- **De Engelse galerij had nog Nederlandse alt-teksten.** De kolom `alt_en`
+  bestond wel, maar de voorbeeldgegevens vulden hem niet, waardoor een
+  schermlezer op de Engelse site Nederlandse omschrijvingen voorlas. De zes
+  galerijbeelden hebben nu een Engelse tekst, en
+  `scripts/onderhoud/werkgebied-noord-holland.cjs` vult ze bij in een database
+  die al draait.
+- "Townhouse on the river Zaan" suggereert een geschakelde stadswoning. Nu
+  "Detached house on the River Zaan".
+
 ## September 2026 — knoppen en navigatie
 
 - Een pijltje bij "Plan een afspraak" en bij de knop in de hero, dat een klein

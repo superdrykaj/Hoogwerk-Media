@@ -249,7 +249,7 @@ function EnglishBody() {
           This website sets no tracking cookies. One technically necessary cookie
           is used, and only for the site owner: the cookie that keeps the admin
           signed in. If you later add statistics or embedded video, add here
-          which cookies that places:{" "}
+          which cookies they set:{" "}
           <Fill locale="en">any statistics or video cookies</Fill>.
         </p>
       </section>

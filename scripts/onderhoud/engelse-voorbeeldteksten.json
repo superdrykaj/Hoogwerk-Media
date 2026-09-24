@@ -33,9 +33,9 @@
   },
   "projects": {
     "herenhuis-aan-de-zaan": {
-      "title_en": "Townhouse on the river Zaan",
+      "title_en": "Detached house on the River Zaan",
       "location_en": "Zaandam (example)",
-      "summary_en": "Aerial photos of a detached townhouse, made for an estate agent's brochure.",
+      "summary_en": "Aerial photos of a detached house, made for an estate agent's brochure.",
       "body_en": "The estate agent wanted to show how the house sits on the water and how far the garden runs back. You can't capture that from the ground.\n\nI flew in the last hour before sunset, so the water lies still and the façade catches warm light. Twelve photos were delivered: a series of overviews and a few detail shots of the roof and the extension.\n\nThe images were used in the brochure, on the property portal and in the social media ads.",
       "cover_alt_en": "Example image: aerial photo of a detached house with a garden by the water"
     },
@@ -66,6 +66,22 @@
       "summary_en": "Personal work: a series of landscape images of the peat meadows in the early morning.",
       "body_en": "This is my own work, made to practise with light and composition in open landscape.\n\nThe images were made in the half hour after sunrise, when mist still hangs over the water. I flew low and slow, so the lines of the ditches come out well.\n\nPart of this series hangs as prints in my workspace.",
       "cover_alt_en": "Example image: aerial photo of peat meadows in the morning mist"
+    }
+  },
+  "images": {
+    "herenhuis-aan-de-zaan": {
+      "/images/gallery-1.jpg": "Example image: overview of the plot from the south",
+      "/images/project-vastgoed-2.jpg": "Example image: the house with the driveway in view"
+    },
+    "nieuwbouwwijk-in-aanbouw": {
+      "/images/gallery-2.jpg": "Example image: overview of the construction site"
+    },
+    "bedrijventerrein-achtersluispolder": {
+      "/images/gallery-2.jpg": "Example image: the site from the north"
+    },
+    "veenweide-bij-zonsopkomst": {
+      "/images/project-natuur-2.jpg": "Example image: a watercourse running through the landscape",
+      "/images/gallery-1.jpg": "Example image: fields seen from the air"
     }
   }
 }

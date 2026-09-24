@@ -145,11 +145,11 @@ export const EXAMPLE_PROJECTS = [
     cover_alt:
       "Voorbeeldbeeld: luchtfoto van een vrijstaand huis met tuin aan het water",
     title_en:
-      "Townhouse on the river Zaan",
+      "Detached house on the River Zaan",
     location_en:
       "Zaandam (example)",
     summary_en:
-      "Aerial photos of a detached townhouse, made for an estate agent's brochure.",
+      "Aerial photos of a detached house, made for an estate agent's brochure.",
     body_en:
       "The estate agent wanted to show how the house sits on the water and how far the garden runs back. You can't capture that from the ground.\n\nI flew in the last hour before sunset, so the water lies still and the façade catches warm light. Twelve photos were delivered: a series of overviews and a few detail shots of the roof and the extension.\n\nThe images were used in the brochure, on the property portal and in the social media ads.",
     cover_alt_en:
@@ -158,8 +158,16 @@ export const EXAMPLE_PROJECTS = [
     featured: 1,
     sort_order: 1,
     images: [
-      ["/images/gallery-1.jpg", "Voorbeeldbeeld: overzicht van het perceel vanuit het zuiden"],
-      ["/images/project-vastgoed-2.jpg", "Voorbeeldbeeld: het huis met de oprit in beeld"],
+      [
+        "/images/gallery-1.jpg",
+        "Voorbeeldbeeld: overzicht van het perceel vanuit het zuiden",
+        "Example image: overview of the plot from the south",
+      ],
+      [
+        "/images/project-vastgoed-2.jpg",
+        "Voorbeeldbeeld: het huis met de oprit in beeld",
+        "Example image: the house with the driveway in view",
+      ],
     ],
   },
   {
@@ -186,7 +194,13 @@ export const EXAMPLE_PROJECTS = [
     video_url: "",
     featured: 0,
     sort_order: 2,
-    images: [["/images/gallery-2.jpg", "Voorbeeldbeeld: overzicht van de bouwplaats"]],
+    images: [
+      [
+        "/images/gallery-2.jpg",
+        "Voorbeeldbeeld: overzicht van de bouwplaats",
+        "Example image: overview of the construction site",
+      ],
+    ],
   },
   {
     slug: "bedrijventerrein-achtersluispolder",
@@ -212,7 +226,13 @@ export const EXAMPLE_PROJECTS = [
     video_url: "",
     featured: 1,
     sort_order: 3,
-    images: [["/images/gallery-2.jpg", "Voorbeeldbeeld: het terrein vanuit het noorden"]],
+    images: [
+      [
+        "/images/gallery-2.jpg",
+        "Voorbeeldbeeld: het terrein vanuit het noorden",
+        "Example image: the site from the north",
+      ],
+    ],
   },
   {
     slug: "productielocatie-in-bedrijf",
@@ -265,8 +285,16 @@ export const EXAMPLE_PROJECTS = [
     featured: 1,
     sort_order: 5,
     images: [
-      ["/images/project-natuur-2.jpg", "Voorbeeldbeeld: waterloop door het landschap"],
-      ["/images/gallery-1.jpg", "Voorbeeldbeeld: velden vanuit de lucht"],
+      [
+        "/images/project-natuur-2.jpg",
+        "Voorbeeldbeeld: waterloop door het landschap",
+        "Example image: a watercourse running through the landscape",
+      ],
+      [
+        "/images/gallery-1.jpg",
+        "Voorbeeldbeeld: velden vanuit de lucht",
+        "Example image: fields seen from the air",
+      ],
     ],
   },
 ];
@@ -303,7 +331,7 @@ export function installExampleData(db: Database): {
      ON CONFLICT(slug) DO NOTHING`,
   );
   const insertImage = db.prepare(
-    "INSERT INTO project_images (project_id, url, alt, sort_order) VALUES (?, ?, ?, ?)",
+    "INSERT INTO project_images (project_id, url, alt, alt_en, sort_order) VALUES (?, ?, ?, ?, ?)",
   );
   const insertWindow = db.prepare(
     "INSERT INTO weekly_availability (weekday, start_minute, end_minute) VALUES (?, ?, ?)",
@@ -332,7 +360,9 @@ export function installExampleData(db: Database): {
       if (result.changes === 0) continue; // bestond al
       counts.projects += 1;
       const id = Number(result.lastInsertRowid);
-      images.forEach(([url, alt], index) => insertImage.run(id, url, alt, index));
+      images.forEach(([url, alt, altEn], index) =>
+        insertImage.run(id, url, alt, altEn, index),
+      );
     }
   });
   run();
