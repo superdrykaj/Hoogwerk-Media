@@ -1,4 +1,4 @@
-import { site } from "@/content/site";
+import type { Dictionary } from "@/content/copy";
 
 /**
  * De showreel op de homepage.
@@ -12,7 +12,7 @@ import { site } from "@/content/site";
  * daarom op "metadata", zodat de browser alleen de kop van het bestand ophaalt
  * en pas na een klik de rest. Het posterbeeld vult tot die tijd het kader.
  */
-export function Showreel() {
+export function Showreel({ t }: { t: Dictionary }) {
   return (
     <div className="mt-10 overflow-hidden rounded-2xl border border-ink-700 bg-ink-950">
       {/* Vaste 16:9-verhouding, zodat het kader er al staat voordat er iets is
@@ -24,14 +24,14 @@ export function Showreel() {
         poster="/media/hoogbeeldmedia-poster.webp"
         width={1920}
         height={1080}
-        aria-label={site.showreel.label}
+        aria-label={t.home.showreelLabel}
         className="aspect-video h-auto w-full bg-ink-950"
       >
         <source src="/media/hoogbeeldmedia-portfolio.mp4" type="video/mp4" />
         <p className="p-6 text-sm text-mist-300">
-          Je browser kan deze video niet afspelen.{" "}
+          {t.home.showreelFallback}{" "}
           <a href="/media/hoogbeeldmedia-portfolio.mp4" className="link-quiet">
-            Download de showreel
+            {t.home.showreelDownload}
           </a>
           .
         </p>

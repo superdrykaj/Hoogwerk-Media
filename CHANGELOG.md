@@ -1,5 +1,48 @@
 # Wijzigingen
 
+## September 2026 — eigen dronebeelden
+
+De aangeleverde video's staan nu in de site. De bestanden zelf zijn ongewijzigd
+gebleven en worden rechtstreeks vanuit `public/media` geserveerd.
+
+### Hero
+
+- De hero heeft een videoachtergrond in plaats van het voorbeeldbeeld. Staand
+  beeld tot 767 px, liggend daarboven; WebM waar de browser dat aankan, anders
+  MP4.
+- Er wordt altijd precies één van de vier bestanden opgehaald. De `<video>`
+  vertrekt zonder bron van de server en krijgt er pas in de browser een
+  toegewezen — met vier `<source>`-elementen zou een browser er meer dan één
+  kunnen proberen, en zonder dat uitstel zouden server en browser verschillend
+  renderen.
+- `prefers-reduced-motion: reduce`: er wordt geen video opgehaald en niets
+  gestart. Alleen het posterbeeld, op dezelfde hoogte.
+- Laadt de video niet, dan blijft het posterbeeld staan en werken kop en knop
+  gewoon. De hoogte van de hero verandert nooit.
+- **Opgelost onderweg:** de eerste regel van de kop haalde 2,91:1 tegenover de
+  lichte lucht in het beeld, onder de toegankelijkheidsnorm. De sluier over de
+  video loopt nu naar onderen toe op: bovenin blijft het beeld licht, achter de
+  tekst is het donker genoeg. Gemeten: 4,5:1 en hoger.
+
+### Showreel
+
+- Nieuwe showreel in de werk-sectie op de homepage, boven de projecten.
+- Speelt niet vanzelf af, heeft de ingebouwde bediening van de browser en een
+  vast 16:9-kader, zodat de pagina niet verspringt.
+- Van de 56 MB wordt bij het laden van de pagina 0,37 MB opgehaald: alleen de
+  kop van het bestand. De rest komt pas na een klik.
+- **Opgelost onderweg:** een videospeler staat in de tabvolgorde, maar `video`
+  ontbrak in de focusregel van de site. De standaardring van de browser is een
+  donkere lijn van één pixel en viel op deze achtergrond weg.
+
+### Overig
+
+- De video's en het poster krijgen een cache van een week mee. Ze stonden op
+  `max-age=0`, waardoor de browser bij elk bezoek opnieuw navroeg of ze nog
+  klopten.
+- De hero-teksten en de showreel staan in beide talen in `content/copy.nl.ts`
+  en `content/copy.en.ts`.
+
 ## September 2026 — Engelse versie
 
 De site staat nu in twee talen online. Nederlands houdt zijn adressen, Engels

@@ -92,11 +92,19 @@ export const nl = {
 
   /* -- Homepage ------------------------------------------------------------ */
   home: {
-    heroTitle: "Een hoger perspectief op jouw pand.",
+    heroTitle: "Uw locatie professioneel vanuit de lucht",
     heroIntro:
-      "Luchtfoto's en korte films van vastgoed, bedrijfsterreinen en bouw in " +
-      "de Zaanstreek. Eén aanspreekpunt, oplevering binnen vijf werkdagen.",
+      "Dronefotografie en dronevideo voor bedrijven, vastgoed en projecten in " +
+      "Zaandam en Noord-Holland.",
+    heroCta: "Bespreek uw project",
     heroWork: "Bekijk het werk",
+    /**
+     * Beschrijving van het achtergrondbeeld van de hero, voor wie de video
+     * niet te zien krijgt.
+     */
+    heroPosterAlt:
+      "Dronebeeld van karakteristieke bebouwing en boten aan het water in de " +
+      "Zaanstreek.",
     /** Harde feiten onder de hero. Kort, controleerbaar, geen marketing. */
     heroFacts: ["50 MP, 1-inch sensor", "4K HDR video", "Zaanstreek en Noord-Holland"],
 
@@ -129,7 +137,14 @@ export const nl = {
     chooseMoment: "Een moment kiezen →",
 
     workEyebrow: "Werk",
-    workTitle: "Een selectie.",
+    workTitle: "Bekijk ons werk",
+    workIntro:
+      "Een selectie van dronebeelden boven stad, landschap en infrastructuur.",
+    /** Wat een schermlezer van de videospeler te horen krijgt. */
+    showreelLabel:
+      "Showreel met dronebeelden boven stad, landschap en infrastructuur",
+    showreelFallback: "Je browser kan deze video niet afspelen.",
+    showreelDownload: "Download de showreel",
     workAll: "Alles bekijken",
     workEmpty: "De eerste cases staan er binnenkort.",
     workEmptyHint: "Projecten voeg je toe via de beheeromgeving.",

@@ -2,8 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { BookingWidget } from "@/components/booking/booking-widget";
+import { HeroVideo } from "@/components/hero-video";
 import { ProjectCard } from "@/components/project-card";
 import { Reveal } from "@/components/reveal";
+import { Showreel } from "@/components/showreel";
 import { UnderConstruction } from "@/components/under-construction";
 import { copy, type Dictionary } from "@/content/copy";
 import { site } from "@/content/site";
@@ -45,18 +47,10 @@ export async function HomePage({ locale }: { locale: Locale }) {
 function Hero({ t, locale }: { t: Dictionary; locale: Locale }) {
   return (
     <section className="relative isolate -mt-[4.5rem] flex min-h-[92svh] items-end overflow-hidden pt-[4.5rem]">
-      <Image
-        src="/images/hero.jpg"
-        alt=""
-        fill
-        priority
-        sizes="100vw"
-        className="-z-10 object-cover"
-      />
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 -z-10 bg-gradient-to-b from-ink-950/75 via-ink-950/35 to-ink-950"
-      />
+      <HeroVideo alt={t.home.heroPosterAlt} />
+
+      {/* Sluier over de video, zie .hero-scrim in globals.css. */}
+      <div aria-hidden="true" className="hero-scrim absolute inset-0 -z-10" />
 
       <div className="container-page pb-16 pt-24 sm:pb-24">
         <h1 className="display-1 rise max-w-4xl">{t.home.heroTitle}</h1>
@@ -68,9 +62,9 @@ function Hero({ t, locale }: { t: Dictionary; locale: Locale }) {
           className="rise mt-9 flex flex-wrap gap-3"
           style={{ animationDelay: "220ms" }}
         >
-          <a href="#boeken" className="btn btn-primary">
-            {t.nav.book}
-          </a>
+          <Link href={href("/contact", locale)} className="btn btn-primary">
+            {t.home.heroCta}
+          </Link>
           <Link href={href("/portfolio", locale)} className="btn btn-ghost">
             {t.home.heroWork}
           </Link>
@@ -158,11 +152,14 @@ function Work({
               <h2 id="werk-titel" className="display-2 mt-4 max-w-xl">
                 {t.home.workTitle}
               </h2>
+              <p className="lede mt-5">{t.home.workIntro}</p>
             </div>
             <Link href={href("/portfolio", locale)} className="btn btn-ghost">
               {t.home.workAll}
             </Link>
           </div>
+
+          <Showreel t={t} />
         </Reveal>
 
         {projects.length === 0 ? (
