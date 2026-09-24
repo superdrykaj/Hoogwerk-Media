@@ -1,5 +1,20 @@
 # Wijzigingen
 
+## September 2026 — fly.dev stuurt door naar het eigen domein
+
+Het adres `hoogbeeld-media.fly.dev` is niet weg te halen: dat krijgt elke
+Fly-app automatisch. Wie het toch intikt, wordt nu blijvend (301) doorgestuurd
+naar dezelfde pagina op `hoogbeeldmedia.nl`. Twee adressen die dezelfde inhoud
+serveren telt voor Google als dubbele inhoud.
+
+Twee paden gaan er niet in mee, allebei met opzet: `/api/` niet, want daar zit
+de gezondheidscheck van Fly op, en `/admin` niet, zodat je er altijd nog bij
+kunt als er iets mis is met je domein of certificaat.
+
+Werkt alleen zolang `NEXT_PUBLIC_SITE_URL` op je eigen domein staat. Ontbreekt
+die of wijst hij zelf naar fly.dev, dan gebeurt er niets — je kunt jezelf er
+dus niet mee buitensluiten.
+
 ## September 2026 — correcties Engelse vertaling
 
 - "short films of property" werd "short films for real estate, commercial sites

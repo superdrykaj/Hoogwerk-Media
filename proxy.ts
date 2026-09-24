@@ -45,7 +45,49 @@ function doorlaten(request: NextRequest) {
   return NextResponse.next({ request: { headers } });
 }
 
+/**
+ * Elke Fly-app is óók bereikbaar op <appnaam>.fly.dev. Dat adres kun je niet
+ * weghalen, maar je kunt bezoekers wel doorsturen naar je eigen domein.
+ *
+ * Dat is niet alleen netter: twee adressen die dezelfde pagina's serveren
+ * betekent voor Google dubbele inhoud, en dan moet hij raden welke de echte is.
+ * Een blijvende omleiding (301) maakt dat eenduidig.
+ *
+ * Twee uitzonderingen, allebei expres:
+ *  - /api/ blijft staan, want daar zit de gezondheidscheck van Fly op.
+ *  - /admin blijft staan, zodat je er altijd nog bij kunt als er iets mis is
+ *    met je domein of het certificaat.
+ *
+ * Werkt alleen als NEXT_PUBLIC_SITE_URL op je eigen domein staat. Staat hij er
+ * niet, of wijst hij zelf naar fly.dev, dan gebeurt er niets.
+ */
+function naarEigenDomein(request: NextRequest): NextResponse | null {
+  const host = request.headers.get("host") ?? "";
+  if (!host.endsWith(".fly.dev")) return null;
+
+  const { pathname } = request.nextUrl;
+  if (pathname.startsWith("/api/") || pathname.startsWith("/admin")) return null;
+
+  const eigen = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (!eigen) return null;
+
+  let doel: URL;
+  try {
+    doel = new URL(eigen);
+  } catch {
+    return null;
+  }
+  if (doel.hostname.endsWith(".fly.dev")) return null;
+
+  doel.pathname = pathname;
+  doel.search = request.nextUrl.search;
+  return NextResponse.redirect(doel, 301);
+}
+
 export function proxy(request: NextRequest) {
+  const omleiding = naarEigenDomein(request);
+  if (omleiding) return omleiding;
+
   if (process.env.SITE_STATUS === "live") return doorlaten(request);
 
   const { pathname } = request.nextUrl;
