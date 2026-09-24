@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { Arrow } from "@/components/arrow";
 import { ProjectGallery } from "@/components/project-gallery";
+import { ProjectVideo } from "@/components/project-video";
 import { copy } from "@/content/copy";
 import { href, type Locale } from "@/lib/locale";
 import { projectText } from "@/lib/localised";
@@ -21,6 +22,12 @@ export async function ProjectPage({
 
   const t = copy(locale);
   const project = getProjectBySlug(slug);
+  /**
+   * Let op: zet geen `loading.tsx` boven deze route. Dat maakt een
+   * Suspense-grens, en dan stuurt Next de HTTP-status al weg voordat hier
+   * bekend is dat het project niet bestaat. De 404-pagina verschijnt dan wél,
+   * maar met status 200 — en zo'n "soft 404" wordt gewoon geïndexeerd.
+   */
   if (!project || !project.published) notFound();
 
   const tekst = projectText(project, locale);
@@ -29,7 +36,12 @@ export async function ProjectPage({
     .filter((p) => p.id !== project.id)
     .slice(0, 3);
 
-  const videoEmbed = toEmbedUrl(project.videoUrl);
+  // Een eigen bestand spelen we zelf af; een YouTube- of Vimeo-link gaat in
+  // een iframe.
+  const eigenVideo = project.videoUrl.trim().startsWith("/")
+    ? project.videoUrl.trim()
+    : null;
+  const videoEmbed = eigenVideo ? null : toEmbedUrl(project.videoUrl);
 
   return (
     <article className="pb-8">
@@ -66,9 +78,12 @@ export async function ProjectPage({
               {t.portfolio.categories[project.category] ?? project.category}
             </span>
             {tekst.location && <span className="chip">{tekst.location}</span>}
-            <span className="chip border-haze-500/40 text-haze-300">
-              {t.project.exampleChip}
-            </span>
+            {/* Alleen verzonnen projecten dragen dit label. */}
+            {project.isExample && (
+              <span className="chip border-amber-400/40 text-amber-200/90">
+                {t.project.exampleChip}
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -112,7 +127,14 @@ export async function ProjectPage({
           <h2 id="video-titel" className="display-2 mb-6">
             {t.project.videoTitle}
           </h2>
-          {videoEmbed ? (
+          {eigenVideo ? (
+            <ProjectVideo
+              t={t}
+              src={eigenVideo}
+              poster={project.coverUrl}
+              title={tekst.title}
+            />
+          ) : videoEmbed ? (
             <div className="aspect-video overflow-hidden rounded-2xl border border-ink-700 bg-ink-900">
               <iframe
                 src={videoEmbed}

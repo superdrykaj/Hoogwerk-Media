@@ -23,8 +23,11 @@ export async function HomePage({ locale }: { locale: Locale }) {
   if (!(await siteIsOpen())) return <UnderConstruction locale={locale} />;
 
   const services = listServices({ onlyActive: true });
+  // Alleen de uitgelichte projecten, op hun eigen volgorde. Welke dat zijn,
+  // bepaal je in de beheeromgeving met het vinkje "uitgelicht".
   const projects = listProjects({
     onlyPublished: true,
+    onlyFeatured: true,
     featuredFirst: true,
     limit: 3,
   });

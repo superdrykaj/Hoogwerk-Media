@@ -35,7 +35,13 @@ const dbPath = process.env.DATABASE_PATH
   ? path.resolve(process.env.DATABASE_PATH)
   : path.join(dataDir, "kai-aerials.db");
 
-/** Per project: waaraan we het herkennen, en wat het wordt. */
+/**
+ * Per project: waaraan we het herkennen, en wat het wordt.
+ *
+ * Het oude "uiterwaarden-bij-zonsopkomst" staat er niet meer bij. Dat werd
+ * "veenweide-bij-zonsopkomst", en dat project is inmiddels vervangen door
+ * echt werk; zie scripts/onderhoud/echte-projecten-2026.cjs.
+ */
 const PROJECTEN = [
   {
     slug: "herenhuis-aan-de-vecht",
@@ -78,22 +84,6 @@ const PROJECTEN = [
       location: "Utrecht (voorbeeld)",
     },
     wordt: { location: "Zaandam (voorbeeld)" },
-  },
-  {
-    slug: "uiterwaarden-bij-zonsopkomst",
-    was: {
-      title: "Uiterwaarden bij zonsopkomst",
-      location: "Kromme Rijngebied (voorbeeld)",
-    },
-    wordt: {
-      slug: "veenweide-bij-zonsopkomst",
-      title: "Veenweidegebied bij zonsopkomst",
-      location: "Wormer- en Jisperveld (voorbeeld)",
-      summary:
-        "Vrij werk: een reeks landschapsbeelden van het veenweidegebied in de vroege ochtend.",
-      cover_alt:
-        "Voorbeeldbeeld: luchtfoto van veenweidegebied in de ochtendmist",
-    },
   },
 ];
 

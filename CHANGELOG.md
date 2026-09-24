@@ -1,5 +1,34 @@
 # Wijzigingen
 
+## September 2026 — twee echte projecten in het portfolio
+
+- **De Zaan in Wormerveer** en **Knooppunt Zaandam bij zonsondergang** staan in
+  het portfolio, in beide talen, elk met een eigen dronevideo en posterbeeld.
+  De homepage licht precies deze twee uit, in die volgorde.
+- Het verzonnen project *Veenweidegebied bij zonsopkomst* is verdwenen, met
+  zijn galerijbeelden erbij.
+- **Nieuw veld `is_example`.** Alleen verzonnen projecten dragen nog het label
+  "Voorbeeldproject". De melding boven het portfolio beweert niet langer dat
+  alles fictief is, maar zegt dat alleen gelabelde projecten dat zijn — en valt
+  weg zodra er geen voorbeeld meer tussen staat. Standaard is een project
+  *echt*: wat jij zelf aanmaakt krijgt nooit per ongeluk dat label.
+- De projectpagina speelt een eigen videobestand nu zelf af met de ingebouwde
+  speler: 16:9, posterbeeld, bediening, geen automatisch afspelen. Een
+  YouTube- of Vimeo-link blijft werken zoals hij werkte. De portfoliokaart
+  haalt alleen het posterbeeld op, niet de video van twintig megabyte.
+- **Opgelost: een niet-bestaand project gaf status 200.** De 404-pagina
+  verscheen wel, maar met de verkeerde statuscode, en zo'n "soft 404" wordt
+  door Google gewoon geïndexeerd. Oorzaak was `app/(site)/loading.tsx`: die
+  maakte een Suspense-grens, waardoor de status al verstuurd was voordat de
+  pagina wist dat het project niet bestond. Dat laadskelet is weg; pagina's
+  renderen in zo'n twintig milliseconde, dus het viel toch nauwelijks op.
+- Posterbeelden uit `public/media` mogen door de beeldoptimalisatie van Next.
+  Zonder dat gaf de portfoliokaart een 400 en bleef de afbeelding leeg.
+
+Draai na het uitrollen eenmalig
+`node scripts/onderhoud/echte-projecten-2026.cjs`: de projecten staan in de
+database en komen daar niet vanzelf in.
+
 ## September 2026 — fly.dev stuurt door naar het eigen domein
 
 Het adres `hoogbeeld-media.fly.dev` is niet weg te halen: dat krijgt elke

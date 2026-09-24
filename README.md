@@ -394,6 +394,24 @@ Hetzelfde script vult ook de **Engelse voorbeeldteksten** aan, en ook daar
 alleen waar het Engelse veld nog leeg is. Heb je zelf al iets ingevuld, dan
 blijft dat staan.
 
+### Echte projecten in een bestaande database zetten
+
+De twee echte projecten (De Zaan in Wormerveer en Knooppunt Zaandam) staan in
+de database, niet in de code. Een site die al draait krijgt ze dus niet vanzelf.
+
+```bash
+# lokaal
+node scripts/onderhoud/echte-projecten-2026.cjs
+
+# op de server, nadat de nieuwe versie is uitgerold
+fly ssh console -C "node scripts/onderhoud/echte-projecten-2026.cjs"
+```
+
+Het script voegt beide projecten toe of werkt ze bij, verwijdert het verzonnen
+veenweideproject met zijn galerijbeelden, en geeft de overgebleven
+voorbeeldprojecten het label `Voorbeeldproject`. Wat jij zelf hebt aangemaakt
+blijft ongemoeid. Nog een keer draaien verandert niets meer.
+
 ### Diensten en tarieven in een bestaande database bijwerken
 
 Hetzelfde geldt voor de diensten: die staan in de database en veranderen niet

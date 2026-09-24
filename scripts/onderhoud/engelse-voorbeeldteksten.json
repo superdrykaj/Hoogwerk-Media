@@ -59,13 +59,6 @@
       "summary_en": "Images of a production site, used in a recruitment campaign for new colleagues.",
       "body_en": "A recruitment campaign needed images showing how large the site is and how the work is done.\n\nWe agreed in advance with management which parts could and could not be shown. During the flight a colleague kept watch on the ground.\n\nThe images were used on the vacancies page and in short videos for social media.",
       "cover_alt_en": "Example image: aerial photo of a production site"
-    },
-    "veenweide-bij-zonsopkomst": {
-      "title_en": "Peat meadows at sunrise",
-      "location_en": "Wormer- en Jisperveld (example)",
-      "summary_en": "Personal work: a series of landscape images of the peat meadows in the early morning.",
-      "body_en": "This is my own work, made to practise with light and composition in open landscape.\n\nThe images were made in the half hour after sunrise, when mist still hangs over the water. I flew low and slow, so the lines of the ditches come out well.\n\nPart of this series hangs as prints in my workspace.",
-      "cover_alt_en": "Example image: aerial photo of peat meadows in the morning mist"
     }
   },
   "images": {
@@ -78,10 +71,6 @@
     },
     "bedrijventerrein-achtersluispolder": {
       "/images/gallery-2.jpg": "Example image: the site from the north"
-    },
-    "veenweide-bij-zonsopkomst": {
-      "/images/project-natuur-2.jpg": "Example image: a watercourse running through the landscape",
-      "/images/gallery-1.jpg": "Example image: fields seen from the air"
     }
   }
 }

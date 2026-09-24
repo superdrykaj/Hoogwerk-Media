@@ -19,10 +19,14 @@ export async function PortfolioPage({ locale }: { locale: Locale }) {
         <p className="eyebrow">{t.portfolio.eyebrow}</p>
         <h1 className="display-1 mt-4 text-balance">{t.portfolio.title}</h1>
         <p className="lede mt-6">{t.portfolio.intro(t.region.short)}</p>
-        <p className="notice notice-info mt-8">
-          {t.portfolio.noticeBefore}{" "}
-          <strong>{t.portfolio.noticeStrong}</strong> {t.portfolio.noticeAfter}
-        </p>
+        {/* Alleen tonen zolang er nog verzonnen projecten tussen staan.
+            Zijn die allemaal vervangen, dan valt de melding vanzelf weg. */}
+        {projects.some((project) => project.isExample) && (
+          <p className="notice notice-info mt-8">
+            {t.portfolio.noticeBefore}{" "}
+            <strong>{t.portfolio.noticeStrong}</strong> {t.portfolio.noticeAfter}
+          </p>
+        )}
       </header>
 
       <div className="mt-14">

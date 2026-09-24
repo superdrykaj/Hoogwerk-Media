@@ -21,6 +21,7 @@ type Row = {
   video_url: string;
   published: number;
   featured: number;
+  is_example: number;
   sort_order: number;
   created_utc: number;
 };
@@ -44,15 +45,26 @@ function map(row: Row): Project {
     videoUrl: row.video_url,
     published: row.published === 1,
     featured: row.featured === 1,
+    isExample: row.is_example === 1,
     sortOrder: row.sort_order,
     createdUtc: row.created_utc,
   };
 }
 
 export function listProjects(
-  options: { onlyPublished?: boolean; featuredFirst?: boolean; limit?: number } = {},
+  options: {
+    onlyPublished?: boolean;
+    /** Alleen de uitgelichte projecten, voor de homepage. */
+    onlyFeatured?: boolean;
+    featuredFirst?: boolean;
+    limit?: number;
+  } = {},
 ): Project[] {
-  const where = options.onlyPublished ? "WHERE published = 1" : "";
+  const voorwaarden = [
+    options.onlyPublished ? "published = 1" : "",
+    options.onlyFeatured ? "featured = 1" : "",
+  ].filter(Boolean);
+  const where = voorwaarden.length ? `WHERE ${voorwaarden.join(" AND ")}` : "";
   const order = options.featuredFirst
     ? "ORDER BY featured DESC, sort_order, id DESC"
     : "ORDER BY sort_order, id DESC";
@@ -77,7 +89,12 @@ export function getProjectBySlug(slug: string): Project | null {
   return row ? map(row) : null;
 }
 
-export type ProjectInput = Omit<Project, "id" | "createdUtc">;
+/**
+ * Wat de beheeromgeving van een project mag zetten. `isExample` hoort daar
+ * niet bij: alles wat jij zelf aanmaakt is echt werk, en dat hoort geen
+ * voorbeeldlabel te krijgen.
+ */
+export type ProjectInput = Omit<Project, "id" | "createdUtc" | "isExample">;
 
 export function createProject(values: ProjectInput): number {
   const result = getDb()

@@ -38,6 +38,12 @@ export function ProjectCard({
         <span className="chip absolute left-4 top-4 bg-ink-950/70 backdrop-blur">
           {t.portfolio.categories[project.category] ?? project.category}
         </span>
+        {/* Alleen verzonnen projecten dragen dit label. */}
+        {project.isExample && (
+          <span className="chip absolute right-4 top-4 border-amber-400/40 bg-ink-950/70 text-amber-200/90 backdrop-blur">
+            {t.project.exampleChip}
+          </span>
+        )}
       </div>
 
       <div className="p-5">

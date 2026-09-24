@@ -95,6 +95,8 @@ export type Project = {
   videoUrl: string;
   published: boolean;
   featured: boolean;
+  /** Verzonnen demonstratieproject. Alleen deze krijgen het voorbeeldlabel. */
+  isExample: boolean;
   sortOrder: number;
   createdUtc: number;
 };

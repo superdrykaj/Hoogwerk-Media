@@ -133,6 +133,58 @@ export const EXAMPLE_WEEKLY: [number, number, number][] = [
 
 export const EXAMPLE_PROJECTS = [
   {
+    slug: "de-zaan-in-wormerveer",
+    title: "De Zaan in Wormerveer",
+    category: "natuur",
+    location: "Wormerveer",
+    summary:
+      "Een rustige drone-impressie van de Zaan, de karakteristieke bebouwing en het waterfront van Wormerveer.",
+    body:
+      "Voor deze locatie-impressie heb ik de Zaan en het waterfront van Wormerveer vanuit meerdere hoogtes en richtingen vastgelegd.\n\nDe rustige camerabewegingen laten het water, de bebouwing en de kade in samenhang zien. Vijf zorgvuldig gekozen dronepassages zijn samengebracht tot een compacte, filmische webvideo.",
+    cover_url: "/media/wormerveer-de-zaan-poster.webp",
+    cover_alt:
+      "Dronebeeld van de Zaan en de bebouwing aan het waterfront in Wormerveer",
+    title_en: "The River Zaan in Wormerveer",
+    location_en: "Wormerveer",
+    summary_en:
+      "A calm aerial impression of the River Zaan, its distinctive waterfront buildings and the Wormerveer shoreline.",
+    body_en:
+      "For this location film, I captured the River Zaan and the Wormerveer waterfront from several heights and directions.\n\nThe calm camera movements show the relationship between the water, the buildings and the quay. Five carefully selected drone passes were combined into a concise, cinematic web video.",
+    cover_alt_en:
+      "Aerial view of the River Zaan and the waterfront buildings in Wormerveer",
+    video_url: "/media/wormerveer-de-zaan-dronevideo.mp4",
+    featured: 1,
+    sort_order: 1,
+    is_example: 0,
+    images: [],
+  },
+  {
+    slug: "knooppunt-zaandam-bij-zonsondergang",
+    title: "Knooppunt Zaandam bij zonsondergang",
+    category: "bedrijven",
+    location: "Zaandam",
+    summary:
+      "Een dynamische drone-impressie van de snelweg bij knooppunt Zaandam tijdens de avondspits.",
+    body:
+      "Rond zonsondergang heb ik de snelweg bij knooppunt Zaandam vanuit verschillende hoogtes en richtingen vastgelegd.\n\nDe combinatie van verkeer, infrastructuur, water en avondlucht laat de schaal en dynamiek van de locatie zien. De montage blijft rustig en professioneel, terwijl de beweging van het verkeer voor visuele energie zorgt.",
+    cover_url: "/media/knooppunt-zaandam-poster.webp",
+    cover_alt:
+      "Dronebeeld van de snelweg bij knooppunt Zaandam tijdens zonsondergang",
+    title_en: "Zaandam interchange at sunset",
+    location_en: "Zaandam",
+    summary_en:
+      "A dynamic aerial impression of the motorway near Zaandam interchange during the evening rush hour.",
+    body_en:
+      "Around sunset, I filmed the motorway near Zaandam interchange from several heights and directions.\n\nThe combination of traffic, infrastructure, water and the evening sky shows the scale and movement of the location. The edit remains calm and professional, while the traffic adds visual energy.",
+    cover_alt_en:
+      "Aerial view of the motorway near Zaandam interchange at sunset",
+    video_url: "/media/knooppunt-zaandam-dronevideo.mp4",
+    featured: 1,
+    sort_order: 2,
+    is_example: 0,
+    images: [],
+  },
+  {
     slug: "herenhuis-aan-de-zaan",
     title: "Herenhuis aan de Zaan",
     category: "vastgoed",
@@ -155,8 +207,9 @@ export const EXAMPLE_PROJECTS = [
     cover_alt_en:
       "Example image: aerial photo of a detached house with a garden by the water",
     video_url: "",
-    featured: 1,
-    sort_order: 1,
+    featured: 0,
+    sort_order: 11,
+    is_example: 1,
     images: [
       [
         "/images/gallery-1.jpg",
@@ -193,7 +246,8 @@ export const EXAMPLE_PROJECTS = [
       "Example image: aerial photo of a housing estate under construction",
     video_url: "",
     featured: 0,
-    sort_order: 2,
+    sort_order: 12,
+    is_example: 1,
     images: [
       [
         "/images/gallery-2.jpg",
@@ -224,8 +278,9 @@ export const EXAMPLE_PROJECTS = [
     cover_alt_en:
       "Example image: aerial photo of a business park",
     video_url: "",
-    featured: 1,
-    sort_order: 3,
+    featured: 0,
+    sort_order: 13,
+    is_example: 1,
     images: [
       [
         "/images/gallery-2.jpg",
@@ -257,45 +312,9 @@ export const EXAMPLE_PROJECTS = [
       "Example image: aerial photo of a production site",
     video_url: "",
     featured: 0,
-    sort_order: 4,
+    sort_order: 14,
+    is_example: 1,
     images: [],
-  },
-  {
-    slug: "veenweide-bij-zonsopkomst",
-    title: "Veenweidegebied bij zonsopkomst",
-    category: "natuur",
-    location: "Wormer- en Jisperveld (voorbeeld)",
-    summary:
-      "Vrij werk: een reeks landschapsbeelden van het veenweidegebied in de vroege ochtend.",
-    body:
-      "Dit is eigen werk, gemaakt om te oefenen met licht en compositie in het open landschap.\n\nDe beelden zijn gemaakt in het half uur na zonsopkomst, als er nog mist boven het water hangt. Ik vloog laag en langzaam, zodat de lijnen van de sloten goed uitkomen.\n\nEen deel van deze reeks hangt als print in mijn werkruimte.",
-    cover_url: "/images/project-natuur-1.jpg",
-    cover_alt: "Voorbeeldbeeld: luchtfoto van veenweidegebied in de ochtendmist",
-    title_en:
-      "Peat meadows at sunrise",
-    location_en:
-      "Wormer- en Jisperveld (example)",
-    summary_en:
-      "Personal work: a series of landscape images of the peat meadows in the early morning.",
-    body_en:
-      "This is my own work, made to practise with light and composition in open landscape.\n\nThe images were made in the half hour after sunrise, when mist still hangs over the water. I flew low and slow, so the lines of the ditches come out well.\n\nPart of this series hangs as prints in my workspace.",
-    cover_alt_en:
-      "Example image: aerial photo of peat meadows in the morning mist",
-    video_url: "",
-    featured: 1,
-    sort_order: 5,
-    images: [
-      [
-        "/images/project-natuur-2.jpg",
-        "Voorbeeldbeeld: waterloop door het landschap",
-        "Example image: a watercourse running through the landscape",
-      ],
-      [
-        "/images/gallery-1.jpg",
-        "Voorbeeldbeeld: velden vanuit de lucht",
-        "Example image: fields seen from the air",
-      ],
-    ],
   },
 ];
 
@@ -323,11 +342,12 @@ export function installExampleData(db: Database): {
   const insertProject = db.prepare(
     `INSERT INTO projects
       (slug, title, category, location, summary, body, cover_url, cover_alt,
-       title_en, location_en, summary_en, body_en, cover_alt_en,
+       title_en, location_en, summary_en, body_en, cover_alt_en, is_example,
        video_url, published, featured, sort_order, created_utc)
      VALUES (@slug, @title, @category, @location, @summary, @body, @cover_url,
              @cover_alt, @title_en, @location_en, @summary_en, @body_en,
-             @cover_alt_en, @video_url, 1, @featured, @sort_order, @created_utc)
+             @cover_alt_en, @is_example, @video_url, 1, @featured, @sort_order,
+             @created_utc)
      ON CONFLICT(slug) DO NOTHING`,
   );
   const insertImage = db.prepare(

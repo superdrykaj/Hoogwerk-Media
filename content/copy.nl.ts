@@ -255,18 +255,17 @@ export const nl = {
   portfolio: {
     metaTitle: "Portfolio",
     metaDescription:
-      `Voorbeeldprojecten van ${site.name}: dronefoto's en dronevideo's voor ` +
+      `Werk van ${site.name}: dronefoto's en dronevideo's voor ` +
       "vastgoed, bedrijven, evenementen, natuur en locaties in Zaandam en " +
       "Noord-Holland.",
     eyebrow: "Portfolio",
     title: "Werk vanuit de lucht.",
     intro: (regio: string) =>
-      `Hieronder staan voorbeeldprojecten uit ${regio}. Filter op het soort ` +
-      "opdracht om te zien wat er mogelijk is.",
-    noticeBefore: "Let op: dit zijn",
-    noticeStrong: "fictieve voorbeeldprojecten",
+      `Werk uit ${regio}. Filter op het soort opdracht.`,
+    noticeBefore: "Projecten met het label",
+    noticeStrong: "Voorbeeldproject",
     noticeAfter:
-      "met tijdelijke afbeeldingen. Vervang ze in de beheeromgeving door je eigen werk.",
+      "zijn fictieve demonstratieprojecten met tijdelijke afbeeldingen. De overige projecten zijn echt werk.",
     empty: "Er zijn nog geen projecten gepubliceerd.",
     emptyAction: "Naar de beheeromgeving",
     ctaTitle: "Ook zo'n project laten maken?",
@@ -293,16 +292,18 @@ export const nl = {
   project: {
     notFound: "Project niet gevonden",
     metaDescription: (locatie: string) =>
-      `Voorbeeldproject van ${site.name} in ${locatie}.`,
+      `Project van ${site.name} in ${locatie}.`,
     breadcrumb: "Kruimelpad",
     exampleChip: "Voorbeeldproject",
-    coverAlt: (titel: string) => `Voorbeeldbeeld van ${titel}`,
+    coverAlt: (titel: string) => `Beeld van ${titel}`,
     cardLink: "Bekijk project",
     cardNoImage: "Nog geen afbeelding",
     asideTitle: "Ook zo'n project laten maken?",
     asideBody: "Vertel me over je locatie en je plannen. Ik denk graag mee.",
     asideAsk: "Eerst een vraag stellen",
     videoTitle: "Video",
+    videoFallback: "Je browser kan deze video niet afspelen.",
+    videoDownload: "Download de video",
     videoOf: (titel: string) => `Video van ${titel}`,
     videoEmpty: "Hier komt de video van dit project.",
     videoEmptyHint:
