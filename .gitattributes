@@ -15,5 +15,7 @@
 *.webp binary
 *.avif binary
 *.ico  binary
+*.mp4  binary
+*.webm binary
 *.woff binary
 *.woff2 binary
