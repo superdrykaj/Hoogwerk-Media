@@ -40,6 +40,36 @@ const BRONNEN = {
 };
 
 /**
+ * Wat de browser ons vertelt over de verbinding.
+ *
+ * Alleen Chromium-browsers hebben dit; Safari en Firefox laten het weg. Weten
+ * we niets, dan gaan we uit van een gewone verbinding en speelt de video
+ * gewoon af.
+ */
+type Verbinding = {
+  /** De bezoeker heeft databesparing aangezet. */
+  saveData?: boolean;
+  effectiveType?: "slow-2g" | "2g" | "3g" | "4g";
+};
+
+/**
+ * Mag deze bezoeker een videobestand van een paar megabyte verwachten?
+ *
+ * Nee bij databesparing — dat is een uitgesproken wens, geen gok — en nee op
+ * 2G, waar een hero-video de pagina alleen maar in de weg zit. Op een gewone
+ * mobiele verbinding speelt hij wel.
+ */
+function zuinigOfTraag(): boolean {
+  const verbinding = (navigator as Navigator & { connection?: Verbinding })
+    .connection;
+  if (!verbinding) return false;
+  if (verbinding.saveData) return true;
+  return (
+    verbinding.effectiveType === "2g" || verbinding.effectiveType === "slow-2g"
+  );
+}
+
+/**
  * Welke van de vier bestanden deze browser moet ophalen.
  * De WebM-bestanden zijn VP9 en ongeveer de helft kleiner dan de MP4's; kan de
  * browser daar niets mee, dan pakken we H.264.
@@ -66,6 +96,11 @@ export function HeroVideo({ alt }: { alt: string }) {
     // Minder beweging gevraagd: niets ophalen, niets afspelen. Het posterbeeld
     // eronder is dan het hele verhaal.
     if (window.matchMedia(MINDER_BEWEGING).matches) return;
+
+    // Hetzelfde bij databesparing of een 2G-verbinding. Bewust niet alleen op
+    // een klein scherm: databesparing is iets wat de bezoeker zelf aanzet, en
+    // dat geldt net zo goed achter een laptop op een gedeelde hotspot.
+    if (zuinigOfTraag()) return;
 
     const breekpunt = window.matchMedia(MOBIEL);
 
