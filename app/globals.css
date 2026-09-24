@@ -27,7 +27,10 @@
   --color-mist-100: #e9ecef;
   --color-mist-300: #b6bdc6;
   --color-mist-500: #838d99;
-  --color-mist-600: #66707c;
+  /* Was #66707c. Dat haalde als tekst van 12 px maar 3,7:1 tegen de donkere
+     achtergrond, onder de norm van 4,5:1. Nu 5,1:1. Het scheelt weinig meer
+     met mist-500: deze schaal had een tint te veel voor een donker thema. */
+  --color-mist-600: #7c8694;
 
   /* Accent: gedempt staalblauw. Verzadiging blijft onder de 45%, zodat het
      naast het grijs staat in plaats van eroverheen. */

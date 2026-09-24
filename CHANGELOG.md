@@ -1,5 +1,19 @@
 # Wijzigingen
 
+## September 2026 — toegankelijkheid
+
+Naar aanleiding van een Lighthouse-meting. Toegankelijkheid ging van 84 naar
+100; de opmaak op het scherm verandert nauwelijks.
+
+- **Ongeldige opmaak hersteld.** De werkwijze-lijst had `<div>`-elementen als
+  directe kinderen van de `<ol>`, en de vragenlijst had er een laag te veel
+  tussen de `<dl>` en de vraag-en-antwoordparen. Dat kwam door het element dat
+  de inhoud laat verschijnen bij het scrollen; dat staat nu op de juiste plek
+  in de nesting. Een schermlezer kondigde daardoor geen lijst aan.
+- **De lichtste grijstint was te donker voor tekst.** `mist-600` haalde als
+  tekst van 12 px maar 3,7:1, onder de norm van 4,5:1. Nu 5,1:1. Dat raakt de
+  kleine regels onder de boekingsmodule, in de footer en in de beheeromgeving.
+
 ## September 2026 — eigen dronebeelden
 
 De aangeleverde video's staan nu in de site. De bestanden zelf zijn ongewijzigd

@@ -193,10 +193,12 @@ function Process({ t }: { t: Dictionary }) {
         </h2>
       </Reveal>
 
+      {/* Reveal staat binnen de <li>, niet eromheen: een <ol> mag alleen
+          <li> als kind hebben, en Reveal rendert een <div>. */}
       <ol className="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
         {t.home.process.map((step, index) => (
-          <Reveal key={step.title} delay={index * 80}>
-            <li className="relative pt-6">
+          <li key={step.title} className="relative">
+            <Reveal delay={index * 80} className="pt-6">
               <span
                 aria-hidden="true"
                 className="absolute left-0 top-0 h-px w-full bg-gradient-to-r from-haze-400/60 to-transparent"
@@ -208,8 +210,8 @@ function Process({ t }: { t: Dictionary }) {
               <p className="mt-2 text-sm leading-relaxed text-mist-500">
                 {step.body}
               </p>
-            </li>
-          </Reveal>
+            </Reveal>
+          </li>
         ))}
       </ol>
     </section>
@@ -340,14 +342,19 @@ function Faq({ t }: { t: Dictionary }) {
       </Reveal>
 
       <dl className="mt-14 grid gap-x-16 gap-y-10 md:grid-cols-2">
+        {/* Eén <div> per vraag-en-antwoord, en niet dieper: een <dl> mag een
+            <div> om elke groep hebben, maar geen <div> in een <div>. Reveal is
+            die ene laag, dus de opmaak gaat mee in zijn className. */}
         {t.home.faq.map((item, index) => (
-          <Reveal key={item.question} delay={(index % 2) * 70}>
-            <div className="border-t border-ink-700 pt-5">
-              <dt className="display-3">{item.question}</dt>
-              <dd className="mt-2.5 max-w-prose text-sm leading-relaxed text-mist-500">
-                {item.answer}
-              </dd>
-            </div>
+          <Reveal
+            key={item.question}
+            delay={(index % 2) * 70}
+            className="border-t border-ink-700 pt-5"
+          >
+            <dt className="display-3">{item.question}</dt>
+            <dd className="mt-2.5 max-w-prose text-sm leading-relaxed text-mist-500">
+              {item.answer}
+            </dd>
           </Reveal>
         ))}
       </dl>
