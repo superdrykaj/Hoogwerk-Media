@@ -1,17 +1,17 @@
 import type { MetadataRoute } from "next";
 
-import { site } from "@/content/site";
 import { href } from "@/lib/locale";
 import { listProjects } from "@/lib/projects";
 import { siteStatus } from "@/lib/site-status";
+import { siteOrigin } from "@/lib/site-url";
 
 export const dynamic = "force-dynamic";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Dichte site: geen sitemap. Zie lib/site-status.ts.
   if (siteStatus() !== "live") return [];
 
-  const base = site.url.replace(/\/$/, "");
+  const base = await siteOrigin();
   const projects = listProjects({ onlyPublished: true });
 
   /** Elke pagina staat er in beide talen in, met een verwijzing naar elkaar. */

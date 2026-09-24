@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { Arrow } from "@/components/arrow";
 import { ContactForm } from "@/components/contact-form";
 import { copy } from "@/content/copy";
 import { site } from "@/content/site";
@@ -71,6 +72,7 @@ export async function ContactPage({ locale }: { locale: Locale }) {
               <dd className="mt-3">
                 <Link href={`${href("/", locale)}#boeken`} className="btn btn-primary">
                   {t.nav.book}
+                  <Arrow />
                 </Link>
               </dd>
             </div>

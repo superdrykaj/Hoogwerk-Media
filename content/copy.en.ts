@@ -26,11 +26,12 @@ export const en: Dictionary = {
   meta: {
     tagline: "Drone photography in Zaandam and North Holland",
     description:
-      `${site.name} makes aerial photos and short films of property, business ` +
-      `sites and construction in Zaandam and North Holland. Book a slot online.`,
+      `${site.name} makes aerial photos and short films for real estate, ` +
+      `commercial sites and construction projects in Zaandam and North ` +
+      `Holland. Book a slot online.`,
     ogDescription:
-      "Aerial photos and short films of property, business sites and " +
-      "construction in Zaandam and North Holland.",
+      "Aerial photos and short films for real estate, commercial sites and " +
+      "construction projects in Zaandam and North Holland.",
   },
 
   region: {
@@ -43,7 +44,7 @@ export const en: Dictionary = {
 
   /* -- Header and footer --------------------------------------------------- */
   nav: {
-    home: "Start",
+    home: "Home",
     portfolio: "Work",
     contact: "Contact",
     privacy: "Privacy",
@@ -78,20 +79,12 @@ export const en: Dictionary = {
       `© ${year} ${site.name}. All company details and projects on this site are examples.`,
   },
 
-  demoBanner: {
-    label: "Demo",
-    short: "Projects and photos are still examples.",
-    text: "The projects, prices and photos on this site are still",
-    emphasis: "examples",
-    link: "What does that mean?",
-  },
-
   /* -- Home ---------------------------------------------------------------- */
   home: {
     heroTitle: "Your location, professionally filmed from the air",
     heroIntro:
-      "Drone photography and video for businesses, property and projects in " +
-      "Zaandam and North Holland.",
+      "Drone photography and video for businesses, real estate and " +
+      "construction projects in Zaandam and North Holland.",
     heroCta: "Discuss your project",
     heroWork: "See the work",
     heroPosterAlt:
@@ -104,7 +97,7 @@ export const en: Dictionary = {
     highlights: [
       {
         title: "Property",
-        body: "Homes and commercial buildings in their surroundings. For listings, website and brochure.",
+        body: "Homes and commercial buildings in their surroundings. For property listings, websites and sales brochures.",
       },
       {
         title: "Business sites",
@@ -116,7 +109,7 @@ export const en: Dictionary = {
       },
       {
         title: "Locations and nature",
-        body: "Recreation areas, marinas and polder, shot at the right hour of the day.",
+        body: "Recreation areas, marinas and polders, shot at the right hour of the day.",
       },
     ],
 
@@ -140,10 +133,10 @@ export const en: Dictionary = {
     workEmptyHint: "You add projects in the admin area.",
 
     processEyebrow: "How it works",
-    processTitle: "From conversation to file.",
+    processTitle: "From first conversation to final files.",
     process: [
       {
-        title: "Get acquainted",
+        title: "Introduction",
         body: "A short call about the location and the images you're after.",
       },
       {
@@ -166,7 +159,7 @@ export const en: Dictionary = {
       "A request is not an appointment yet. I check the location in GoDrone, " +
       "look at the weather and then confirm by e-mail.",
     timezoneNote: "All times in Dutch local time.",
-    timezoneAsk: "Rather talk it through first?",
+    timezoneAsk: "Would you rather discuss it first?",
     timezoneLink: "Send a message",
 
     aboutEyebrow: "About me",
@@ -190,7 +183,7 @@ export const en: Dictionary = {
       "Travel beyond 25 km: € 0.45 per kilometre",
       "Waiting time on location: € 65 per hour",
       "Use in print, advertising or campaigns: by arrangement",
-      "Flights that require a Specific permit",
+      "Flights that require an operational authorisation for the ‘specific’ category",
     ],
 
     faqEyebrow: "Questions",
@@ -209,8 +202,8 @@ export const en: Dictionary = {
         answer:
           "Not over people. I fly in the open category with a drone under 250 " +
           "grams, which means I may not fly over crowds. An event is only " +
-          "possible if the site is empty, or with a Specific permit, which I do " +
-          "not hold at the moment.",
+          "possible if the site is empty, or with an operational authorisation " +
+          "for the ‘specific’ category, which I do not hold at the moment.",
       },
       {
         question: "What about the neighbours' privacy?",
@@ -236,16 +229,16 @@ export const en: Dictionary = {
         question: "What may I do with the images?",
         answer:
           "You get the right to use them on your own website and social " +
-          "channels. The copyright stays with me. For a billboard, an advert or " +
-          "a campaign we agree that separately.",
+          "channels. The copyright stays with me. For a billboard, an advert " +
+          "or a campaign, we agree separate terms.",
       },
     ],
 
     aboutBody: (region: string, equipment: string) => [
       `I'm Kai, a freelance drone pilot in ${region}. No middlemen: I plan, I ` +
         "fly and I deliver.",
-      `I fly a ${equipment} — compact enough for tight locations, with a sensor ` +
-        "that stays sharp at dusk too.",
+      `I fly a ${equipment} — compact enough for tight locations, with a ` +
+        "sensor that produces sharp images even at dusk.",
     ],
   },
 
@@ -294,7 +287,7 @@ export const en: Dictionary = {
     cardLink: "View project",
     cardNoImage: "No image yet",
     asideTitle: "Want a project like this?",
-    asideBody: "Tell me about your location and your plans. I'm happy to think along.",
+    asideBody: "Tell me about your location and your plans. I'd be happy to help shape the idea.",
     asideAsk: "Ask a question first",
     videoTitle: "Video",
     videoOf: (title: string) => `Video of ${title}`,
@@ -375,8 +368,9 @@ export const en: Dictionary = {
     retry: "Try again",
     noDays: "No free days in this period",
     noDaysBody:
-      "Look further ahead with the 'Later' button, or send me a message if you have something specific in mind.",
-    noDaysAction: "Look later →",
+      "Look further ahead with the 'View later dates' button, or send me a " +
+      "message if you have something specific in mind.",
+    noDaysAction: "View later dates →",
     noTimes: "No free times on this day",
     noTimesBody: "Please pick another date.",
     backToDates: "Back to the dates",
@@ -399,7 +393,7 @@ export const en: Dictionary = {
     rowPhone: "Phone",
     rowLocation: "Location",
     rowLocations: (amount: number) => `Locations (${amount})`,
-    rowSessions: "Shoot moments",
+    rowSessions: "Shoot sessions",
     rowPeriod: "Preferred period",
     rowPreference: "Preference",
     rowProject: "Project",
@@ -460,12 +454,12 @@ export const en: Dictionary = {
     errService: "Please choose a service.",
     errMoment: "Please choose a date and time.",
     errCheck: "Please check the highlighted fields.",
-    errRejected: "Request refused.",
-    errRejectedMessage: "Message refused.",
+    errRejected: "Request rejected.",
+    errRejectedMessage: "Message rejected.",
     errTooMany:
-      "Too many requests have just been sent from this address. Please try again in a few minutes.",
+      "Too many requests were sent from this address in a short period. Please try again in a few minutes.",
     errTooManyMessages:
-      "Too many messages have just been sent from this address. Please try again in a few minutes.",
+      "Too many messages were sent from this address in a short period. Please try again in a few minutes.",
   },
 
   /* -- Slot messages ------------------------------------------------------- */
@@ -486,11 +480,11 @@ export const en: Dictionary = {
     intro:
       "A custom project often spans several days. These answers let me prepare " +
       "the planning before we speak.",
-    sessionsLabel: "Number of shoot moments",
+    sessionsLabel: "Number of shoot sessions",
     sessions: {
-      "1": "One shoot moment",
-      "2": "Two shoot moments",
-      "3plus": "Three or more shoot moments",
+      "1": "One shoot session",
+      "2": "Two shoot sessions",
+      "3plus": "Three or more shoot sessions",
       onbekend: "Not sure yet",
     },
     periodLabel: "Preferred period",
@@ -510,7 +504,7 @@ export const en: Dictionary = {
       flexibel: "No preference",
     },
     summaryLocations: (amount: number) => `Locations (${amount})`,
-    summarySessions: "Shoot moments",
+    summarySessions: "Shoot sessions",
     summaryPeriod: "Preferred period",
     summaryPreference: "Preference",
   },
@@ -557,7 +551,7 @@ export const en: Dictionary = {
     summaryNoDescription: "(no description)",
 
     requestSubject: (reference: string) => `Request received (${reference}) — ${site.name}`,
-    requestBody: `Thanks for your request to ${site.name}. I've received it in good order.`,
+    requestBody: `Thanks for your request to ${site.name}. I've received it.`,
     requestNotice: [
       "Please note: this is not a confirmed appointment yet. I first check the",
       "location, the airspace rules and the weather forecast, and then confirm",

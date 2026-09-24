@@ -1,5 +1,70 @@
 # Wijzigingen
 
+## September 2026 — correcties Engelse vertaling
+
+- "short films of property" werd "short films for real estate, commercial sites
+  and construction projects"; ook in de zoekresultaten en het deelbeeld.
+- "Specific permit" was niet de officiële term. Nu "operational authorisation
+  for the ‘specific’ category", conform EASA. Staat op twee plekken: bij de
+  uitzonderingen op het tarief en in de vraag over evenementen.
+- "shoot moments" overal vervangen door "shoot sessions".
+- Losse verbeteringen: "For listings" → "For property listings, websites and
+  sales brochures", "polder" → "polders", een sensor die nu "produces sharp
+  images even at dusk" in plaats van "stays sharp", "Request refused" →
+  "Request rejected", en het anglicisme "received it in good order" eruit.
+- Natuurlijker Engels: Start → Home, Get acquainted → Introduction, From
+  conversation to file → From first conversation to final files, en nog drie.
+- **De Engelse galerij had nog Nederlandse alt-teksten.** De kolom `alt_en`
+  bestond wel, maar de voorbeeldgegevens vulden hem niet, waardoor een
+  schermlezer op de Engelse site Nederlandse omschrijvingen voorlas. De zes
+  galerijbeelden hebben nu een Engelse tekst, en
+  `scripts/onderhoud/werkgebied-noord-holland.cjs` vult ze bij in een database
+  die al draait.
+- "Townhouse on the river Zaan" suggereert een geschakelde stadswoning. Nu
+  "Detached house on the River Zaan".
+
+## September 2026 — knoppen en navigatie
+
+- Een pijltje bij "Plan een afspraak" en bij de knop in de hero, dat een klein
+  stukje meeschuift als je erover zweeft. Alleen bij die twee: als elke knop
+  een pijl heeft, zegt de pijl niets meer.
+- De taalknop heeft een wereldbol gekregen naast EN/NL.
+- **De footer markeert nu de pagina waar je al bent.** De link leidde wel
+  degelijk ergens heen, maar stond je al op die pagina, dan gebeurde er niets
+  zichtbaars en leek hij kapot. Nu staat er een streep onder en heeft hij geen
+  linkkleur meer, net als in de kop.
+
+## September 2026 — demomelding weg, wereldbol bij de taalknop
+
+- De balk "Projecten en foto's zijn nog voorbeelden" is verdwenen, net als de
+  uitlegpagina `/demo` waar hij naartoe wees. Daarmee vervalt ook de
+  omgevingsvariabele `DEMO_MODE`.
+- De taalknop heeft een wereldbol gekregen naast de EN/NL-aanduiding.
+
+**Let op:** er staat nu niets meer op de site dat bezoekers vertelt dat het
+portfolio nog voorbeeldprojecten bevat. Vervang die door eigen werk voordat je
+de site openzet.
+
+## September 2026 — vindbaarheid en beveiligingsheaders
+
+Naar aanleiding van een crawl met Screaming Frog.
+
+- **Opgelost: de site wees zoekmachines naar localhost.** Zonder de variabele
+  `NEXT_PUBLIC_SITE_URL` viel het publieke adres terug op
+  `http://localhost:3000`. Elke canonieke link, elke hreflang-verwijzing en de
+  hele sitemap wezen daarheen — een adres dat voor de buitenwereld niet
+  bestaat. Dat verklaarde in één klap vijf meldingen uit het rapport.
+  Het adres staat nu vast in `fly.toml`, en als het er ooit niet is leidt de
+  site het af uit het verzoek zelf, zodat er nooit meer localhost uit kan
+  komen.
+- **Beveiligingsheaders toegevoegd**: HSTS, `X-Content-Type-Options: nosniff`,
+  `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy:
+  strict-origin-when-cross-origin` en een Content-Security-Policy. Alles wat de
+  site laadt komt van de site zelf, dus de policy mag streng: geen enkele
+  externe bron is toegestaan.
+- De link naar de beheeromgeving in de footer staat op `nofollow`. Die pagina
+  staat op disallow in robots.txt, maar crawlers liepen er toch op af.
+
 ## September 2026 — hero-video en de verbinding
 
 De hero-video blijft weg bij databesparing en op 2G. Op een gewone mobiele

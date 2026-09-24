@@ -201,6 +201,14 @@ body::after {
     background-color: #98303e;
   }
 
+  /* Het pijltje bij een knop schuift mee als je erover zweeft. */
+  .btn-arrow {
+    transition: transform 0.2s ease;
+  }
+  .btn:hover .btn-arrow {
+    transform: translateX(2px);
+  }
+
   /* Tekstlink met een onderlijn die meebeweegt. */
   .link-quiet {
     color: var(--color-haze-300);

@@ -85,8 +85,8 @@ describe("scopeLines", () => {
     const regels = scopeLines(scope, "Zaandam", en);
     expect(regels[0].label).toBe("Locations (2)");
     expect(regels[1]).toEqual({
-      label: "Shoot moments",
-      value: "Three or more shoot moments",
+      label: "Shoot sessions",
+      value: "Three or more shoot sessions",
     });
     expect(regels[2].value).toBe("Last hour before sunset");
   });

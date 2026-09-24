@@ -201,6 +201,35 @@ for (const [slug, velden] of Object.entries(ENGELS.services)) {
 for (const [slug, velden] of Object.entries(ENGELS.projects)) {
   engels += vulEngels("projects", slug, velden);
 }
+
+/**
+ * De alt-teksten van de galerijbeelden. Die staan niet in `projects` maar in
+ * `project_images`, en die tabel heeft geen slug: we zoeken ze op via het
+ * project en de bestandsnaam. Zonder Engelse alt-tekst krijgt een
+ * schermlezer op de Engelse site de Nederlandse omschrijving te horen.
+ */
+for (const [slug, beelden] of Object.entries(ENGELS.images ?? {})) {
+  const project = db
+    .prepare("SELECT id FROM projects WHERE slug = ?")
+    .get(slug);
+  if (!project) continue;
+
+  for (const [url, altEn] of Object.entries(beelden)) {
+    const rij = db
+      .prepare(
+        "SELECT id, alt_en FROM project_images WHERE project_id = ? AND url = ?",
+      )
+      .get(project.id, url);
+    if (!rij || String(rij.alt_en ?? "").trim()) continue;
+
+    db.prepare("UPDATE project_images SET alt_en = ? WHERE id = ?").run(
+      altEn,
+      rij.id,
+    );
+    console.log(`- ${slug} ${url}: Engelse alt-tekst ingevuld`);
+    engels += 1;
+  }
+}
 if (engels === 0) console.log("- Engelse teksten: niets aan te vullen");
 
 db.close();

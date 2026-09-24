@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { Arrow } from "@/components/arrow";
 import { BookingWidget } from "@/components/booking/booking-widget";
 import { HeroVideo } from "@/components/hero-video";
 import { ProjectCard } from "@/components/project-card";
@@ -64,6 +65,7 @@ function Hero({ t, locale }: { t: Dictionary; locale: Locale }) {
         >
           <Link href={href("/contact", locale)} className="btn btn-primary">
             {t.home.heroCta}
+            <Arrow />
           </Link>
           <Link href={href("/portfolio", locale)} className="btn btn-ghost">
             {t.home.heroWork}
@@ -457,6 +459,7 @@ function About({ t, locale }: { t: Dictionary; locale: Locale }) {
             <div className="mt-8 flex flex-wrap gap-3">
               <a href="#boeken" className="btn btn-primary">
                 {t.nav.book}
+                <Arrow />
               </a>
               <Link href={href("/contact", locale)} className="btn btn-ghost">
                 {t.nav.contact}

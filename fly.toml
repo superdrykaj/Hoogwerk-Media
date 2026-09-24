@@ -11,11 +11,13 @@ swap_size_mb = 512
 [env]
   PORT = "3000"
   DATA_DIR = "/data"
-  # Zet op "false" zodra de voorbeeldgegevens door je eigen inhoud zijn vervangen.
-  DEMO_MODE = "true"
   # "soon" = bezoekers zien alleen "binnenkort online"; jij ziet als ingelogde
   # beheerder de volledige site. Zet op "live" om de deur open te zetten.
   SITE_STATUS = "soon"
+  # Het publieke adres. Hiermee worden canonieke links, hreflang en de sitemap
+  # opgebouwd. Staat dit er niet, dan leidt de site het af uit het verzoek —
+  # maar vastzetten is betrouwbaarder. Pas dit aan als je domein wijzigt.
+  NEXT_PUBLIC_SITE_URL = "https://hoogbeeldmedia.nl"
 
 # Blijvende schijf: hier staan de database en de geüploade foto's.
 # Zonder deze schijf is alles na een herstart weg.
