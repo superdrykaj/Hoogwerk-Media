@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 
 import { sendContactAction } from "@/app/actions/public";
 import { copy, type Dictionary } from "@/content/copy";
@@ -19,6 +19,14 @@ export function ContactForm({
     sendContactAction,
     emptyFormState,
   );
+
+  // Bij een foutmelding de aandacht naar de melding brengen. Zonder dit staat
+  // iemand op een mobiel naar een ogenschijnlijk onveranderd formulier te
+  // kijken, terwijl de reden erboven staat.
+  const errorRef = useRef<HTMLParagraphElement>(null);
+  useEffect(() => {
+    if (state.status === "error") errorRef.current?.focus();
+  }, [state]);
 
   if (state.status === "success") {
     return (
@@ -58,7 +66,7 @@ export function ContactForm({
       <input type="hidden" name="locale" value={locale} />
 
       {state.status === "error" && (
-        <p className="notice notice-error" role="alert">
+        <p className="notice notice-error" role="alert" tabIndex={-1} ref={errorRef}>
           {state.message}
         </p>
       )}
@@ -72,6 +80,7 @@ export function ContactForm({
           required
           error={state.errors.name}
           autoComplete="name"
+          defaultValue={state.values?.name}
         />
         <Field
           t={t}
@@ -82,6 +91,7 @@ export function ContactForm({
           required
           error={state.errors.email}
           autoComplete="email"
+          defaultValue={state.values?.email}
         />
       </div>
 
@@ -92,6 +102,7 @@ export function ContactForm({
         label={t.forms.subject}
         required
         error={state.errors.subject}
+        defaultValue={state.values?.subject}
       />
 
       <div>
@@ -103,6 +114,7 @@ export function ContactForm({
           name="message"
           rows={6}
           required
+          defaultValue={state.values?.message}
           className="field-input"
           aria-invalid={state.errors.message ? "true" : undefined}
           aria-describedby={
@@ -150,6 +162,7 @@ function Field({
   required,
   error,
   autoComplete,
+  defaultValue,
 }: {
   t: Dictionary;
   id: string;
@@ -159,6 +172,7 @@ function Field({
   required?: boolean;
   error?: string;
   autoComplete?: string;
+  defaultValue?: string;
 }) {
   return (
     <div>
@@ -171,6 +185,7 @@ function Field({
         type={type}
         required={required}
         autoComplete={autoComplete}
+        defaultValue={defaultValue}
         className="field-input"
         aria-invalid={error ? "true" : undefined}
         aria-describedby={error ? `${id}-error` : undefined}

@@ -22,6 +22,24 @@ const nextConfig: NextConfig = {
   },
   // Native module: mag niet door de bundler worden meegenomen.
   serverExternalPackages: ["better-sqlite3"],
+
+  async headers() {
+    return [
+      {
+        // De video's en het posterbeeld in public/media. Zonder deze regel
+        // stuurt Next "max-age=0" mee en vraagt de browser bij elk bezoek
+        // opnieuw of het bestand nog klopt. Dat kost per pagina een extra
+        // rondje naar de server, voor bestanden die nooit veranderen.
+        //
+        // Geen "immutable": de bestandsnamen bevatten geen versie, dus als je
+        // een video vervangt moet die verandering er binnen afzienbare tijd
+        // doorheen komen. Een week is daarvoor kort genoeg en scheelt de
+        // terugkerende bezoeker toch al het wachten.
+        source: "/media/:bestand*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=604800" }],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

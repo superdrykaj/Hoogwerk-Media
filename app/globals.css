@@ -98,8 +98,11 @@ body::after {
   }
 }
 
-/* Zichtbare toetsenbordfocus op de hele site. */
-:where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+/* Zichtbare toetsenbordfocus op de hele site.
+   `video` hoort er ook bij: een videospeler met bediening staat in de
+   tabvolgorde, en de standaardring van de browser is een donkere lijn van één
+   pixel — op deze achtergrond niet te zien. */
+:where(a, button, input, textarea, select, summary, video, [tabindex]):focus-visible {
   outline: 2px solid var(--color-haze-400);
   outline-offset: 2px;
   border-radius: 4px;
@@ -206,6 +209,23 @@ body::after {
   .link-quiet:hover {
     color: #c2d8e5;
     text-decoration-color: currentColor;
+  }
+
+  /* Sluier over de hero-video -------------------------------------------- */
+  /* Bovenin licht, zodat het beeld beeld blijft; naar onderen toe donkerder,
+     want daar staat de tekst. De onderrand loopt helemaal dicht, zodat de hero
+     naadloos overgaat in de pagina eronder.
+
+     De waarden zijn niet gegokt: met een egale sluier van 30% haalde de eerste
+     regel van de kop 2,9:1 tegenover de lucht, en dat is te weinig. */
+  .hero-scrim {
+    background-image: linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--color-ink-950) 30%, transparent) 0%,
+      color-mix(in oklab, var(--color-ink-950) 55%, transparent) 38%,
+      color-mix(in oklab, var(--color-ink-950) 82%, transparent) 72%,
+      var(--color-ink-950) 100%
+    );
   }
 
   /* Kaarten ------------------------------------------------------------- */

@@ -88,12 +88,15 @@ export const en: Dictionary = {
 
   /* -- Home ---------------------------------------------------------------- */
   home: {
-    heroTitle: "A higher perspective on your property.",
+    heroTitle: "Your location, professionally filmed from the air",
     heroIntro:
-      "Aerial photos and short films of property, business sites and " +
-      "construction in the Zaan region. One point of contact, delivered within " +
-      "five working days.",
+      "Drone photography and video for businesses, property and projects in " +
+      "Zaandam and North Holland.",
+    heroCta: "Discuss your project",
     heroWork: "See the work",
+    heroPosterAlt:
+      "Aerial view of characteristic buildings and boats on the water in the " +
+      "Zaan region.",
     heroFacts: ["50 MP, 1-inch sensor", "4K HDR video", "Zaan region and North Holland"],
 
     servicesEyebrow: "What I do",
@@ -125,7 +128,13 @@ export const en: Dictionary = {
     chooseMoment: "Pick a time →",
 
     workEyebrow: "Work",
-    workTitle: "A selection.",
+    workTitle: "See our work",
+    workIntro:
+      "A selection of aerial footage over city, landscape and infrastructure.",
+    showreelLabel:
+      "Showreel with aerial footage over city, landscape and infrastructure",
+    showreelFallback: "Your browser cannot play this video.",
+    showreelDownload: "Download the showreel",
     workAll: "See everything",
     workEmpty: "The first cases are coming soon.",
     workEmptyHint: "You add projects in the admin area.",
