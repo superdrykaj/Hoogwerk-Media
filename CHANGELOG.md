@@ -1,5 +1,20 @@
 # Wijzigingen
 
+## September 2026 — hero-video en de verbinding
+
+De hero-video blijft weg bij databesparing en op 2G. Op een gewone mobiele
+verbinding speelt hij gewoon af.
+
+- `Save-Data` aan, of een verbinding die de browser als 2G of trager meldt: er
+  wordt geen videobestand opgehaald en het posterbeeld blijft staan. Dat
+  scheelt ruim 3 MB bij het laden.
+- Dit geldt op elk schermformaat, niet alleen op een telefoon: databesparing is
+  iets wat de bezoeker zelf aanzet, en dat geldt net zo goed achter een laptop
+  op een gedeelde hotspot.
+- Browsers zonder deze informatie (Safari, Firefox) spelen de video gewoon af.
+- De hoogte van de hero en de positie van de tekst veranderen in geen enkel
+  geval.
+
 ## September 2026 — toegankelijkheid
 
 Naar aanleiding van een Lighthouse-meting. Toegankelijkheid ging van 84 naar
