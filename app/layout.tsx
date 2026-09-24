@@ -6,6 +6,7 @@ import { copy } from "@/content/copy";
 import { site } from "@/content/site";
 import { HTML_LANG, OG_LOCALE, localeFromPath, type Locale } from "@/lib/locale";
 import { siteStatus } from "@/lib/site-status";
+import { siteOrigin } from "@/lib/site-url";
 
 import "./globals.css";
 
@@ -41,7 +42,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const t = copy(locale);
 
   return {
-    metadataBase: new URL(site.url),
+    metadataBase: new URL(await siteOrigin()),
     title: {
       default: `${t.meta.tagline} | ${site.name}`,
       template: `%s | ${site.name}`,

@@ -148,7 +148,10 @@ export function SiteFooter({ locale }: { locale: Locale }) {
           <p>
             © {year} {site.name}
           </p>
-          <Link href="/admin" className="hover:text-mist-300">
+          {/* De beheeromgeving staat op disallow in robots.txt. Zonder
+              nofollow lopen crawlers er toch op af en melden ze een
+              geblokkeerde link. */}
+          <Link href="/admin" rel="nofollow" className="hover:text-mist-300">
             {t.nav.admin}
           </Link>
         </div>

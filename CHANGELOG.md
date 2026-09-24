@@ -1,5 +1,25 @@
 # Wijzigingen
 
+## September 2026 — vindbaarheid en beveiligingsheaders
+
+Naar aanleiding van een crawl met Screaming Frog.
+
+- **Opgelost: de site wees zoekmachines naar localhost.** Zonder de variabele
+  `NEXT_PUBLIC_SITE_URL` viel het publieke adres terug op
+  `http://localhost:3000`. Elke canonieke link, elke hreflang-verwijzing en de
+  hele sitemap wezen daarheen — een adres dat voor de buitenwereld niet
+  bestaat. Dat verklaarde in één klap vijf meldingen uit het rapport.
+  Het adres staat nu vast in `fly.toml`, en als het er ooit niet is leidt de
+  site het af uit het verzoek zelf, zodat er nooit meer localhost uit kan
+  komen.
+- **Beveiligingsheaders toegevoegd**: HSTS, `X-Content-Type-Options: nosniff`,
+  `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy:
+  strict-origin-when-cross-origin` en een Content-Security-Policy. Alles wat de
+  site laadt komt van de site zelf, dus de policy mag streng: geen enkele
+  externe bron is toegestaan.
+- De link naar de beheeromgeving in de footer staat op `nofollow`. Die pagina
+  staat op disallow in robots.txt, maar crawlers liepen er toch op af.
+
 ## September 2026 — hero-video en de verbinding
 
 De hero-video blijft weg bij databesparing en op 2G. Op een gewone mobiele

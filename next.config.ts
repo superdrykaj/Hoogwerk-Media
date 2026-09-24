@@ -24,7 +24,59 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["better-sqlite3"],
 
   async headers() {
+    const ontwikkeling = process.env.NODE_ENV !== "production";
+
+    /**
+     * Wat de pagina mag laden. Alles komt van onszelf: de lettertypen worden
+     * door Next meegebakken, de video's staan in public/media en er zit geen
+     * enkele externe dienst in de site.
+     *
+     * Eerlijk over de zwakke plek: `unsafe-inline` bij scripts is nodig omdat
+     * Next zijn opstartcode in de HTML zet. Strenger kan met een nonce per
+     * verzoek, maar dat kost het vooraf opbouwen van pagina's. Wat hier staat,
+     * houdt wél alle scripts van buiten tegen, en dat is waar het om gaat.
+     */
+    const csp = [
+      "default-src 'self'",
+      `script-src 'self' 'unsafe-inline'${ontwikkeling ? " 'unsafe-eval'" : ""}`,
+      // Tailwind zet opmaak in style-attributen; die tellen als inline.
+      "style-src 'self' 'unsafe-inline'",
+      // data: voor de ruis over de achtergrond, blob: voor beeldvoorbeelden
+      // in de beheeromgeving.
+      "img-src 'self' data: blob:",
+      "media-src 'self'",
+      "font-src 'self'",
+      `connect-src 'self'${ontwikkeling ? " ws: wss:" : ""}`,
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'none'",
+      "upgrade-insecure-requests",
+    ].join("; ");
+
     return [
+      {
+        source: "/:pad*",
+        headers: [
+          // Alleen via HTTPS, ook bij een eerste bezoek na het intypen van het
+          // adres zonder https:// ervoor. Twee jaar, inclusief subdomeinen.
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains",
+          },
+          // De browser mag het bestandstype niet zelf gaan raden.
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          // Niet in een frame op andermans site te zetten.
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          // Bij een klik naar buiten gaat alleen het domein mee, niet het
+          // volledige pad, en bij een stap terug naar http helemaal niets.
+          {
+            key: "Referrer-Policy",
+            value: "strict-origin-when-cross-origin",
+          },
+          { key: "Content-Security-Policy", value: csp },
+        ],
+      },
       {
         // De video's en het posterbeeld in public/media. Zonder deze regel
         // stuurt Next "max-age=0" mee en vraagt de browser bij elk bezoek
