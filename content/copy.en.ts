@@ -246,16 +246,15 @@ export const en: Dictionary = {
   portfolio: {
     metaTitle: "Portfolio",
     metaDescription:
-      `Example projects by ${site.name}: aerial photography and video for ` +
-      "property, business, events, nature and locations in Zaandam and North Holland.",
+      `Work by ${site.name}: aerial photography and video for real estate, ` +
+      "commercial sites, construction and locations in Zaandam and North Holland.",
     eyebrow: "Portfolio",
     title: "Work from the air.",
-    intro: (region: string) =>
-      `Below are example projects from ${region}. Filter by type of work to see ` +
-      "what's possible.",
-    noticeBefore: "Please note: these are",
-    noticeStrong: "fictional example projects",
-    noticeAfter: "with placeholder images. Replace them with your own work in the admin area.",
+    intro: (region: string) => `Work from ${region}. Filter by type of work.`,
+    noticeBefore: "Projects labelled",
+    noticeStrong: "Example project",
+    noticeAfter:
+      "are fictional demonstration projects with placeholder images. The other projects are real work.",
     empty: "No projects have been published yet.",
     emptyAction: "Go to the admin area",
     ctaTitle: "Want a project like this?",
@@ -280,7 +279,7 @@ export const en: Dictionary = {
 
   project: {
     notFound: "Project not found",
-    metaDescription: (location: string) => `Example project by ${site.name} in ${location}.`,
+    metaDescription: (location: string) => `Project by ${site.name} in ${location}.`,
     breadcrumb: "Breadcrumb",
     exampleChip: "Example project",
     coverAlt: (title: string) => `Placeholder image for ${title}`,
@@ -290,6 +289,8 @@ export const en: Dictionary = {
     asideBody: "Tell me about your location and your plans. I'd be happy to help shape the idea.",
     asideAsk: "Ask a question first",
     videoTitle: "Video",
+    videoFallback: "Your browser cannot play this video.",
+    videoDownload: "Download the video",
     videoOf: (title: string) => `Video of ${title}`,
     videoEmpty: "The video for this project goes here.",
     videoEmptyHint: "Add a YouTube or Vimeo link to this project in the admin area.",

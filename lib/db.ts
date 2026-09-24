@@ -78,7 +78,11 @@ export function getDb(): Database.Database {
   return globalThis.__hoogbeeldMediaDb;
 }
 
-function migrate(db: Database.Database) {
+/**
+ * Zet de tabellen klaar en voegt ontbrekende kolommen toe. Geëxporteerd zodat
+ * een test dit op een database in het geheugen kan draaien.
+ */
+export function migrate(db: Database.Database) {
   db.exec(`
     CREATE TABLE IF NOT EXISTS settings (
       key   TEXT PRIMARY KEY,
@@ -198,6 +202,15 @@ function migrate(db: Database.Database) {
   addColumn(db, "projects", "body_en", "TEXT NOT NULL DEFAULT ''");
   addColumn(db, "projects", "cover_alt_en", "TEXT NOT NULL DEFAULT ''");
   addColumn(db, "project_images", "alt_en", "TEXT NOT NULL DEFAULT ''");
+  /**
+   * Is dit een verzonnen voorbeeldproject?
+   *
+   * Standaard 0, dus "echt". Dat is met opzet: een project dat jij zelf in de
+   * beheeromgeving hebt aangemaakt mag nooit per ongeluk het label
+   * "voorbeeldproject" krijgen. De verzonnen projecten worden expliciet op 1
+   * gezet, door de voorbeeldgegevens en door het onderhoudsscript.
+   */
+  addColumn(db, "projects", "is_example", "INTEGER NOT NULL DEFAULT 0");
   // Taal waarin de aanvraag is gedaan, zodat ook latere mails kloppen.
   addColumn(db, "bookings", "locale", "TEXT NOT NULL DEFAULT 'nl'");
 

@@ -17,6 +17,10 @@ const nextConfig: NextConfig = {
       { pathname: "/api/uploads/**" },
       // Logovarianten in de wortel van public/, zoals /logo-mark.png.
       { pathname: "/logo-*" },
+      // Posterbeelden bij de projecten. Het bestand op schijf blijft zoals het
+      // is; Next levert er alleen een kleinere uitsnede van voor de kaartjes,
+      // die maar een paar honderd pixels breed zijn.
+      { pathname: "/media/**" },
     ],
     formats: ["image/avif", "image/webp"],
   },
@@ -47,6 +51,8 @@ const nextConfig: NextConfig = {
       "media-src 'self'",
       "font-src 'self'",
       `connect-src 'self'${ontwikkeling ? " ws: wss:" : ""}`,
+      // De projectpagina ondersteunt een YouTube- of Vimeo-link als video.
+      "frame-src 'self' https://www.youtube-nocookie.com https://player.vimeo.com",
       "object-src 'none'",
       "base-uri 'self'",
       "form-action 'self'",
