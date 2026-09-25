@@ -11,8 +11,8 @@ swap_size_mb = 512
 [env]
   PORT = "3000"
   DATA_DIR = "/data"
-  # Testomgeving mag gerust "soon" blijven tonen aan bezoekers zonder login.
-  SITE_STATUS = "soon"
+  # Testomgeving toont altijd de volledige site, ook aan bezoekers zonder login.
+  SITE_STATUS = "live"
   NEXT_PUBLIC_SITE_URL = "https://hoogbeeld-media-test.fly.dev"
 
 # Eigen, losse schijf voor de testomgeving — nooit dezelfde als productie,
