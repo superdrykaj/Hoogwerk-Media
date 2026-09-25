@@ -436,7 +436,7 @@ function About({ t, locale }: { t: Dictionary; locale: Locale }) {
         <Reveal>
           <div className="relative aspect-4/3 overflow-hidden rounded-2xl border border-ink-700">
             <Image
-              src="/images/about-kai-torso.jpg"
+              src="/media/about-kai-torso.png"
               alt={t.home.aboutImageAlt}
               fill
               sizes="(max-width: 1024px) 100vw, 50vw"
