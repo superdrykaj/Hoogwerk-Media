@@ -7,18 +7,31 @@ import { countBookings, listBookings } from "@/lib/bookings";
 import { isMailConfigured, recentMailLog } from "@/lib/mail";
 import { countUnhandledMessages } from "@/lib/messages";
 import { listProjects } from "@/lib/projects";
+import { countOpenRevisionRequests } from "@/lib/revisions";
 import { formatTimestamp } from "@/lib/time";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
-  const { now, pending, confirmed, unread, published, all, upcoming, conflicts, mailReady, mailLog } =
-    await loadDashboard();
+  const {
+    now,
+    pending,
+    confirmed,
+    unread,
+    openRevisions,
+    published,
+    all,
+    upcoming,
+    conflicts,
+    mailReady,
+    mailLog,
+  } = await loadDashboard();
   return renderDashboard({
     now,
     pending,
     confirmed,
     unread,
+    openRevisions,
     published,
     all,
     upcoming,
@@ -34,6 +47,7 @@ async function loadDashboard() {
   const pending = countBookings("pending");
   const confirmed = countBookings("confirmed");
   const unread = countUnhandledMessages();
+  const openRevisions = countOpenRevisionRequests();
   const projects = listProjects();
   const published = projects.filter((p) => p.published).length;
 
@@ -52,6 +66,7 @@ async function loadDashboard() {
     pending,
     confirmed,
     unread,
+    openRevisions,
     published,
     all,
     upcoming,
@@ -65,6 +80,7 @@ function renderDashboard({
   pending,
   confirmed,
   unread,
+  openRevisions,
   published,
   all,
   upcoming,
@@ -116,6 +132,12 @@ function renderDashboard({
         <Stat label="Bevestigde afspraken" value={confirmed} href="/admin/boekingen?status=confirmed" />
         <Stat label="Nieuwe berichten" value={unread} href="/admin/berichten" highlight={unread > 0} />
         <Stat label="Gepubliceerde projecten" value={published} href="/admin/projecten" />
+        <Stat
+          label="Openstaande wijzigingsverzoeken"
+          value={openRevisions}
+          href="/admin/boekingen?status=confirmed"
+          highlight={openRevisions > 0}
+        />
       </div>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-[1.4fr_1fr]">

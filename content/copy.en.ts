@@ -583,5 +583,58 @@ export const en: Dictionary = {
     contactOwnerSubject: (subject: string) => `Contact form: ${subject}`,
     contactFrom: "From:",
     contactRe: "Subject:",
+
+    paymentRequestSubject: (reference: string) => `Payment request (${reference}) — ${site.name}`,
+    paymentRequestBody: (amount: string) =>
+      `Thanks for the job! This project comes with an invoice of ${amount}, which you can ` +
+      `pay easily and securely online via the link below.`,
+    invoiceNumberLabel: "Invoice number",
+    invoiceLinkLabel: "View or download the invoice:",
+    paymentRequestPayLabel: "Pay this invoice online:",
+    paymentRequestNotice:
+      "Prefer to pay on delivery instead? That's fine too — this link stays valid until then.",
+    paymentRequestReply: "Have a question about this invoice? Just reply to this e-mail.",
+
+    deliverySubject: (reference: string) => `Project completed (${reference}) — ${site.name}`,
+    deliveryBodyReady:
+      "Good news: your project is finished! I enjoyed working on it and hope you're just " +
+      "as happy with the result. The final files are ready for you via the link below.",
+    deliveryBodyUnpaid: (amount: string) =>
+      `Good news: your project is finished! Before the files become available, there's ` +
+      `still an invoice of ${amount} open; once it's paid, they'll automatically become ` +
+      `available via the link below.`,
+    deliveryLinkLabel: "View and download your files:",
+    deliveryRevisionNotice:
+      "Not fully happy with the first edit? Let me know via the same link — I'm happy to " +
+      "go over a change with you.",
+    deliveryReply: "Questions about the delivery? Just reply to this e-mail.",
+
+    revisionOwnerSubject: (reference: string, name: string) => `Change requested (${reference}) — ${name}`,
+    revisionOwnerBody: "A change has been requested on a delivery.",
+  },
+
+  /* -- Delivery page --------------------------------------------------------- */
+  delivery: {
+    invalidTitle: "This link is no longer valid",
+    invalidBody:
+      "Check that you used the full link from the e-mail, or get in touch if you think this isn't right.",
+    heading: (reference: string) => `Delivery — ${reference}`,
+    invoiceNumberLabel: "Invoice number",
+    viewInvoiceLabel: "View or download your invoice (PDF)",
+    payTitle: "Payment required",
+    payIntro: (amount: string) =>
+      `An invoice of ${amount} is open for this project. Once it's paid, the files below will automatically become available.`,
+    payButton: "Pay now",
+    payError: "Payment didn't go through just now. Please try again or get in touch.",
+    paidNotice: (when: string) => `Paid on ${when}.`,
+    filesTitle: "Your files",
+    filesIntro: "Click a file to download it.",
+    downloadLabel: "Download",
+    revisionTitle: "Not fully happy?",
+    revisionIntro: "Let me know what you'd like changed; I'll go through it with you.",
+    revisionPlaceholder: "For example: could the colours in the second clip be a bit warmer?",
+    revisionSubmit: "Request a change",
+    revisionSuccess: "Thanks, your request has been sent. I'll be in touch soon.",
+    revisionError: "Please enter a message of at least 10 characters.",
   },
 };

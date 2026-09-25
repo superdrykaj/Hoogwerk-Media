@@ -598,6 +598,61 @@ export const nl = {
     contactOwnerSubject: (onderwerp: string) => `Contactformulier: ${onderwerp}`,
     contactFrom: "Van:",
     contactRe: "Onderwerp:",
+
+    paymentRequestSubject: (kenmerk: string) => `Betaalverzoek (${kenmerk}) — ${site.name}`,
+    paymentRequestBody: (bedrag: string) =>
+      `Bedankt voor de opdracht! Bij dit project hoort een factuur van ${bedrag}, die je ` +
+      `eenvoudig en veilig online kunt betalen via de onderstaande link.`,
+    invoiceNumberLabel: "Factuurnummer",
+    invoiceLinkLabel: "Bekijk of download de factuur:",
+    paymentRequestPayLabel: "Betaal deze factuur online:",
+    paymentRequestNotice:
+      "Liever pas betalen bij oplevering? Dat kan ook — deze link blijft geldig tot dan.",
+    paymentRequestReply: "Heb je een vraag over deze factuur? Antwoord gerust op deze mail.",
+
+    deliverySubject: (kenmerk: string) => `Project afgerond (${kenmerk}) — ${site.name}`,
+    deliveryBodyReady:
+      "Goed nieuws: je project is afgerond! Ik heb met plezier aan deze opdracht gewerkt " +
+      "en hoop dat je net zo blij bent met het resultaat. De eindproducten staan voor je " +
+      "klaar via onderstaande link.",
+    deliveryBodyUnpaid: (bedrag: string) =>
+      `Goed nieuws: je project is afgerond! Voordat de eindproducten vrijkomen, staat er ` +
+      `nog een factuur van ${bedrag} open; zodra die betaald is, komen ze automatisch ` +
+      `beschikbaar via onderstaande link.`,
+    deliveryLinkLabel: "Bekijk en download je bestanden:",
+    deliveryRevisionNotice:
+      "Ben je niet helemaal tevreden over de eerste editing? Laat het gerust weten via " +
+      "dezelfde link — ik denk graag met je mee voor een wijziging.",
+    deliveryReply: "Vragen over de oplevering? Antwoord gerust op deze mail.",
+
+    revisionOwnerSubject: (kenmerk: string, naam: string) => `Wijziging aangevraagd (${kenmerk}) — ${naam}`,
+    revisionOwnerBody: "Er is een wijziging aangevraagd op een oplevering.",
+  },
+
+  /* -- Opleveringspagina ------------------------------------------------------ */
+  delivery: {
+    invalidTitle: "Deze link is niet (meer) geldig",
+    invalidBody:
+      "Controleer of je de volledige link uit de e-mail hebt gebruikt, of neem contact op als je denkt dat dit niet klopt.",
+    heading: (kenmerk: string) => `Oplevering — ${kenmerk}`,
+    invoiceNumberLabel: "Factuurnummer",
+    viewInvoiceLabel: "Bekijk of download je factuur (PDF)",
+    payTitle: "Betaling vereist",
+    payIntro: (bedrag: string) =>
+      `Voor dit project staat een factuur van ${bedrag} open. Zodra deze betaald is, komen de bestanden hieronder automatisch vrij.`,
+    payButton: "Nu betalen",
+    payError: "Betalen lukte net niet. Probeer het nog eens of neem contact op.",
+    paidNotice: (wanneer: string) => `Betaald op ${wanneer}.`,
+    filesTitle: "Jouw bestanden",
+    filesIntro: "Klik op een bestand om het te downloaden.",
+    downloadLabel: "Downloaden",
+    revisionTitle: "Niet helemaal tevreden?",
+    revisionIntro: "Laat weten wat je anders zou willen zien; ik neem het met je door.",
+    revisionPlaceholder:
+      "Bijvoorbeeld: kun je de kleuren in het tweede fragment iets warmer maken?",
+    revisionSubmit: "Wijziging aanvragen",
+    revisionSuccess: "Bedankt, je verzoek is verstuurd. Ik neem snel contact op.",
+    revisionError: "Vul een bericht van minstens 10 tekens in.",
   },
 };
 
