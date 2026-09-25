@@ -80,7 +80,7 @@ export async function ProjectPage({
             {tekst.location && <span className="chip">{tekst.location}</span>}
             {/* Alleen verzonnen projecten dragen dit label. */}
             {project.isExample && (
-              <span className="chip border-amber-400/40 text-amber-200/90">
+              <span className="text-xs uppercase tracking-wider text-mist-600">
                 {t.project.exampleChip}
               </span>
             )}
@@ -122,7 +122,6 @@ export async function ProjectPage({
           </aside>
         </div>
 
-        {/* Video ------------------------------------------------------------ */}
         <section aria-labelledby="video-titel" className="pb-4">
           <h2 id="video-titel" className="display-2 mb-6">
             {t.project.videoTitle}
@@ -157,7 +156,6 @@ export async function ProjectPage({
           )}
         </section>
 
-        {/* Galerij ---------------------------------------------------------- */}
         <section aria-labelledby="galerij-titel" className="py-16">
           <h2 id="galerij-titel" className="display-2 mb-6">
             {t.project.galleryTitle}
@@ -171,7 +169,6 @@ export async function ProjectPage({
           )}
         </section>
 
-        {/* Andere projecten ------------------------------------------------- */}
         {others.length > 0 && (
           <section aria-labelledby="meer-titel" className="border-t border-ink-700 py-16">
             <h2 id="meer-titel" className="display-2 mb-8">
@@ -214,7 +211,6 @@ export async function ProjectPage({
   );
 }
 
-/** Zet een YouTube- of Vimeo-link om naar een insluitbare URL. */
 function toEmbedUrl(input: string): string | null {
   if (!input) return null;
   try {
