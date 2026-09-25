@@ -449,9 +449,10 @@ projecten — er is geen apart component voor.
 Hetzelfde geldt voor de diensten: die staan in de database en veranderen niet
 mee met `lib/example-data.ts`. Voor de herziening van de tarieven is er een
 tweede script. Het hernoemt de fotografie- en videodienst, zet de nieuwe
-bedragen erin, voegt *Bedrijfsfilm* en *Bouwvordering* toe, haalt het
-voorbeeldproject over een festival van de site en verplaatst het
-nieuwbouwproject naar de categorie bouwvordering.
+bedragen erin, voegt *Bedrijfsfilm* en *Bouwvoortgang* toe (en hernoemt een
+bestaande *Bouwvordering* naar *Bouwvoortgang*), haalt het voorbeeldproject
+over een festival van de site en verplaatst het nieuwbouwproject naar de
+categorie bouwvordering.
 
 ```bash
 # lokaal
