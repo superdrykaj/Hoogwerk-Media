@@ -115,14 +115,28 @@ describe("projectselectie voor de homepage", () => {
     db.close();
   });
 
-  it("zet de voorbeeldprojecten wel in het volledige portfolio", () => {
+  it("toont in het portfolio alleen de twee echte projecten", () => {
     const db = verseDatabase();
     installExampleData(db);
-    const alle = db
+    const zichtbaar = db
       .prepare("SELECT slug, is_example FROM projects WHERE published = 1")
       .all() as { slug: string; is_example: number }[];
-    expect(alle.length).toBeGreaterThan(ECHT.length);
-    expect(alle.filter((r) => r.is_example === 1).length).toBeGreaterThan(0);
+    expect(zichtbaar.map((r) => r.slug).sort()).toEqual([...ECHT].sort());
+    expect(zichtbaar.every((r) => r.is_example === 0)).toBe(true);
+    db.close();
+  });
+
+  it("zet de voorbeeldprojecten als concept klaar, niet op de site", () => {
+    const db = verseDatabase();
+    installExampleData(db);
+    const concepten = db
+      .prepare("SELECT slug FROM projects WHERE published = 0")
+      .all() as { slug: string }[];
+    // Wel aanwezig in de beheeromgeving, om als sjabloon te gebruiken.
+    expect(concepten.length).toBeGreaterThan(0);
+    expect(concepten.length).toBe(
+      EXAMPLE_PROJECTS.filter((p) => p.is_example === 1).length,
+    );
     db.close();
   });
 

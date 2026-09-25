@@ -14,6 +14,9 @@ export default function SettingsPage() {
   const status = siteStatus();
   const mailReady = isMailConfigured();
   const naartoe = mailRecipients();
+  // Microsoft 365 heeft één weigering die zo vaak voorkomt dat de uitleg
+  // erbij hoort te staan, ook als er op dit moment niets misgaat.
+  const viaMicrosoft = /office365|outlook\.com/i.test(process.env.SMTP_HOST ?? "");
 
   return (
     <>
@@ -79,16 +82,49 @@ export default function SettingsPage() {
               value={site.email}
               hint="Staat als antwoordadres in de mail aan de afzender."
             />
+            <Regel
+              label="Agenda-uitnodiging"
+              value={naartoe.calendar}
+              hint="Bij een bevestigde afspraak gaat hier een .ics-uitnodiging heen. Verplaats of annuleer je de afspraak, dan schuift die in je agenda mee."
+            />
           </dl>
           <p className="field-hint">
             De adressen komen uit <code>content/site.ts</code>. Wil je de
             meldingen ergens anders hebben, zet dan{" "}
             <code>MAIL_TO_BOOKINGS</code> en <code>MAIL_TO_CONTACT</code> op de
-            server (of <code>MAIL_TO</code> voor allebei tegelijk).
+            server (of <code>MAIL_TO</code> voor allebei tegelijk). De
+            agenda-uitnodiging volgt <code>MAIL_TO</code> bewust niet; die heeft
+            een eigen instelling: <code>MAIL_TO_CALENDAR</code>.
           </p>
 
           {mailReady ? (
-            <TestMailForm defaultTo={naartoe.bookings} />
+            <>
+              <TestMailForm defaultTo={naartoe.bookings} />
+              {viaMicrosoft && (
+                <details className="mt-5 rounded-xl border border-ink-700 p-4">
+                  <summary className="cursor-pointer text-sm font-semibold text-mist-100">
+                    Weigert Microsoft 365 de aanmelding?
+                  </summary>
+                  <p className="mt-3 text-sm leading-relaxed text-mist-300">
+                    Bij <code>535 5.7.3 Authentication unsuccessful</code> ligt
+                    het vrijwel nooit aan de website. Microsoft zet verzenden
+                    via SMTP per postvak standaard uit. Zet in het Microsoft
+                    365-beheercentrum bij Gebruikers → Actieve gebruikers → het
+                    account → E-mail → E-mail-apps beheren de optie{" "}
+                    <strong>Geverifieerde SMTP</strong> aan. Staat die er niet,
+                    dan is SMTP voor de hele organisatie uit; dat zet je aan met{" "}
+                    <code>Set-TransportConfig -SmtpClientAuthenticationDisabled $false</code>.
+                  </p>
+                  <p className="field-hint">
+                    Met tweestapsverificatie op het account werkt het gewone
+                    wachtwoord nooit: maak een app-wachtwoord en zet dat in{" "}
+                    <code>SMTP_PASSWORD</code>. Lukt het niet, dan is een
+                    verzenddienst als Resend, Postmark of Brevo het rustigste
+                    alternatief: die geeft SMTP-gegevens die het meteen doen.
+                  </p>
+                </details>
+              )}
+            </>
           ) : (
             <>
               <h3 className="mt-6 text-sm font-semibold text-mist-100">

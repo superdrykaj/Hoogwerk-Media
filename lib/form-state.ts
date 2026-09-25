@@ -37,6 +37,12 @@ export type ActionState = {
   status: "idle" | "success" | "error" | "warning";
   message: string;
   errors?: Record<string, string>;
+  /**
+   * Toelichting onder de melding, regel voor regel. Gebruikt waar één zin niet
+   * genoeg is: bij een weigerende mailserver hoort naast de oorzaak ook het
+   * lijstje van wat je eraan kunt doen.
+   */
+  details?: string[];
 };
 
 export const emptyActionState: ActionState = { status: "idle", message: "" };

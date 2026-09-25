@@ -1,18 +1,18 @@
 import Link from "next/link";
 
-import { EmptyState, PageHeading, Panel, StatusBadge } from "@/components/admin/ui";
+import { DashboardBookings } from "@/components/admin/dashboard-bookings";
+import { PageHeading, Panel } from "@/components/admin/ui";
 import { conflictingBookings } from "@/lib/availability";
 import { countBookings, listBookings } from "@/lib/bookings";
 import { isMailConfigured, recentMailLog } from "@/lib/mail";
 import { countUnhandledMessages } from "@/lib/messages";
 import { listProjects } from "@/lib/projects";
 import { formatTimestamp } from "@/lib/time";
-import { STATUS_LABELS } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
-  const { now, pending, confirmed, unread, published, upcoming, conflicts, mailReady, mailLog } =
+  const { now, pending, confirmed, unread, published, all, upcoming, conflicts, mailReady, mailLog } =
     await loadDashboard();
   return renderDashboard({
     now,
@@ -20,6 +20,7 @@ export default async function AdminDashboard() {
     confirmed,
     unread,
     published,
+    all,
     upcoming,
     conflicts,
     mailReady,
@@ -36,6 +37,8 @@ async function loadDashboard() {
   const projects = listProjects();
   const published = projects.filter((p) => p.published).length;
 
+  // De agenda laat ook eerdere maanden zien, dus die heeft alles nodig.
+  const all = listBookings();
   const upcoming = listBookings({ fromUtc: now })
     .filter((b) => b.status === "pending" || b.status === "confirmed")
     .slice(0, 6);
@@ -50,6 +53,7 @@ async function loadDashboard() {
     confirmed,
     unread,
     published,
+    all,
     upcoming,
     conflicts,
     mailReady,
@@ -62,6 +66,7 @@ function renderDashboard({
   confirmed,
   unread,
   published,
+  all,
   upcoming,
   conflicts,
   mailReady,
@@ -114,33 +119,8 @@ function renderDashboard({
       </div>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
-        <Panel title="Eerstvolgende afspraken">
-          {upcoming.length === 0 ? (
-            <EmptyState
-              title="Nog niets gepland"
-              body="Zodra iemand een afspraak aanvraagt, verschijnt die hier."
-              href="/admin/beschikbaarheid"
-              linkLabel="Beschikbaarheid instellen"
-            />
-          ) : (
-            <ul className="divide-y divide-ink-700">
-              {upcoming.map((booking) => (
-                <li key={booking.id} className="flex flex-wrap items-center gap-3 py-3">
-                  <span className="w-48 shrink-0 text-sm tabular-nums text-mist-300">
-                    {formatTimestamp(booking.startUtc)}
-                  </span>
-                  <span className="flex-1 text-sm">
-                    <span className="font-medium">{booking.name}</span>
-                    <span className="text-mist-500"> — {booking.serviceName}</span>
-                  </span>
-                  <StatusBadge status={booking.status} label={STATUS_LABELS[booking.status]} />
-                </li>
-              ))}
-            </ul>
-          )}
-          <Link href="/admin/boekingen" className="btn btn-quiet mt-5">
-            Alle boekingen
-          </Link>
+        <Panel>
+          <DashboardBookings upcoming={upcoming} all={all} />
         </Panel>
 
         <Panel title="Verzonden e-mail" description="De laatste pogingen om e-mail te versturen.">

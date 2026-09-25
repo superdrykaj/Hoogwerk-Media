@@ -9,9 +9,9 @@ export const dynamic = "force-dynamic";
 export default async function BookingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<{ status?: string; open?: string }>;
 }) {
-  const { status } = await searchParams;
+  const { status, open } = await searchParams;
   const bookings = listBookings();
   const conflicts = conflictingBookings();
 
@@ -24,6 +24,7 @@ export default async function BookingsPage({
       <BookingsManager
         bookings={bookings}
         initialStatus={status ?? "all"}
+        initialOpenId={Number(open) || null}
         conflictIds={conflicts.map((c) => c.id)}
         mailReady={isMailConfigured()}
       />
