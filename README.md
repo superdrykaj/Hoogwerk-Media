@@ -199,7 +199,7 @@ herstart van de server vanzelf weer opkomt.
 | `AUTH_SECRET` | ja | Ondertekent het inlogcookie. Komt uit hetzelfde commando. |
 | `NEXT_PUBLIC_SITE_URL` | ja | Paginatitels, deelbeeld, `robots.txt` en `sitemap.xml`. |
 | `DATA_DIR` | in productie | Map voor de database en de uploads. In Docker staat die al op `/data`. |
-| `SITE_STATUS` | nee | Staat standaard op `"soon"`: bezoekers zien alleen de pagina "binnenkort online". Zet op `"live"` om de site te openen. |
+| `SITE_STATUS` | nee | Alleen de beginstand van een verse installatie. Daarna bepaalt de knop in Beheer → Instellingen of de site open staat. |
 | `SEED_ON_EMPTY` | nee | Staat standaard aan: een lege database wordt bij de eerste start met de voorbeelden gevuld. Zet op `"false"` als je leeg wilt beginnen. |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `MAIL_FROM`, `MAIL_TO` | nee | Nodig voor bevestigingsmails. Zonder deze gegevens gaat er geen mail uit, en zegt de site dat er ook bij. |
 
@@ -217,17 +217,17 @@ Ben je ingelogd via `/admin`, dan zie je de volledige site gewoon, met een balk
 bovenin die eraan herinnert dat niemand anders dit ziet. Je kunt dus alles
 rustig nakijken terwijl de deur dicht blijft.
 
-Opengaan doe je met één variabele:
+Open- en dichtzetten doe je met de knop in **Beheer → Instellingen →
+Zichtbaarheid van de site**. Dat werkt direct; je hoeft er niets voor uit te
+rollen. De stand staat in de database.
 
-```bash
-# Fly.io
-fly secrets set SITE_STATUS=live      # of pas [env] in fly.toml aan en deploy
+Bij een verse installatie, als er nog nooit op die knop is gedrukt, geldt de
+omgevingsvariabele `SITE_STATUS` als beginstand. Die staat in `fly.toml` op
+`"soon"`, zodat een nieuwe installatie altijd dicht begint. Zodra je de knop
+één keer gebruikt, telt alleen de database nog.
 
-# lokaal
-SITE_STATUS=live npm run dev
-```
-
-Doe dat pas als de lijst onder *Voor je opengaat* hieronder afgevinkt is.
+Zet de site pas open als de lijst onder *Voor je opengaat* hieronder
+afgevinkt is.
 
 ### Voor je opengaat
 
@@ -239,7 +239,7 @@ Doe dat pas als de lijst onder *Voor je opengaat* hieronder afgevinkt is.
 - Contactformulier getest: er komt echt een mailtje binnen.
 - Geen voorbeeldprojecten meer in het portfolio; die waarschuwden bezoekers
   voorheen via een balk bovenaan, en die balk is er niet meer.
-- Als sluitstuk `SITE_STATUS="live"`.
+- Als sluitstuk: de site openzetten met de knop in Beheer → Instellingen.
 
 ### Wat er na publicatie gebeurt
 

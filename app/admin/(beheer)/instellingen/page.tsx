@@ -1,14 +1,17 @@
 import { PageHeading, Panel } from "@/components/admin/ui";
 import { SettingsForm } from "@/components/admin/settings-form";
+import { SiteStatusForm } from "@/components/admin/site-status-form";
 import { TestMailForm } from "@/components/admin/test-mail-form";
 import { site } from "@/content/site";
 import { isMailConfigured, mailRecipients } from "@/lib/mail";
 import { getSettings } from "@/lib/settings";
+import { siteStatus } from "@/lib/site-status";
 
 export const dynamic = "force-dynamic";
 
 export default function SettingsPage() {
   const settings = getSettings();
+  const status = siteStatus();
   const mailReady = isMailConfigured();
   const naartoe = mailRecipients();
 
@@ -20,6 +23,13 @@ export default function SettingsPage() {
       />
 
       <div className="space-y-8">
+        <Panel
+          title="Zichtbaarheid van de site"
+          description="Staat de website open voor bezoekers, of alleen voor jou?"
+        >
+          <SiteStatusForm status={status} />
+        </Panel>
+
         <Panel
           title="Boekingsregels"
           description="Deze regels gelden voor alle diensten in de boekingsmodule."

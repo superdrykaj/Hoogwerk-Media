@@ -3,6 +3,10 @@ import "server-only";
 import { notFound } from "next/navigation";
 
 import { isSignedIn } from "./auth";
+import { getDb } from "./db";
+import { bepaalStatus, type SiteStatus } from "./site-status-rule";
+
+export type { SiteStatus };
 
 /**
  * ============================================================================
@@ -15,19 +19,40 @@ import { isSignedIn } from "./auth";
  *  Ben je ingelogd via /admin, dan zie je de volledige site gewoon. Zo kun je
  *  alles rustig nakijken terwijl de deur voor de buitenwereld dicht blijft.
  *
- *  Opengaan doe je met één omgevingsvariabele:
+ *  Open- en dichtzetten doe je met de knop in Beheer → Instellingen. De stand
+ *  staat in de database, zodat je er geen uitrol voor nodig hebt.
  *
- *      SITE_STATUS="live"
- *
- *  In fly.toml staat die waarde onder [env]. Na `fly deploy` is de site open.
+ *  Staat er nog niets in de database — bij een verse installatie — dan geldt
+ *  de omgevingsvariabele SITE_STATUS als beginstand. Die staat in fly.toml op
+ *  "soon". Zodra je de knop één keer gebruikt, telt alleen de database nog.
  * ============================================================================
  */
 
-export type SiteStatus = "soon" | "live";
+/** Sleutel in de instellingentabel. */
+const SLEUTEL = "siteStatus";
 
-/** Wat er in de omgeving staat ingesteld. Alles behalve "live" telt als dicht. */
+/**
+ * De huidige stand. Alles behalve "live" telt als dicht.
+ *
+ * Bewust synchroon: better-sqlite3 leest zonder te wachten, en zo hoeven
+ * robots.txt, de sitemap en de metadata niet te veranderen.
+ */
 export function siteStatus(): SiteStatus {
-  return process.env.SITE_STATUS === "live" ? "live" : "soon";
+  const rij = getDb()
+    .prepare("SELECT value FROM settings WHERE key = ?")
+    .get(SLEUTEL) as { value: string } | undefined;
+
+  return bepaalStatus(rij?.value, process.env.SITE_STATUS);
+}
+
+/** Zet de site open of dicht. Wordt aangeroepen vanuit de beheeromgeving. */
+export function setSiteStatus(status: SiteStatus): void {
+  getDb()
+    .prepare(
+      "INSERT INTO settings (key, value) VALUES (?, ?) " +
+        "ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+    )
+    .run(SLEUTEL, status);
 }
 
 /**

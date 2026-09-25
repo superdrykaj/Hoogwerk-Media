@@ -1,24 +1,14 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-import { SESSION_COOKIE, verifySessionToken } from "@/lib/session-token";
-
 /**
  * ============================================================================
  *  DE DEUR VAN DE WEBSITE
  * ============================================================================
- *  Zolang SITE_STATUS niet op "live" staat, krijgt een bezoeker alleen de
- *  voorpagina te zien. Alle andere pagina's sturen we terug naar de voorpagina
- *  voordat er ook maar iets van wordt opgebouwd.
+ *  Twee taken.
  *
- *  Dat laatste is de reden dat dit hier staat en niet in de pagina's zelf: een
- *  `redirect()` in een pagina wordt in deze versie van Next.js als meta-tag in
- *  de HTML gezet. De bezoeker gaat dan wel naar de voorpagina, maar heeft de
- *  hele pagina al binnengekregen. Hier grijpen we in vóór het renderen, dus
- *  gaat er niets de deur uit.
- *
- *  Ben je ingelogd als beheerder, dan ga je gewoon overal doorheen.
- *  Zie lib/site-status.ts voor de rest van de schakelaar.
+ *  Het fly.dev-adres stuurt door naar het eigen domein; dat kan hier, omdat
+ *  het alleen naar de host van het verzoek hoeft te kijken.
  *
  *  Daarnaast geeft dit bestand het opgevraagde pad door aan de pagina's. De
  *  hoofdlayout moet weten of de bezoeker op de Nederlandse of de Engelse
@@ -29,14 +19,6 @@ import { SESSION_COOKIE, verifySessionToken } from "@/lib/session-token";
  *  `middleware.ts` is vervallen; de werking is verder hetzelfde.
  * ============================================================================
  */
-
-function isAdmin(request: NextRequest): boolean {
-  const secret = process.env.AUTH_SECRET;
-  if (!secret || secret.length < 16) return false;
-
-  const token = request.cookies.get(SESSION_COOKIE)?.value;
-  return Boolean(token && verifySessionToken(token, secret));
-}
 
 /** Laat het verzoek door, met het pad erbij voor de hoofdlayout. */
 function doorlaten(request: NextRequest) {
@@ -88,28 +70,17 @@ export function proxy(request: NextRequest) {
   const omleiding = naarEigenDomein(request);
   if (omleiding) return omleiding;
 
-  if (process.env.SITE_STATUS === "live") return doorlaten(request);
-
-  const { pathname } = request.nextUrl;
-
-  // De voorpagina toont zelf "binnenkort online"; de beheeromgeving en de
-  // gezondheidscheck moeten altijd bereikbaar blijven. /en is de Engelse
-  // voorpagina en hoort daar dus ook bij.
-  if (
-    pathname === "/" ||
-    pathname === "/en" ||
-    pathname.startsWith("/admin") ||
-    pathname.startsWith("/api/")
-  ) {
-    return doorlaten(request);
-  }
-
-  if (isAdmin(request)) return doorlaten(request);
-
-  // Een Engelse bezoeker komt op de Engelse voorpagina terecht, niet op de
-  // Nederlandse.
-  const naar = pathname.startsWith("/en/") ? "/en" : "/";
-  return NextResponse.redirect(new URL(naar, request.url));
+  /**
+   * Hier stond ook de afscherming van een dichte site. Die is verhuisd naar de
+   * pagina's zelf, omdat de stand nu in de database staat en een proxy die niet
+   * kan lezen: hij draait buiten de applicatie en heeft geen toegang tot de
+   * native databasemodule.
+   *
+   * Dat is geen gat. Elke publieke pagina roept requireOpenSite() aan en geeft
+   * een 404 als de site dicht is — zonder iets van de inhoud mee te sturen. De
+   * voorpagina toont dan "binnenkort online". Zie lib/site-status.ts.
+   */
+  return doorlaten(request);
 }
 
 export const config = {

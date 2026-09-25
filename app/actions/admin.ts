@@ -46,6 +46,7 @@ import type { ActionState } from "@/lib/form-state";
 import { rateLimit } from "@/lib/rate-limit";
 import { createService, deleteService, updateService } from "@/lib/services";
 import { saveSettings } from "@/lib/settings";
+import { setSiteStatus } from "@/lib/site-status";
 import { parseMinutes, zonedToUtc } from "@/lib/time";
 import { leesWeekschema } from "@/lib/week-schedule";
 import { saveUpload } from "@/lib/uploads";
@@ -595,4 +596,44 @@ export async function deleteMessageAction(formData: FormData): Promise<void> {
   deleteMessage(Number(formData.get("id")));
   revalidatePath("/admin/berichten");
   revalidatePath("/admin");
+}
+
+/**
+ * Zet de site open of dicht.
+ *
+ * De stand staat in de database, niet in een omgevingsvariabele, zodat dit met
+ * één klik kan in plaats van met een nieuwe uitrol. Zie lib/site-status.ts.
+ */
+export async function setSiteStatusAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  await requireAdmin();
+
+  const gewenst = formData.get("status") === "live" ? "live" : "soon";
+  setSiteStatus(gewenst);
+
+  // Alles wat van de stand afhangt opnieuw opbouwen: beide voorpagina's, het
+  // portfolio, de sitemap en robots.txt.
+  for (const pad of [
+    "/",
+    "/en",
+    "/portfolio",
+    "/en/portfolio",
+    "/contact",
+    "/en/contact",
+    "/sitemap.xml",
+    "/robots.txt",
+    "/admin/instellingen",
+  ]) {
+    revalidatePath(pad);
+  }
+
+  return {
+    status: "success",
+    message:
+      gewenst === "live"
+        ? "De site staat open. Bezoekers zien nu de volledige website."
+        : "De site staat dicht. Bezoekers zien alleen \u201cbinnenkort online\u201d; jij ziet als ingelogde beheerder nog alles.",
+  };
 }

@@ -1,5 +1,20 @@
 # Wijzigingen
 
+## September 2026 — knop voor de zichtbaarheid van de site
+
+De site open- of dichtzetten kan nu met een knop in **Beheer → Instellingen**.
+Dat werkt direct: geen `fly secrets`, geen uitrol.
+
+- De stand staat in de database in plaats van in een omgevingsvariabele. Bij
+  een verse installatie geldt `SITE_STATUS` nog als beginstand; zodra je de
+  knop één keer gebruikt, telt alleen de database.
+- De afscherming van een dichte site is verhuisd van `proxy.ts` naar de
+  pagina's zelf. Een proxy draait buiten de applicatie en kan de database niet
+  lezen. Dat is geen gat: elke publieke pagina geeft een 404 zonder iets van de
+  inhoud mee te sturen, en de voorpagina toont "binnenkort online".
+- `proxy.ts` doet nu nog twee dingen: de omleiding van fly.dev naar het eigen
+  domein, en het doorgeven van het pad aan de layout.
+
 ## September 2026 — twee echte projecten in het portfolio
 
 - **De Zaan in Wormerveer** en **Knooppunt Zaandam bij zonsondergang** staan in
