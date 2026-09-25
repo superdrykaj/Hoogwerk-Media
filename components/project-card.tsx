@@ -38,36 +38,25 @@ export function ProjectCard({
         <span className="chip absolute left-4 top-4 bg-ink-950/70 backdrop-blur">
           {t.portfolio.categories[project.category] ?? project.category}
         </span>
-        {/* Alleen verzonnen projecten dragen dit label. */}
         {project.isExample && (
-          <span className="chip absolute right-4 top-4 border-amber-400/40 bg-ink-950/70 text-amber-200/90 backdrop-blur">
+          <span className="absolute right-4 top-4 text-[10px] uppercase tracking-wider text-mist-500/80">
             {t.project.exampleChip}
           </span>
         )}
       </div>
-
       <div className="p-5">
         <h3 className="font-[family-name:var(--font-display)] text-lg font-semibold tracking-tight">
-          <Link
-            href={href(`/portfolio/${project.slug}`, locale)}
-            className="after:absolute after:inset-0"
-          >
+          <Link href={href(`/portfolio/${project.slug}`, locale)} className="after:absolute after:inset-0">
             {tekst.title}
           </Link>
         </h3>
-        {tekst.location && (
-          <p className="mt-1 text-sm text-mist-500">{tekst.location}</p>
-        )}
+        {tekst.location && <p className="mt-1 text-sm text-mist-500">{tekst.location}</p>}
         {tekst.summary && (
-          <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-mist-500">
-            {tekst.summary}
-          </p>
+          <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-mist-500">{tekst.summary}</p>
         )}
         <p className="mt-4 text-sm font-semibold text-haze-300">
           {t.project.cardLink}
-          <span aria-hidden="true" className="ml-1 inline-block transition-transform group-hover:translate-x-1">
-            →
-          </span>
+          <span aria-hidden="true" className="ml-1 inline-block transition-transform group-hover:translate-x-1">→</span>
         </p>
       </div>
     </article>

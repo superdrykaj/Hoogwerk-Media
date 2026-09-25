@@ -19,12 +19,9 @@ export async function PortfolioPage({ locale }: { locale: Locale }) {
         <p className="eyebrow">{t.portfolio.eyebrow}</p>
         <h1 className="display-1 mt-4 text-balance">{t.portfolio.title}</h1>
         <p className="lede mt-6">{t.portfolio.intro(t.region.short)}</p>
-        {/* Alleen tonen zolang er nog verzonnen projecten tussen staan.
-            Zijn die allemaal vervangen, dan valt de melding vanzelf weg. */}
         {projects.some((project) => project.isExample) && (
-          <p className="notice notice-info mt-8">
-            {t.portfolio.noticeBefore}{" "}
-            <strong>{t.portfolio.noticeStrong}</strong> {t.portfolio.noticeAfter}
+          <p className="mt-6 text-sm text-mist-600">
+            {t.portfolio.noticeBefore}
           </p>
         )}
       </header>
@@ -33,7 +30,7 @@ export async function PortfolioPage({ locale }: { locale: Locale }) {
         {projects.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-ink-600 px-6 py-20 text-center">
             <p className="text-mist-300">{t.portfolio.empty}</p>
-            <Link href="/admin/projecten" className="btn btn-ghost mt-6">
+            <Link href={href("/contact", locale)} className="btn btn-ghost mt-6">
               {t.portfolio.emptyAction}
             </Link>
           </div>
