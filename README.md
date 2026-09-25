@@ -412,6 +412,38 @@ veenweideproject met zijn galerijbeelden, en geeft de overgebleven
 voorbeeldprojecten het label `Voorbeeldproject`. Wat jij zelf hebt aangemaakt
 blijft ongemoeid. Nog een keer draaien verandert niets meer.
 
+### Fotogalerijen bij de echte projecten
+
+Bij beide echte projecten horen vier foto's. Die staan, net als de projecten
+zelf, in de database.
+
+```bash
+# lokaal
+node scripts/onderhoud/projectgalerijen-2026.cjs
+
+# op de server, nadat de nieuwe versie is uitgerold
+fly ssh console -C "node scripts/onderhoud/projectgalerijen-2026.cjs"
+```
+
+| Project | Foto's |
+| --- | --- |
+| De Zaan in Wormerveer | `/media/wormerveer-de-zaan-01…04.webp` |
+| Knooppunt Zaandam bij zonsondergang | `/media/knooppunt-zaandam-01…04.webp` |
+
+Het script werkt per foto op de bestandsnaam: staat hij er nog niet, dan komt
+hij erbij; staat hij er al, dan worden alleen een afwijkend bijschrift of een
+afwijkende volgorde bijgewerkt. Eigen foto's die je zelf hebt geüpload blijven
+staan. Nog een keer draaien verandert niets meer, dus er komt nooit een dubbele
+regel bij — ook niet na een nieuwe uitrol.
+
+Ontbreekt een bestand in `public/media`, dan slaat het script die regel over en
+zegt dat erbij. Zet het bestand erbij en draai het script opnieuw; liever geen
+galerij dan een galerij met gebroken afbeeldingen.
+
+De posterbeelden blijven de omslagafbeelding van het project; die staan los van
+de galerij. De galerij en de lichtbak zijn dezelfde als bij de andere
+projecten — er is geen apart component voor.
+
 ### Diensten en tarieven in een bestaande database bijwerken
 
 Hetzelfde geldt voor de diensten: die staan in de database en veranderen niet

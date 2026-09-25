@@ -1,5 +1,16 @@
 # Wijzigingen
 
+## September 2026 — fotogalerijen bij de echte projecten
+
+- Vier foto's bij **De Zaan in Wormerveer** en vier bij **Knooppunt Zaandam bij
+  zonsondergang**, met bijschriften in het Nederlands en het Engels.
+- De posterbeelden blijven de omslagafbeelding; de galerij en de lichtbak zijn
+  dezelfde als bij de andere projecten.
+- Nieuwe installaties krijgen de galerijen uit de voorbeeldgegevens. Voor een
+  database die al draait is er `scripts/onderhoud/projectgalerijen-2026.cjs`.
+  Dat script werkt per bestandsnaam en voegt nooit een dubbele regel toe, ook
+  niet na een nieuwe uitrol.
+
 ## September 2026 — knop voor de zichtbaarheid van de site
 
 De site open- of dichtzetten kan nu met een knop in **Beheer → Instellingen**.

@@ -171,7 +171,28 @@ export const EXAMPLE_PROJECTS = [
     featured: 1,
     sort_order: 1,
     is_example: 0,
-    images: [],
+    images: [
+      [
+        "/media/wormerveer-de-zaan-01.webp",
+        "Karakteristieke bebouwing en woonboten langs de Zaan in Wormerveer",
+        "Waterfront buildings and houseboats along the River Zaan in Wormerveer",
+      ],
+      [
+        "/media/wormerveer-de-zaan-02.webp",
+        "Uitzicht over de Zaan met bomen en kade in Wormerveer",
+        "View across the River Zaan with trees and the quay in Wormerveer",
+      ],
+      [
+        "/media/wormerveer-de-zaan-03.webp",
+        "Hoog droneperspectief over Wormerveer en de Zaan",
+        "High aerial view across Wormerveer and the River Zaan",
+      ],
+      [
+        "/media/wormerveer-de-zaan-04.webp",
+        "Bocht in de Zaan langs de kade van Wormerveer",
+        "Bend in the River Zaan along the Wormerveer quay",
+      ],
+    ],
   },
   {
     slug: "knooppunt-zaandam-bij-zonsondergang",
@@ -198,7 +219,28 @@ export const EXAMPLE_PROJECTS = [
     featured: 1,
     sort_order: 2,
     is_example: 0,
-    images: [],
+    images: [
+      [
+        "/media/knooppunt-zaandam-01.webp",
+        "Snelweg door het groene landschap bij knooppunt Zaandam in de avond",
+        "Motorway through the green landscape near Zaandam interchange in the evening",
+      ],
+      [
+        "/media/knooppunt-zaandam-02.webp",
+        "Rijbanen en verkeer bij knooppunt Zaandam vanuit de lucht",
+        "Aerial view of the carriageways and traffic near Zaandam interchange",
+      ],
+      [
+        "/media/knooppunt-zaandam-03.webp",
+        "Snelweg en watergang bij knooppunt Zaandam rond zonsondergang",
+        "Motorway and waterway near Zaandam interchange around sunset",
+      ],
+      [
+        "/media/knooppunt-zaandam-04.webp",
+        "Avondverkeer op de snelweg richting Zaandam",
+        "Evening traffic on the motorway towards Zaandam",
+      ],
+    ],
   },
   {
     slug: "herenhuis-aan-de-zaan",
