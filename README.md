@@ -201,6 +201,7 @@ herstart van de server vanzelf weer opkomt.
 | `DATA_DIR` | in productie | Map voor de database en de uploads. In Docker staat die al op `/data`. |
 | `SITE_STATUS` | nee | Alleen de beginstand van een verse installatie. Daarna bepaalt de knop in Beheer → Instellingen of de site open staat. |
 | `SEED_ON_EMPTY` | nee | Staat standaard aan: een lege database wordt bij de eerste start met de voorbeelden gevuld. Zet op `"false"` als je leeg wilt beginnen. |
+| `SERVER_REQUEST_TIMEOUT_MS` | nee | Alleen voor de Docker/standalone-server. Staat standaard op `0`, zodat grote uploads niet na Node's standaardlimiet van vijf minuten worden afgebroken. |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `MAIL_FROM`, `MAIL_TO` | nee | Nodig voor bevestigingsmails. Zonder deze gegevens gaat er geen mail uit, en zegt de site dat er ook bij. |
 
 Geheimen horen in de instellingen van je hosting, nooit in de repository.
@@ -790,6 +791,13 @@ het geheugen van de machine geen beperkende factor meer voor de
 bestandsgrootte — standaard mag een opleverbestand tot 4 GB zijn
 (`DELIVERY_MAX_UPLOAD_MB`).
 
+De Docker/standalone-server schakelt daarnaast Node's totale request-timeout
+uit. Zonder die instelling breekt Node een upload standaard na ongeveer vijf
+minuten af, ook als er nog steeds bytes binnenkomen. `headersTimeout` blijft
+wel actief; alleen de tijd voor de grote requestbody is onbeperkt. Wil je toch
+een totale grens instellen, zet dan `SERVER_REQUEST_TIMEOUT_MS` op het gewenste
+aantal milliseconden.
+
 **De schijfruimte van de gekoppelde volume is nu wél de beperking.** Er zit
 geen automatische opruiming op: bestanden blijven staan totdat je een boeking
 verwijdert. Reken bij een paar opdrachten met 4K-beeldmateriaal al snel op
@@ -802,6 +810,7 @@ fly volumes extend <volume-id> -s 20   # bijvoorbeeld naar 20 GB
 
 ```
 # DELIVERY_MAX_UPLOAD_MB="4096"
+# SERVER_REQUEST_TIMEOUT_MS="0"
 ```
 
 (Het geheugen van de machine, standaard 512 MB, mag je los daarvan nog
