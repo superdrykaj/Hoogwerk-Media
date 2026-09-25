@@ -583,5 +583,46 @@ export const en: Dictionary = {
     contactOwnerSubject: (subject: string) => `Contact form: ${subject}`,
     contactFrom: "From:",
     contactRe: "Subject:",
+
+    paymentRequestSubject: (reference: string) => `Payment request (${reference}) — ${site.name}`,
+    paymentRequestBody: (amount: string) =>
+      `This job comes with an invoice of ${amount}. You can pay it online directly via the link below.`,
+    paymentRequestLinkLabel: "Pay this invoice:",
+    paymentRequestNotice:
+      "Prefer to pay on delivery instead? That's fine too — this link stays valid until then.",
+
+    deliverySubject: (reference: string) => `Project completed (${reference}) — ${site.name}`,
+    deliveryBodyReady: "Your project is finished! The final files are ready for you via the link below.",
+    deliveryBodyUnpaid: (amount: string) =>
+      `Your project is finished! The invoice of ${amount} is still open; once it's paid, the files will automatically become available via the link below.`,
+    deliveryLinkLabel: "View and download your files:",
+    deliveryRevisionNotice:
+      "Not fully happy with the editing? You can request a change via the same link.",
+
+    revisionOwnerSubject: (reference: string, name: string) => `Change requested (${reference}) — ${name}`,
+    revisionOwnerBody: "A change has been requested on a delivery.",
+  },
+
+  /* -- Delivery page --------------------------------------------------------- */
+  delivery: {
+    invalidTitle: "This link is no longer valid",
+    invalidBody:
+      "Check that you used the full link from the e-mail, or get in touch if you think this isn't right.",
+    heading: (reference: string) => `Delivery — ${reference}`,
+    payTitle: "Payment required",
+    payIntro: (amount: string) =>
+      `An invoice of ${amount} is open for this project. Once it's paid, the files below will automatically become available.`,
+    payButton: "Pay now",
+    payError: "Payment didn't go through just now. Please try again or get in touch.",
+    paidNotice: (when: string) => `Paid on ${when}.`,
+    filesTitle: "Your files",
+    filesIntro: "Click a file to download it.",
+    downloadLabel: "Download",
+    revisionTitle: "Not fully happy?",
+    revisionIntro: "Let me know what you'd like changed; I'll go through it with you.",
+    revisionPlaceholder: "For example: could the colours in the second clip be a bit warmer?",
+    revisionSubmit: "Request a change",
+    revisionSuccess: "Thanks, your request has been sent. I'll be in touch soon.",
+    revisionError: "Please enter a message of at least 10 characters.",
   },
 };

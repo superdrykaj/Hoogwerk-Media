@@ -14,7 +14,7 @@ import { installExampleData } from "./example-data";
  * Zet DATABASE_PATH in het .env-bestand om een andere locatie te gebruiken.
  */
 
-const DATA_DIR = process.env.DATA_DIR
+export const DATA_DIR = process.env.DATA_DIR
   ? path.resolve(process.env.DATA_DIR)
   : path.join(process.cwd(), "data");
 
@@ -188,6 +188,49 @@ export function migrate(db: Database.Database) {
       detail      TEXT NOT NULL DEFAULT '',
       created_utc INTEGER NOT NULL
     );
+
+    -- Eén factuur/oplevering per boeking. Het bedrag vult Kai zelf in; dat
+    -- staat los van services.price_label, wat maar een indicatie is.
+    CREATE TABLE IF NOT EXISTS invoices (
+      id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+      booking_id          INTEGER NOT NULL UNIQUE REFERENCES bookings(id) ON DELETE CASCADE,
+      -- Lang en willekeurig, voor de opleveringslink. Bewust niet de korte,
+      -- mensleesbare boekingsreferentie: die staat al in mails en het adres.
+      token               TEXT NOT NULL UNIQUE,
+      amount_cents        INTEGER NOT NULL DEFAULT 0,
+      description         TEXT NOT NULL DEFAULT '',
+      pay_before_download INTEGER NOT NULL DEFAULT 1,
+      status              TEXT NOT NULL DEFAULT 'draft', -- draft | sent | paid | cancelled
+      mollie_payment_id   TEXT NOT NULL DEFAULT '',
+      paid_utc            INTEGER,
+      payment_sent_utc    INTEGER,
+      delivery_sent_utc   INTEGER,
+      created_utc         INTEGER NOT NULL,
+      updated_utc         INTEGER NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS invoice_files (
+      id            INTEGER PRIMARY KEY AUTOINCREMENT,
+      invoice_id    INTEGER NOT NULL REFERENCES invoices(id) ON DELETE CASCADE,
+      -- Willekeurige naam op schijf; original_name is wat de klant ziet.
+      filename      TEXT NOT NULL,
+      original_name TEXT NOT NULL,
+      content_type  TEXT NOT NULL,
+      size_bytes    INTEGER NOT NULL,
+      sort_order    INTEGER NOT NULL DEFAULT 0,
+      created_utc   INTEGER NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_invoice_files_invoice ON invoice_files(invoice_id);
+
+    CREATE TABLE IF NOT EXISTS revision_requests (
+      id           INTEGER PRIMARY KEY AUTOINCREMENT,
+      invoice_id   INTEGER NOT NULL REFERENCES invoices(id) ON DELETE CASCADE,
+      message      TEXT NOT NULL,
+      status       TEXT NOT NULL DEFAULT 'open', -- open | done
+      created_utc  INTEGER NOT NULL,
+      updated_utc  INTEGER NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_revision_requests_invoice ON revision_requests(invoice_id);
   `);
 
   // Kolommen die later zijn bijgekomen. `CREATE TABLE IF NOT EXISTS` voegt ze

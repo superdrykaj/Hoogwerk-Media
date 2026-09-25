@@ -17,6 +17,7 @@ import {
   ViewToggle,
   type BookingView,
 } from "@/components/admin/booking-calendar";
+import { InvoicePanel, type DeliveryInfo } from "@/components/admin/invoice-panel";
 import { StatusBadge } from "@/components/admin/ui";
 import {
   dateKeyOf,
@@ -41,6 +42,8 @@ export function BookingsManager({
   initialOpenId = null,
   conflictIds,
   mailReady,
+  mollieReady,
+  deliveryByBooking,
 }: {
   bookings: Booking[];
   initialStatus: string;
@@ -48,6 +51,8 @@ export function BookingsManager({
   initialOpenId?: number | null;
   conflictIds: number[];
   mailReady: boolean;
+  mollieReady: boolean;
+  deliveryByBooking: Record<number, DeliveryInfo>;
 }) {
   const [view, setView] = useState<BookingView>("list");
   const [filter, setFilter] = useState(initialStatus);
@@ -115,6 +120,8 @@ export function BookingsManager({
               open={openId === booking.id}
               onToggle={() => setOpenId(openId === booking.id ? null : booking.id)}
               conflict={conflictSet.has(booking.id)}
+              mollieReady={mollieReady}
+              delivery={deliveryByBooking[booking.id]}
             />
           ))}
         </ul>
@@ -135,11 +142,15 @@ function BookingRow({
   open,
   onToggle,
   conflict,
+  mollieReady,
+  delivery,
 }: {
   booking: Booking;
   open: boolean;
   onToggle: () => void;
   conflict: boolean;
+  mollieReady: boolean;
+  delivery?: DeliveryInfo;
 }) {
   return (
     <li className={`card overflow-hidden ${conflict ? "border-amber-500/50" : ""}`}>
@@ -180,12 +191,20 @@ function BookingRow({
         </p>
       )}
 
-      {open && <BookingDetail booking={booking} />}
+      {open && <BookingDetail booking={booking} mollieReady={mollieReady} delivery={delivery} />}
     </li>
   );
 }
 
-function BookingDetail({ booking }: { booking: Booking }) {
+function BookingDetail({
+  booking,
+  mollieReady,
+  delivery,
+}: {
+  booking: Booking;
+  mollieReady: boolean;
+  delivery?: DeliveryInfo;
+}) {
   const [statusState, statusAction, statusPending] = useActionState<ActionState, FormData>(
     updateBookingStatusAction,
     emptyActionState,
@@ -381,6 +400,10 @@ function BookingDetail({ booking }: { booking: Booking }) {
               )}
             </div>
           </form>
+
+          {booking.status === "confirmed" && delivery && (
+            <InvoicePanel bookingId={booking.id} info={delivery} mollieReady={mollieReady} />
+          )}
 
           <form action={deleteBookingAction} className="border-t border-ink-700 pt-4">
             <input type="hidden" name="id" value={booking.id} />

@@ -732,6 +732,9 @@ vijf e-mails of ze zijn verzonden, overgeslagen of mislukt.
 | Bevestiging van de aanvraag, met kenmerk | de klant | `boekingen@` |
 | Melding van een nieuwe aanvraag | jou | de klant |
 | Bevestigen, afwijzen of annuleren | de klant | `boekingen@` |
+| Betaalverzoek voor een factuur | de klant | `boekingen@` |
+| Project afgerond, met opleveringslink | de klant | `boekingen@` |
+| Wijziging aangevraagd op een oplevering | jou | de klant |
 | Ontvangstbevestiging contactformulier | de afzender | `info@` |
 | Het contactbericht zelf | jou | de afzender |
 
@@ -744,6 +747,43 @@ Het SPF-record van `hoogbeeldmedia.nl` eindigt op `-all` en staat alleen
 Microsoft toe. Verstuur je via Microsoft 365, dan klopt dat en hoef je niets te
 doen. Ga je via een andere dienst versturen, dan moet die eerst in het
 SPF-record, anders worden je mails geweigerd in plaats van in de spammap gezet.
+
+### Betalen en opleveren (optioneel)
+
+Bij een **bevestigde boeking** kun je in **Beheer → Boekingen** de sectie
+"Oplevering & factuur" openklappen om een bedrag vast te leggen, eindproducten
+te uploaden en die naar de klant te versturen. Twee momenten om te betalen:
+
+- **Betaalverzoek versturen** — kan meteen na het bevestigen van de boeking,
+  los van de oplevering. Handig als je (een deel van) het bedrag vooraf wilt
+  ontvangen.
+- **Project afronden & opleveren** — verstuurt de eindproducten via een
+  beveiligde link. Staat de paywall aan (standaard) en is er nog niet betaald,
+  dan ziet de klant eerst een betaalscherm; de bestanden komen vrij zodra de
+  betaling binnen is. Vanaf dezelfde link kan de klant ook een wijziging
+  aanvragen als de eerste editing niet bevalt.
+
+Betalen loopt via [Mollie](https://www.mollie.com/), in testmodus zolang je
+een testsleutel gebruikt:
+
+```
+MOLLIE_API_KEY="test_..."
+```
+
+Voor een Mollie-account heb je een **KvK-nummer** nodig. Heb je dat nog niet,
+dan werkt de rest van de oplevering gewoon: zet de paywall-toggle per factuur
+uit, dan zijn de bestanden direct te downloaden zonder dat er een betaling aan
+te pas komt. Zodra je wél een (test)sleutel hebt, vul je die in — er hoeft
+verder niets aan de code te veranderen.
+
+De eindproducten (foto's, video's, zip's) staan op dezelfde schijf als de
+database en de projectfoto's (zie **Opslaglocatie** hieronder), in een eigen,
+niet-publieke map. Ze zijn alleen te downloaden via de beveiligde link, nooit
+rechtstreeks. Grote bestanden: zet zo nodig een eigen maximum:
+
+```
+# DELIVERY_MAX_UPLOAD_MB="1024"
+```
 
 ### Publieke adres van de site
 

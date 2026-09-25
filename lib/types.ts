@@ -110,6 +110,46 @@ export type ProjectImage = {
   sortOrder: number;
 };
 
+export type InvoiceStatus = "draft" | "sent" | "paid" | "cancelled";
+
+export type Invoice = {
+  id: number;
+  bookingId: number;
+  token: string;
+  amountCents: number;
+  description: string;
+  payBeforeDownload: boolean;
+  status: InvoiceStatus;
+  molliePaymentId: string;
+  paidUtc: number | null;
+  paymentSentUtc: number | null;
+  deliverySentUtc: number | null;
+  createdUtc: number;
+  updatedUtc: number;
+};
+
+export type InvoiceFile = {
+  id: number;
+  invoiceId: number;
+  filename: string;
+  originalName: string;
+  contentType: string;
+  sizeBytes: number;
+  sortOrder: number;
+  createdUtc: number;
+};
+
+export type RevisionRequestStatus = "open" | "done";
+
+export type RevisionRequest = {
+  id: number;
+  invoiceId: number;
+  message: string;
+  status: RevisionRequestStatus;
+  createdUtc: number;
+  updatedUtc: number;
+};
+
 export type ContactMessage = {
   id: number;
   name: string;

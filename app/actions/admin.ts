@@ -32,10 +32,29 @@ import {
   sendBookingCancelledMail,
   sendBookingConfirmedMail,
   sendBookingMovedInvite,
+  sendDeliveryMail,
+  sendPaymentRequestMail,
   sendTestMail,
 } from "@/lib/mail";
 import { verklaarMailFout } from "@/lib/mail-error";
 import { deleteMessage, setMessageHandled } from "@/lib/messages";
+import { saveDeliveryFile, deleteDeliveryFileFromDisk } from "@/lib/deliveries";
+import {
+  deleteInvoiceFile,
+  getInvoice,
+  getInvoiceByBookingId,
+  addInvoiceFile,
+  listInvoiceFiles,
+  markDeliverySent,
+  markPaid,
+  markPaymentSent,
+  parseAmountInput,
+  saveInvoiceDraft,
+  setMolliePaymentId,
+} from "@/lib/invoices";
+import { createMolliePayment, fetchMolliePaymentStatus } from "@/lib/mollie";
+import { setRevisionRequestStatus } from "@/lib/revisions";
+import { siteOrigin } from "@/lib/site-url";
 import {
   addProjectImage,
   createProject,
@@ -221,6 +240,157 @@ export async function deleteBookingAction(formData: FormData): Promise<void> {
   deleteBooking(Number(formData.get("id")));
   revalidatePath("/admin/boekingen");
   revalidatePath("/");
+}
+
+/* -------------------------------------------------------------------------- */
+/* Oplevering & factuur                                                        */
+/* -------------------------------------------------------------------------- */
+
+export async function saveInvoiceDraftAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  await requireAdmin();
+  const bookingId = Number(formData.get("bookingId"));
+  const amountCents = parseAmountInput(String(formData.get("amount") ?? ""));
+  if (amountCents === null) {
+    return { status: "error", message: "Vul een geldig bedrag in, bijvoorbeeld 250,00." };
+  }
+  const description = String(formData.get("description") ?? "").slice(0, 1000);
+  const payBeforeDownload = formData.get("payBeforeDownload") === "on";
+
+  saveInvoiceDraft(bookingId, { amountCents, description, payBeforeDownload });
+  revalidatePath("/admin/boekingen");
+  return { status: "success", message: "De factuurgegevens zijn opgeslagen." };
+}
+
+export async function sendPaymentRequestAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  await requireAdmin();
+  const bookingId = Number(formData.get("bookingId"));
+  const booking = getBooking(bookingId);
+  const invoice = getInvoiceByBookingId(bookingId);
+  if (!booking || !invoice) {
+    return { status: "error", message: "Sla eerst een bedrag op voordat je een betaalverzoek verstuurt." };
+  }
+  if (invoice.amountCents <= 0) {
+    return { status: "error", message: "Vul eerst een bedrag groter dan € 0,00 in." };
+  }
+
+  const origin = await siteOrigin();
+  const payment = await createMolliePayment({
+    invoiceId: invoice.id,
+    amountCents: invoice.amountCents,
+    description: invoice.description || `${booking.serviceName} — ${booking.reference}`,
+    redirectUrl: `${origin}/oplevering/${invoice.token}`,
+    webhookUrl: `${origin}/api/mollie/webhook`,
+  });
+  if (!payment.ok) {
+    return { status: "error", message: `Mollie weigerde de betaling aan te maken: ${payment.error}` };
+  }
+
+  setMolliePaymentId(invoice.id, payment.paymentId);
+  markPaymentSent(invoice.id);
+  const mailStatus = await sendPaymentRequestMail(booking, invoice, payment.checkoutUrl);
+
+  revalidatePath("/admin/boekingen");
+  return {
+    status: "success",
+    message:
+      mailStatus === "sent"
+        ? "Het betaalverzoek is verstuurd."
+        : "De betaallink is aangemaakt, maar de klant kreeg géén e-mail. Stuur de link zelf door.",
+  };
+}
+
+export async function addDeliveryFileAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  await requireAdmin();
+  const bookingId = Number(formData.get("bookingId"));
+  const invoice = getInvoiceByBookingId(bookingId);
+  if (!invoice) {
+    return { status: "error", message: "Sla eerst het bedrag op voordat je bestanden toevoegt." };
+  }
+
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.size === 0) {
+    return { status: "error", message: "Kies een bestand." };
+  }
+
+  const upload = await saveDeliveryFile(file);
+  if (!upload.ok) {
+    return { status: "error", message: upload.error };
+  }
+
+  addInvoiceFile(invoice.id, upload);
+  revalidatePath("/admin/boekingen");
+  return { status: "success", message: "Het bestand is toegevoegd." };
+}
+
+export async function deleteDeliveryFileAction(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const file = deleteInvoiceFile(Number(formData.get("id")));
+  if (file) await deleteDeliveryFileFromDisk(file.filename);
+  revalidatePath("/admin/boekingen");
+}
+
+export async function sendDeliveryAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  await requireAdmin();
+  const bookingId = Number(formData.get("bookingId"));
+  const booking = getBooking(bookingId);
+  const invoice = getInvoiceByBookingId(bookingId);
+  if (!booking || !invoice) {
+    return { status: "error", message: "Sla eerst het bedrag op." };
+  }
+  if (listInvoiceFiles(invoice.id).length === 0) {
+    return { status: "error", message: "Voeg eerst minstens één bestand toe." };
+  }
+
+  const origin = await siteOrigin();
+  markDeliverySent(invoice.id);
+  const mailStatus = await sendDeliveryMail(booking, invoice, `${origin}/oplevering/${invoice.token}`);
+
+  revalidatePath("/admin/boekingen");
+  return {
+    status: "success",
+    message:
+      mailStatus === "sent"
+        ? "De oplevering is verstuurd."
+        : "De oplevering is klaargezet, maar de klant kreeg géén e-mail. Stuur de link zelf door.",
+  };
+}
+
+/**
+ * Vraagt de actuele status bij Mollie zelf op — nooit de webhook vertrouwen.
+ * Vooral bedoeld als vangnet lokaal of als de webhook nog niet is aangekomen.
+ */
+export async function refreshInvoicePaymentStatusAction(
+  formData: FormData,
+): Promise<void> {
+  await requireAdmin();
+  const invoice = getInvoice(Number(formData.get("invoiceId")));
+  if (invoice?.molliePaymentId) {
+    const status = await fetchMolliePaymentStatus(invoice.molliePaymentId);
+    if (status === "paid") markPaid(invoice.id);
+  }
+  revalidatePath("/admin/boekingen");
+}
+
+export async function setRevisionRequestStatusAction(formData: FormData): Promise<void> {
+  await requireAdmin();
+  setRevisionRequestStatus(
+    Number(formData.get("id")),
+    formData.get("status") === "done" ? "done" : "open",
+  );
+  revalidatePath("/admin/boekingen");
+  revalidatePath("/admin");
 }
 
 /* -------------------------------------------------------------------------- */
