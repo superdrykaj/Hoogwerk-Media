@@ -781,20 +781,32 @@ database en de projectfoto's (zie **Opslaglocatie** hieronder), in een eigen,
 niet-publieke map. Ze zijn alleen te downloaden via de beveiligde link, nooit
 rechtstreeks.
 
-**Uploads zijn beperkt tot 300 MB per bestand.** Dat komt niet alleen door
-`DELIVERY_MAX_UPLOAD_MB`, maar vooral door `serverActions.bodySizeLimit` in
-`next.config.ts`: de uploadknop in de beheeromgeving is een Server Action, en
-die houdt de hele upload in het geheugen van de machine vast. De Fly-machine
-heeft standaard maar 512 MB. Wil je grotere video's kunnen opleveren, dan moet
-je zowel `next.config.ts` als het geheugen ophogen:
+**De upload streamt rechtstreeks naar schijf** (`app/api/admin/opleverbestand/route.ts`),
+in plaats van via een Server Action te lopen zoals de projectfoto's. Dat is
+bewust: een Server Action buffert de hele upload in het geheugen van de
+machine, en dat is bij een video van meerdere GB niet houdbaar. Hierdoor is
+het geheugen van de machine geen beperkende factor meer voor de
+bestandsgrootte — standaard mag een opleverbestand tot 4 GB zijn
+(`DELIVERY_MAX_UPLOAD_MB`).
+
+**De schijfruimte van de gekoppelde volume is nu wél de beperking.** Er zit
+geen automatische opruiming op: bestanden blijven staan totdat je een boeking
+verwijdert. Reken bij een paar opdrachten met 4K-beeldmateriaal al snel op
+enkele GB's per maand. Bekijk en vergroot de volume zo nodig:
 
 ```bash
-fly scale memory 2048   # bijvoorbeeld, op de betreffende app
+fly volumes list -a hoogbeeld-media-test
+fly volumes extend <volume-id> -s 20   # bijvoorbeeld naar 20 GB
 ```
 
 ```
-# DELIVERY_MAX_UPLOAD_MB="300"
+# DELIVERY_MAX_UPLOAD_MB="4096"
 ```
+
+(Het geheugen van de machine, standaard 512 MB, mag je los daarvan nog
+steeds ophogen — dat helpt Next.js in het algemeen, bijvoorbeeld bij het
+verkleinen van afbeeldingen, maar is voor de video-uploads zelf niet meer
+nodig: `fly scale memory 1024 -a hoogbeeld-media-test`.)
 
 ### Publieke adres van de site
 
