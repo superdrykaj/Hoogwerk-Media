@@ -1,0 +1,40 @@
+# Fly.io-configuratie voor de TESTOMGEVING (hoogbeeld-media-test.fly.dev).
+# Draait als aparte Fly-app, los van de live site. Pas "app" aan als je
+# een andere naam kiest bij het aanmaken van de test-app.
+app = "hoogbeeld-media-test"
+primary_region = "ams"
+
+swap_size_mb = 512
+
+[build]
+
+[env]
+  PORT = "3000"
+  DATA_DIR = "/data"
+  # Testomgeving mag gerust "soon" blijven tonen aan bezoekers zonder login.
+  SITE_STATUS = "soon"
+  NEXT_PUBLIC_SITE_URL = "https://hoogbeeld-media-test.fly.dev"
+
+# Eigen, losse schijf voor de testomgeving — nooit dezelfde als productie,
+# anders overschrijven test en live elkaars data.
+[mounts]
+  source = "hoogbeeld_media_test_data"
+  destination = "/data"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/api/health"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"

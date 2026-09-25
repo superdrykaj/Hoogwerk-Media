@@ -1,0 +1,28 @@
+name: Deploy naar Fly.io
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    concurrency: deploy-${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Deploy productie (main → hoogbeeld-media.fly.dev)
+        if: github.ref == 'refs/heads/main'
+        run: flyctl deploy --config fly.toml --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Deploy testomgeving (staging → hoogbeeld-media-test.fly.dev)
+        if: github.ref == 'refs/heads/staging'
+        run: flyctl deploy --config fly.staging.toml --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
