@@ -1,6 +1,7 @@
 import { CompanySettingsForm } from "@/components/admin/company-settings-form";
 import { PageHeading, Panel } from "@/components/admin/ui";
 import { SettingsForm } from "@/components/admin/settings-form";
+import { SettingsTabs } from "@/components/admin/settings-tabs";
 import { SiteStatusForm } from "@/components/admin/site-status-form";
 import { TestMailForm } from "@/components/admin/test-mail-form";
 import { site } from "@/content/site";
@@ -27,33 +28,54 @@ export default function SettingsPage() {
         intro="Boekingsregels en de koppelingen die nog ingesteld moeten worden."
       />
 
-      <div className="space-y-8">
-        <Panel
-          title="Zichtbaarheid van de site"
-          description="Staat de website open voor bezoekers, of alleen voor jou?"
-        >
-          <SiteStatusForm status={status} />
-        </Panel>
+      <SettingsTabs
+        defaultTab={mailReady ? "algemeen" : "email"}
+        attention={{ email: !mailReady }}
+        algemeen={
+          <Panel
+            title="Zichtbaarheid van de site"
+            description="Staat de website open voor bezoekers, of alleen voor jou?"
+          >
+            <SiteStatusForm status={status} />
+          </Panel>
+        }
+        boekingsregels={
+          <Panel
+            title="Boekingsregels"
+            description="Deze regels gelden voor alle diensten in de boekingsmodule."
+          >
+            <SettingsForm settings={settings} />
+          </Panel>
+        }
+        bedrijfsgegevens={
+          <div className="space-y-8">
+            <Panel
+              title="Bedrijfsgegevens voor facturen"
+              description="Komen op elke factuur te staan. Standaard fictief — vul aan zodra je KvK- en BTW-nummer bekend zijn."
+            >
+              <CompanySettingsForm settings={invoiceSettings} />
+            </Panel>
 
-        <Panel
-          title="Bedrijfsgegevens voor facturen"
-          description="Komen op elke factuur te staan. Standaard fictief — vul aan zodra je KvK- en BTW-nummer bekend zijn."
-        >
-          <CompanySettingsForm settings={invoiceSettings} />
-        </Panel>
-
-        <Panel
-          title="Boekingsregels"
-          description="Deze regels gelden voor alle diensten in de boekingsmodule."
-        >
-          <SettingsForm settings={settings} />
-        </Panel>
-
-        <Panel
-          title="E-mail"
-          description="Bevestigingsmails naar klanten en meldingen naar jou."
-        >
-          {mailReady ? (
+            <Panel title="Bedrijfsgegevens en teksten">
+              <p className="text-sm leading-relaxed text-mist-300">
+                Bedrijfsnaam, e-mailadres, werkgebied en alle vaste teksten staan in
+                één bestand: <code className="text-mist-100">content/site.ts</code>.
+                Pas dat bestand aan en de wijziging is direct overal op de site
+                zichtbaar.
+              </p>
+              <p className="field-hint">
+                Tijdelijke afbeeldingen staan in <code>public/images/</code>. Vervang
+                de bestanden en houd dezelfde namen aan.
+              </p>
+            </Panel>
+          </div>
+        }
+        email={
+          <Panel
+            title="E-mail"
+            description="Bevestigingsmails naar klanten en meldingen naar jou."
+          >
+            {mailReady ? (
             <p className="notice notice-success">
               E-mail is ingesteld. De site verstuurt via{" "}
               <code>{process.env.SMTP_HOST}</code> als{" "}
@@ -160,21 +182,9 @@ MAIL_FROM="${site.name} <${site.personalEmail}>"`}
               </p>
             </>
           )}
-        </Panel>
-
-        <Panel title="Bedrijfsgegevens en teksten">
-          <p className="text-sm leading-relaxed text-mist-300">
-            Bedrijfsnaam, e-mailadres, werkgebied en alle vaste teksten staan in
-            één bestand: <code className="text-mist-100">content/site.ts</code>.
-            Pas dat bestand aan en de wijziging is direct overal op de site
-            zichtbaar.
-          </p>
-          <p className="field-hint">
-            Tijdelijke afbeeldingen staan in <code>public/images/</code>. Vervang
-            de bestanden en houd dezelfde namen aan.
-          </p>
-        </Panel>
-      </div>
+          </Panel>
+        }
+      />
     </>
   );
 }
