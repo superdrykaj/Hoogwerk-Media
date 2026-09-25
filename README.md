@@ -483,10 +483,22 @@ De tijdelijke beelden staan in **`public/images/`**:
 | Bestand                   | Waar het staat                    |
 | ------------------------- | --------------------------------- |
 | `hero.jpg`                | Grote afbeelding op de homepage   |
-| `about.jpg`               | Over-mij-blok op de homepage      |
-| `og.jpg`                  | Deelbeeld voor sociale media (1200 × 630) |
 | `project-*.jpg`           | Hoofdafbeeldingen van de voorbeeldprojecten |
 | `gallery-*.jpg`           | Foto's in de projectgalerijen     |
+
+Het echte materiaal staat in **`public/media/`**: de video's, de posterbeelden
+van de projecten, het portret bij "Over mij" en de deelbeelden.
+
+| Bestand                          | Waar het staat                              |
+| -------------------------------- | ------------------------------------------- |
+| `about-kai-torso.png`            | Portret bij "Over mij" op de homepage       |
+| `og-hoogbeeld-media-nl.jpg`      | Voorvertoning bij een gedeelde link (NL)    |
+| `og-hoogbeeld-media-en.jpg`      | Voorvertoning bij een gedeelde link (EN)    |
+
+De deelbeelden zijn 1200 × 630 en hebben de zin in het beeld staan, vandaar een
+bestand per taal. Maak je een nieuwe, geef hem dan een andere naam: WhatsApp en
+LinkedIn onthouden een afbeelding per adres en halen dezelfde naam niet opnieuw
+op.
 
 Vervang de bestanden en houd dezelfde namen aan, dan hoef je verder niets te
 wijzigen. Gebruik liefst JPG of WebP van ongeveer 1600 × 1000 pixels of groter.

@@ -27,6 +27,23 @@ const geistMono = Geist_Mono({
 });
 
 /**
+ * De afbeelding die WhatsApp, LinkedIn en X bij een gedeelde link tonen.
+ *
+ * Per taal een eigen bestand, want de zin staat in het beeld gebrand. De maten
+ * staan erbij: zonder width en height wacht WhatsApp op het downloaden van de
+ * afbeelding voordat het de voorvertoning laat zien, en bij een trage
+ * verbinding komt die dan helemaal niet.
+ */
+function deelbeeld(locale: Locale, tagline: string) {
+  return {
+    url: `/media/og-hoogbeeld-media-${locale}.jpg`,
+    width: 1200,
+    height: 630,
+    alt: `${tagline} — ${site.name}`,
+  };
+}
+
+/**
  * De taal van de huidige pagina. Het pad komt uit proxy.ts, omdat een layout
  * het zelf niet kan opvragen.
  */
@@ -54,7 +71,15 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: site.name,
       title: `${t.meta.tagline} | ${site.name}`,
       description: t.meta.ogDescription,
-      images: [{ url: "/images/og.jpg", width: 1200, height: 630, alt: site.name }],
+      images: [deelbeeld(locale, t.meta.tagline)],
+    },
+    // Zonder deze regels toont X een klein vierkant miniatuurtje in plaats van
+    // de brede kaart. Titel en tekst neemt X over van openGraph.
+    twitter: {
+      card: "summary_large_image",
+      title: `${t.meta.tagline} | ${site.name}`,
+      description: t.meta.ogDescription,
+      images: [deelbeeld(locale, t.meta.tagline).url],
     },
     // Zolang de site nog niet open is, wil je niet dat Google hem opneemt.
     // Een halve site in de zoekresultaten is lastiger weg te krijgen dan je denkt.
