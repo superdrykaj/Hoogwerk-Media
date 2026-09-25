@@ -1,9 +1,9 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import {
-  addDeliveryFileAction,
   deleteDeliveryFileAction,
   refreshInvoicePaymentStatusAction,
   saveInvoiceDraftAction,
@@ -15,6 +15,40 @@ import { formatAmountCents } from "@/lib/currency";
 import { emptyActionState, type ActionState } from "@/lib/form-state";
 import { formatTimestamp } from "@/lib/time";
 import type { Invoice, InvoiceFile, InvoiceStatus, RevisionRequest } from "@/lib/types";
+
+/**
+ * Uploadt rechtstreeks naar de streaming-route (zie
+ * app/api/admin/opleverbestand/route.ts) via XMLHttpRequest in plaats van
+ * fetch, puur om de voortgang te kunnen tonen bij een grote video — fetch
+ * geeft daar geen voortgangsevents voor.
+ */
+function uploadDeliveryFile(
+  invoiceId: number,
+  file: File,
+  onProgress: (percent: number) => void,
+): Promise<{ ok: boolean; error?: string }> {
+  return new Promise((resolve) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", `/api/admin/opleverbestand?invoiceId=${invoiceId}`);
+    xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
+    xhr.setRequestHeader("X-File-Name", encodeURIComponent(file.name));
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) onProgress(Math.round((event.loaded / event.total) * 100));
+    };
+    xhr.onload = () => {
+      try {
+        resolve(JSON.parse(xhr.responseText));
+      } catch {
+        resolve({
+          ok: xhr.status >= 200 && xhr.status < 300,
+          error: "Onverwacht antwoord van de server.",
+        });
+      }
+    };
+    xhr.onerror = () => resolve({ ok: false, error: "Uploaden mislukt door een netwerkfout." });
+    xhr.send(file);
+  });
+}
 
 export type DeliveryInfo = {
   invoice: Invoice | null;
@@ -49,6 +83,7 @@ export function InvoicePanel({
   mollieReady: boolean;
 }) {
   const { invoice, files, revisions } = info;
+  const router = useRouter();
 
   const [draftState, draftAction, draftPending] = useActionState<ActionState, FormData>(
     saveInvoiceDraftAction,
@@ -58,14 +93,37 @@ export function InvoicePanel({
     sendPaymentRequestAction,
     emptyActionState,
   );
-  const [fileState, fileAction, filePending] = useActionState<ActionState, FormData>(
-    addDeliveryFileAction,
-    emptyActionState,
-  );
   const [deliveryState, deliveryAction, deliveryPending] = useActionState<ActionState, FormData>(
     sendDeliveryAction,
     emptyActionState,
   );
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadPercent, setUploadPercent] = useState<number | null>(null);
+  const [uploadMessage, setUploadMessage] = useState<{ error: boolean; text: string } | null>(
+    null,
+  );
+
+  async function handleFileUpload(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!invoice) return;
+    const file = fileInputRef.current?.files?.[0];
+    if (!file) {
+      setUploadMessage({ error: true, text: "Kies een bestand." });
+      return;
+    }
+    setUploadMessage(null);
+    setUploadPercent(0);
+    const result = await uploadDeliveryFile(invoice.id, file, setUploadPercent);
+    setUploadPercent(null);
+    if (result.ok) {
+      setUploadMessage({ error: false, text: "Het bestand is toegevoegd." });
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      router.refresh();
+    } else {
+      setUploadMessage({ error: true, text: result.error ?? "Uploaden is mislukt." });
+    }
+  }
 
   const amountDefault = invoice ? (invoice.amountCents / 100).toFixed(2).replace(".", ",") : "";
 
@@ -228,19 +286,21 @@ export function InvoicePanel({
             ) : (
               <p className="mt-2 text-sm text-mist-500">Nog geen bestanden toegevoegd.</p>
             )}
-            <form action={fileAction} className="mt-3 flex flex-wrap items-center gap-3">
-              <input type="hidden" name="bookingId" value={bookingId} />
-              <input type="file" name="file" required className="text-sm text-mist-300" />
-              <button type="submit" className="btn btn-quiet" disabled={filePending}>
-                {filePending ? "Bezig…" : "Toevoegen"}
+            <form onSubmit={handleFileUpload} className="mt-3 flex flex-wrap items-center gap-3">
+              <input
+                ref={fileInputRef}
+                type="file"
+                name="file"
+                required
+                className="text-sm text-mist-300"
+              />
+              <button type="submit" className="btn btn-quiet" disabled={uploadPercent !== null}>
+                {uploadPercent !== null ? `Bezig… ${uploadPercent}%` : "Toevoegen"}
               </button>
             </form>
-            {fileState.status !== "idle" && (
-              <p
-                className={`notice mt-2 ${fileState.status === "error" ? "notice-error" : "notice-success"}`}
-                role="status"
-              >
-                {fileState.message}
+            {uploadMessage && (
+              <p className={`notice mt-2 ${uploadMessage.error ? "notice-error" : "notice-success"}`} role="status">
+                {uploadMessage.text}
               </p>
             )}
           </div>

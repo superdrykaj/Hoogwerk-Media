@@ -38,13 +38,12 @@ import {
 } from "@/lib/mail";
 import { verklaarMailFout } from "@/lib/mail-error";
 import { deleteMessage, setMessageHandled } from "@/lib/messages";
-import { saveDeliveryFile, deleteDeliveryFileFromDisk } from "@/lib/deliveries";
+import { deleteDeliveryFileFromDisk } from "@/lib/deliveries";
 import {
   deleteInvoiceFile,
   ensureInvoiceNumber,
   getInvoice,
   getInvoiceByBookingId,
-  addInvoiceFile,
   listInvoiceFiles,
   markDeliverySent,
   markPaid,
@@ -312,32 +311,6 @@ export async function sendPaymentRequestAction(
         ? "Het betaalverzoek is verstuurd."
         : "De betaallink is aangemaakt, maar de klant kreeg géén e-mail. Stuur de link zelf door.",
   };
-}
-
-export async function addDeliveryFileAction(
-  _prev: ActionState,
-  formData: FormData,
-): Promise<ActionState> {
-  await requireAdmin();
-  const bookingId = Number(formData.get("bookingId"));
-  const invoice = getInvoiceByBookingId(bookingId);
-  if (!invoice) {
-    return { status: "error", message: "Sla eerst het bedrag op voordat je bestanden toevoegt." };
-  }
-
-  const file = formData.get("file");
-  if (!(file instanceof File) || file.size === 0) {
-    return { status: "error", message: "Kies een bestand." };
-  }
-
-  const upload = await saveDeliveryFile(file);
-  if (!upload.ok) {
-    return { status: "error", message: upload.error };
-  }
-
-  addInvoiceFile(invoice.id, upload);
-  revalidatePath("/admin/boekingen");
-  return { status: "success", message: "Het bestand is toegevoegd." };
 }
 
 export async function deleteDeliveryFileAction(formData: FormData): Promise<void> {

@@ -6,14 +6,12 @@ const nextConfig: NextConfig = {
   output: "standalone",
   experimental: {
     serverActions: {
-      // Standaard 1 MB — veel te weinig voor het uploaden van een
-      // opleverbestand (foto of video). Let op: de machine heeft maar
-      // 512 MB geheugen (zie fly.toml) en een Server Action houdt de hele
-      // upload in het geheugen; ga je dit ophogen richting het maximum uit
-      // DELIVERY_MAX_UPLOAD_MB (standaard 1024), vergroot dan ook het
-      // geheugen van de machine (`fly scale memory 2048`), anders loopt de
-      // machine vast bij een grote video.
-      bodySizeLimit: "300mb",
+      // Standaard 1 MB — te weinig voor de projectfoto-upload (tot 12 MB,
+      // zie lib/uploads.ts). Opleverbestanden (foto/video) lopen bewust niet
+      // via een Server Action: die buffert de hele upload in het geheugen
+      // van de machine, wat bij een grote video niet houdbaar is. Zie
+      // app/api/admin/opleverbestand/route.ts, dat in plaats daarvan streamt.
+      bodySizeLimit: "20mb",
     },
   },
   // De database en de uploads horen op de gekoppelde schijf, nooit in de
