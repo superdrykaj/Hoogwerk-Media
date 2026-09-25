@@ -16,17 +16,31 @@ import { emptyActionState, type ActionState } from "@/lib/form-state";
 import { formatTimestamp } from "@/lib/time";
 import type { Invoice, InvoiceFile, InvoiceStatus, RevisionRequest } from "@/lib/types";
 
+type UploadResult = { ok: boolean; error?: string; cancelled?: boolean; networkError?: boolean };
+
+/**
+ * Letterlijk dezelfde tekst als de catch-fout in lib/deliveries.ts
+ * (saveDeliveryFileStream). Komt deze terug, dan is de schrijf-stream
+ * halverwege afgebroken — dat rekenen we bij het automatisch opnieuw
+ * proberen tot dezelfde categorie als een kale netwerkfout.
+ */
+const GENERIC_SERVER_ERROR = "Uploaden is mislukt. Probeer het nog eens.";
+
 /**
  * Uploadt rechtstreeks naar de streaming-route (zie
  * app/api/admin/opleverbestand/route.ts) via XMLHttpRequest in plaats van
  * fetch, puur om de voortgang te kunnen tonen bij een grote video — fetch
  * geeft daar geen voortgangsevents voor.
+ *
+ * `registerXhr` geeft de aanroeper de xhr terug zodra hij bestaat, zodat een
+ * lopende upload geannuleerd kan worden (zie cancelItem in InvoicePanel).
  */
 function uploadDeliveryFile(
   invoiceId: number,
   file: File,
   onProgress: (percent: number) => void,
-): Promise<{ ok: boolean; error?: string }> {
+  registerXhr: (xhr: XMLHttpRequest) => void,
+): Promise<UploadResult> {
   return new Promise((resolve) => {
     const xhr = new XMLHttpRequest();
     xhr.open("POST", `/api/admin/opleverbestand?invoiceId=${invoiceId}`);
@@ -45,9 +59,20 @@ function uploadDeliveryFile(
         });
       }
     };
-    xhr.onerror = () => resolve({ ok: false, error: "Uploaden mislukt door een netwerkfout." });
+    // Een verbroken verbinding (bijv. door een trage of wegvallende upload)
+    // komt hier binnen zonder antwoord van de server — dat onderscheiden we
+    // van een fout die de server wél expliciet teruggaf, zodat alleen deze
+    // categorie automatisch opnieuw geprobeerd wordt.
+    xhr.onerror = () =>
+      resolve({ ok: false, error: "Uploaden mislukt door een netwerkfout.", networkError: true });
+    xhr.onabort = () => resolve({ ok: false, cancelled: true });
+    registerXhr(xhr);
     xhr.send(file);
   });
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export type DeliveryInfo = {
@@ -67,6 +92,20 @@ function formatSize(bytes: number): string {
   if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
+
+/** Hoeveel keer een upload die op een netwerkfout stukliep automatisch opnieuw geprobeerd wordt. */
+const MAX_ATTEMPTS = 3;
+
+type QueueStatus = "queued" | "uploading" | "done" | "error" | "cancelled";
+
+type QueueItem = {
+  id: string;
+  file: File;
+  percent: number;
+  status: QueueStatus;
+  error?: string;
+  attempts: number;
+};
 
 /**
  * Sectie binnen een bevestigde boeking om de eindproducten en de factuur op
@@ -98,31 +137,111 @@ export function InvoicePanel({
     emptyActionState,
   );
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploadPercent, setUploadPercent] = useState<number | null>(null);
-  const [uploadMessage, setUploadMessage] = useState<{ error: boolean; text: string } | null>(
-    null,
-  );
+  // Wachtrij van uploads: meerdere bestanden tegelijk kiezen mag, maar ze
+  // gaan één voor één omhoog — bij een trage verbinding maakt gelijktijdig
+  // versturen het alleen maar trager en foutgevoeliger. `itemsRef` is de
+  // bron van waarheid voor processQueue (een lopende while-lus, die de
+  // laatste stand synchroon moet kunnen lezen); `items`-state bestaat enkel
+  // om te renderen en wordt bij elke wijziging meteen mee bijgewerkt. Een
+  // `useEffect` om itemsRef te spiegelen zou hier niet werken: die loopt pas
+  // ná de eerstvolgende render, terwijl processQueue direct na het in de
+  // wachtrij zetten van een bestand al de actuele lijst nodig heeft.
+  const [items, setItems] = useState<QueueItem[]>([]);
+  const itemsRef = useRef<QueueItem[]>([]);
+  const processingRef = useRef(false);
+  const xhrByIdRef = useRef<Map<string, XMLHttpRequest>>(new Map());
 
-  async function handleFileUpload(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!invoice) return;
-    const file = fileInputRef.current?.files?.[0];
-    if (!file) {
-      setUploadMessage({ error: true, text: "Kies een bestand." });
-      return;
+  function commitItems(next: QueueItem[]) {
+    itemsRef.current = next;
+    setItems(next);
+  }
+
+  function updateItem(id: string, patch: Partial<QueueItem>) {
+    commitItems(itemsRef.current.map((item) => (item.id === id ? { ...item, ...patch } : item)));
+  }
+
+  async function processQueue(invoiceId: number) {
+    if (processingRef.current) return;
+    processingRef.current = true;
+    let uploadedAny = false;
+    try {
+      while (true) {
+        const next = itemsRef.current.find((item) => item.status === "queued");
+        if (!next) break;
+        updateItem(next.id, { status: "uploading", percent: 0, error: undefined });
+        const result = await uploadDeliveryFile(
+          invoiceId,
+          next.file,
+          (percent) => updateItem(next.id, { percent }),
+          (xhr) => xhrByIdRef.current.set(next.id, xhr),
+        );
+        xhrByIdRef.current.delete(next.id);
+
+        if (result.cancelled) {
+          updateItem(next.id, { status: "cancelled" });
+          continue;
+        }
+        if (result.ok) {
+          updateItem(next.id, { status: "done", percent: 100 });
+          uploadedAny = true;
+          continue;
+        }
+        const attempts = (itemsRef.current.find((item) => item.id === next.id)?.attempts ?? 0) + 1;
+        // Naast een echte netwerkfout (geen antwoord van de server) tellen we
+        // ook de generieke serverfout als tijdelijk: die betekent dat de
+        // schrijf-stream halverwege is afgebroken, wat bij een trage
+        // verbinding vaker gebeurt en bij een nieuwe poging vaak wél lukt. De
+        // specifieke foutmeldingen (bestand te groot, type niet ondersteund)
+        // zijn wél definitief en worden niet automatisch herhaald.
+        const isTransient = result.networkError || result.error === GENERIC_SERVER_ERROR;
+        if (isTransient && attempts < MAX_ATTEMPTS) {
+          // Terug de wachtrij in, met een oplopende pauze — een wegvallende
+          // verbinding herstelt zich meestal na een paar seconden.
+          updateItem(next.id, { status: "queued", attempts, percent: 0 });
+          await sleep(attempts * 1500);
+          continue;
+        }
+        updateItem(next.id, {
+          status: "error",
+          attempts,
+          error: result.error ?? GENERIC_SERVER_ERROR,
+        });
+      }
+    } finally {
+      processingRef.current = false;
     }
-    setUploadMessage(null);
-    setUploadPercent(0);
-    const result = await uploadDeliveryFile(invoice.id, file, setUploadPercent);
-    setUploadPercent(null);
-    if (result.ok) {
-      setUploadMessage({ error: false, text: "Het bestand is toegevoegd." });
-      if (fileInputRef.current) fileInputRef.current.value = "";
+    if (uploadedAny) {
+      commitItems(itemsRef.current.filter((item) => item.status !== "done"));
       router.refresh();
-    } else {
-      setUploadMessage({ error: true, text: result.error ?? "Uploaden is mislukt." });
     }
+  }
+
+  function enqueueFiles(fileList: FileList) {
+    if (!invoice) return;
+    const newItems: QueueItem[] = Array.from(fileList).map((file) => ({
+      id: crypto.randomUUID(),
+      file,
+      percent: 0,
+      status: "queued",
+      attempts: 0,
+    }));
+    if (newItems.length === 0) return;
+    commitItems([...itemsRef.current, ...newItems]);
+    void processQueue(invoice.id);
+  }
+
+  function cancelItem(id: string) {
+    xhrByIdRef.current.get(id)?.abort();
+  }
+
+  function removeItem(id: string) {
+    commitItems(itemsRef.current.filter((item) => item.id !== id));
+  }
+
+  function retryItem(id: string) {
+    if (!invoice) return;
+    updateItem(id, { status: "queued", percent: 0, error: undefined, attempts: 0 });
+    void processQueue(invoice.id);
   }
 
   const amountDefault = invoice ? (invoice.amountCents / 100).toFixed(2).replace(".", ",") : "";
@@ -286,23 +405,119 @@ export function InvoicePanel({
             ) : (
               <p className="mt-2 text-sm text-mist-500">Nog geen bestanden toegevoegd.</p>
             )}
-            <form onSubmit={handleFileUpload} className="mt-3 flex flex-wrap items-center gap-3">
-              <input
-                ref={fileInputRef}
-                type="file"
-                name="file"
-                required
-                className="text-sm text-mist-300"
-              />
-              <button type="submit" className="btn btn-quiet" disabled={uploadPercent !== null}>
-                {uploadPercent !== null ? `Bezig… ${uploadPercent}%` : "Toevoegen"}
-              </button>
-            </form>
-            {uploadMessage && (
-              <p className={`notice mt-2 ${uploadMessage.error ? "notice-error" : "notice-success"}`} role="status">
-                {uploadMessage.text}
-              </p>
+
+            {/* Wachtrij: bestanden die net gekozen zijn, bezig zijn of zijn
+                stukgelopen. Een gelukte upload verdwijnt hieruit zodra de
+                pagina ververst is — dan staat hij in de lijst hierboven. */}
+            {items.length > 0 && (
+              <ul className="mt-2 space-y-1.5 text-sm">
+                {items.map((item) => (
+                  <li key={item.id} className="rounded-lg border border-ink-700 px-3 py-2">
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="min-w-0 truncate">
+                        {item.file.name}{" "}
+                        <span className="text-mist-600">({formatSize(item.file.size)})</span>
+                      </span>
+                      <div className="flex shrink-0 items-center gap-3 text-xs">
+                        {item.status === "uploading" && (
+                          <>
+                            <span className="numeric text-mist-400">{item.percent}%</span>
+                            <button
+                              type="button"
+                              onClick={() => cancelItem(item.id)}
+                              className="text-rose-300 hover:underline"
+                            >
+                              Annuleren
+                            </button>
+                          </>
+                        )}
+                        {item.status === "queued" && (
+                          <>
+                            <span className="text-mist-500">Wacht op vorige upload</span>
+                            <button
+                              type="button"
+                              onClick={() => removeItem(item.id)}
+                              className="text-rose-300 hover:underline"
+                            >
+                              Annuleren
+                            </button>
+                          </>
+                        )}
+                        {item.status === "cancelled" && (
+                          <>
+                            <span className="text-mist-500">Geannuleerd</span>
+                            <button
+                              type="button"
+                              onClick={() => removeItem(item.id)}
+                              className="text-mist-400 hover:underline"
+                            >
+                              Wissen
+                            </button>
+                          </>
+                        )}
+                        {item.status === "error" && (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => retryItem(item.id)}
+                              className="text-haze-300 hover:underline"
+                            >
+                              Opnieuw proberen
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => removeItem(item.id)}
+                              className="text-mist-400 hover:underline"
+                            >
+                              Wissen
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    {(item.status === "uploading" || item.status === "queued") && (
+                      <div
+                        className="mt-2 h-1.5 overflow-hidden rounded-full bg-ink-700"
+                        role="progressbar"
+                        aria-valuenow={item.status === "uploading" ? item.percent : 0}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-label={`Voortgang van ${item.file.name}`}
+                      >
+                        <div
+                          className="h-full rounded-full bg-haze-300 transition-[width] duration-200"
+                          style={{ width: `${item.status === "uploading" ? item.percent : 0}%` }}
+                        />
+                      </div>
+                    )}
+                    {item.status === "error" && item.error && (
+                      <p className="mt-1.5 text-xs text-rose-300">{item.error}</p>
+                    )}
+                  </li>
+                ))}
+              </ul>
             )}
+
+            <div className="mt-3">
+              <label className="btn btn-quiet inline-flex cursor-pointer items-center">
+                + Bestanden toevoegen
+                <input
+                  type="file"
+                  multiple
+                  className="sr-only"
+                  onChange={(event) => {
+                    if (event.target.files && event.target.files.length > 0) {
+                      enqueueFiles(event.target.files);
+                    }
+                    event.target.value = "";
+                  }}
+                />
+              </label>
+              <p className="field-hint">
+                Meerdere bestanden mag: ze gaan één voor één omhoog. Een upload die door de
+                verbinding stukloopt, wordt automatisch een paar keer opnieuw geprobeerd.
+              </p>
+            </div>
           </div>
 
           {/* Oplevering versturen -------------------------------------------- */}
