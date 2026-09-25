@@ -4,6 +4,18 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   // Zelfstandige serverbundel, zodat het Docker-image klein blijft.
   output: "standalone",
+  experimental: {
+    serverActions: {
+      // Standaard 1 MB — veel te weinig voor het uploaden van een
+      // opleverbestand (foto of video). Let op: de machine heeft maar
+      // 512 MB geheugen (zie fly.toml) en een Server Action houdt de hele
+      // upload in het geheugen; ga je dit ophogen richting het maximum uit
+      // DELIVERY_MAX_UPLOAD_MB (standaard 1024), vergroot dan ook het
+      // geheugen van de machine (`fly scale memory 2048`), anders loopt de
+      // machine vast bij een grote video.
+      bodySizeLimit: "300mb",
+    },
+  },
   // De database en de uploads horen op de gekoppelde schijf, nooit in de
   // serverbundel. Zonder deze regel zou een lokale data/-map meegebakken
   // worden, met klantgegevens en al.
