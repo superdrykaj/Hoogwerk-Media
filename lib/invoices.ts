@@ -3,7 +3,7 @@ import "server-only";
 
 import crypto from "node:crypto";
 
-import { getDb } from "./db";
+import { getDb, withWriteTransaction } from "./db";
 import type { Invoice, InvoiceFile, InvoiceStatus } from "./types";
 
 export { formatAmountCents, parseAmountInput } from "./currency";
@@ -12,6 +12,7 @@ type Row = {
   id: number;
   booking_id: number;
   token: string;
+  invoice_number: string | null;
   amount_cents: number;
   description: string;
   pay_before_download: number;
@@ -29,6 +30,7 @@ function map(row: Row): Invoice {
     id: row.id,
     bookingId: row.booking_id,
     token: row.token,
+    invoiceNumber: row.invoice_number,
     amountCents: row.amount_cents,
     description: row.description,
     payBeforeDownload: row.pay_before_download === 1,
@@ -163,6 +165,44 @@ export function markPaid(invoiceId: number): void {
        WHERE id = ? AND status != 'paid'`,
     )
     .run(now, now, invoiceId);
+}
+
+/**
+ * Kent bij de eerste verzending (betaalverzoek of oplevering, wat het eerst
+ * gebeurt) een doorlopend factuurnummer toe, bijvoorbeeld "2026-0001". Een
+ * concept dat nooit is verstuurd krijgt er nooit een, zodat verwijderde
+ * concepten geen gat in de nummering veroorzaken. Al toegekend? Dan komt
+ * hetzelfde nummer terug — er wordt er nooit een tweede uitgegeven.
+ *
+ * Let op: het bedrag op een al genummerde factuur kan daarna nog wijzigen
+ * (bijvoorbeeld na een gesprek met de klant). Verstuur in dat geval opnieuw,
+ * anders wijkt de eerder verstuurde factuur af van wat er nu klaarstaat.
+ */
+export function ensureInvoiceNumber(invoiceId: number): string {
+  return withWriteTransaction((db) => {
+    const existing = db
+      .prepare("SELECT invoice_number FROM invoices WHERE id = ?")
+      .get(invoiceId) as { invoice_number: string | null } | undefined;
+    if (existing?.invoice_number) return existing.invoice_number;
+
+    const year = new Date().getFullYear();
+    const row = db
+      .prepare("SELECT counter FROM invoice_sequence WHERE year = ?")
+      .get(year) as { counter: number } | undefined;
+    const volgnummer = (row?.counter ?? 0) + 1;
+    db.prepare(
+      `INSERT INTO invoice_sequence (year, counter) VALUES (?, ?)
+       ON CONFLICT(year) DO UPDATE SET counter = excluded.counter`,
+    ).run(year, volgnummer);
+
+    const nummer = `${year}-${String(volgnummer).padStart(4, "0")}`;
+    db.prepare("UPDATE invoices SET invoice_number = ?, updated_utc = ? WHERE id = ?").run(
+      nummer,
+      Date.now(),
+      invoiceId,
+    );
+    return nummer;
+  });
 }
 
 export function listInvoiceFiles(invoiceId: number): InvoiceFile[] {

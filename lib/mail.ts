@@ -432,6 +432,7 @@ export async function sendPaymentRequestMail(
   booking: Booking,
   invoice: Invoice,
   checkoutUrl: string,
+  invoiceUrl: string,
 ): Promise<MailStatus> {
   const locale = booking.locale;
   const t = copy(locale).mail;
@@ -444,10 +445,14 @@ export async function sendPaymentRequestMail(
       "",
       t.paymentRequestBody(bedrag),
       ...(invoice.description ? ["", invoice.description] : []),
+      ...(invoice.invoiceNumber ? ["", `${t.invoiceNumberLabel}: ${invoice.invoiceNumber}`] : []),
       "",
-      `${t.paymentRequestLinkLabel} ${checkoutUrl}`,
+      `${t.paymentRequestPayLabel} ${checkoutUrl}`,
+      `${t.invoiceLinkLabel} ${invoiceUrl}`,
       "",
       t.paymentRequestNotice,
+      "",
+      t.paymentRequestReply,
       "",
       t.signature,
       site.bookingEmail,
@@ -465,6 +470,7 @@ export async function sendDeliveryMail(
   booking: Booking,
   invoice: Invoice,
   deliveryUrl: string,
+  invoiceUrl: string,
 ): Promise<MailStatus> {
   const locale = booking.locale;
   const t = copy(locale).mail;
@@ -477,10 +483,14 @@ export async function sendDeliveryMail(
       t.greeting(booking.name),
       "",
       locked ? t.deliveryBodyUnpaid(bedrag) : t.deliveryBodyReady,
+      ...(invoice.invoiceNumber ? ["", `${t.invoiceNumberLabel}: ${invoice.invoiceNumber}`] : []),
       "",
       `${t.deliveryLinkLabel} ${deliveryUrl}`,
+      `${t.invoiceLinkLabel} ${invoiceUrl}`,
       "",
       t.deliveryRevisionNotice,
+      "",
+      t.deliveryReply,
       "",
       t.signature,
       site.bookingEmail,

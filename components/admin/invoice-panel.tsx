@@ -129,6 +129,14 @@ export function InvoicePanel({
         <button type="submit" className="btn btn-quiet" disabled={draftPending}>
           {draftPending ? "Bezig…" : "Opslaan"}
         </button>
+        {invoice?.invoiceNumber && (
+          <p className="field-hint">
+            Deze factuur is al verstuurd onder nummer {invoice.invoiceNumber}. Wijzig je het
+            bedrag naar aanleiding van een gesprek met de klant, verstuur dan hieronder opnieuw
+            een betaalverzoek of oplevering — anders klopt wat je eerder stuurde niet meer met
+            het nieuwe bedrag.
+          </p>
+        )}
       </form>
 
       {invoice && (
@@ -144,6 +152,19 @@ export function InvoicePanel({
             >
               {INVOICE_STATUS_LABELS[invoice.status]} · {formatAmountCents(invoice.amountCents, "nl")}
             </span>
+            {invoice.invoiceNumber && (
+              <>
+                <span className="text-mist-500">Factuurnummer {invoice.invoiceNumber}</span>
+                <a
+                  href={`/api/oplevering/${invoice.token}/factuur`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-haze-300 hover:underline"
+                >
+                  Bekijk factuur (PDF)
+                </a>
+              </>
+            )}
             {invoice.paidUtc && (
               <span className="text-mist-500">Betaald op {formatTimestamp(invoice.paidUtc)}</span>
             )}

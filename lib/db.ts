@@ -209,6 +209,14 @@ export function migrate(db: Database.Database) {
       updated_utc         INTEGER NOT NULL
     );
 
+    -- Doorlopende, jaarlijks herstartende teller voor factuurnummers.
+    -- Apart van invoices.id: dat springt bij verwijderde concepten, een
+    -- toegekend factuurnummer mag geen gaten hebben die daaraan te wijten zijn.
+    CREATE TABLE IF NOT EXISTS invoice_sequence (
+      year    INTEGER PRIMARY KEY,
+      counter INTEGER NOT NULL DEFAULT 0
+    );
+
     CREATE TABLE IF NOT EXISTS invoice_files (
       id            INTEGER PRIMARY KEY AUTOINCREMENT,
       invoice_id    INTEGER NOT NULL REFERENCES invoices(id) ON DELETE CASCADE,
@@ -261,6 +269,13 @@ export function migrate(db: Database.Database) {
   addColumn(db, "bookings", "session_count", "TEXT NOT NULL DEFAULT ''");
   addColumn(db, "bookings", "period_wish", "TEXT NOT NULL DEFAULT ''");
   addColumn(db, "bookings", "time_preferences", "TEXT NOT NULL DEFAULT ''");
+
+  // Toegekend bij de eerste keer versturen (betaalverzoek of oplevering), niet
+  // al bij het opslaan van een concept. Zie ensureInvoiceNumber in lib/invoices.ts.
+  addColumn(db, "invoices", "invoice_number", "TEXT");
+  db.exec(
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_invoices_number ON invoices(invoice_number) WHERE invoice_number IS NOT NULL",
+  );
 }
 
 /** Voegt een kolom toe als die er nog niet is. Bestaande gegevens blijven. */

@@ -25,3 +25,17 @@ export function parseAmountInput(value: string): number | null {
   if (!Number.isFinite(bedrag) || bedrag < 0) return null;
   return Math.round(bedrag * 100);
 }
+
+/**
+ * Splitst een totaalbedrag (inclusief BTW — zo vult Kai het bedrag altijd in,
+ * net als bij de dienstprijzen) terug naar het bedrag exclusief BTW en het
+ * BTW-bedrag zelf, voor op de factuur. BTW wordt altijd verrekend; er is geen
+ * vrijstelling.
+ */
+export function calculateVatBreakdown(
+  totalCents: number,
+  vatRatePercent: number,
+): { subtotalCents: number; vatCents: number; totalCents: number } {
+  const subtotalCents = Math.round(totalCents / (1 + vatRatePercent / 100));
+  return { subtotalCents, vatCents: totalCents - subtotalCents, totalCents };
+}

@@ -76,6 +76,19 @@ export type BookingSettings = {
   maxAdvanceDays: number;
 };
 
+/** Eigen bedrijfsgegevens, nodig op elke factuur. Standaard fictief. */
+export type InvoiceSettings = {
+  companyName: string;
+  companyAddress: string;
+  companyPostcode: string;
+  companyCity: string;
+  companyKvk: string;
+  companyVatNumber: string;
+  companyIban: string;
+  /** BTW-percentage dat over elk factuurbedrag wordt verrekend. */
+  vatRatePercent: number;
+};
+
 export type Project = {
   id: number;
   slug: string;
@@ -116,6 +129,8 @@ export type Invoice = {
   id: number;
   bookingId: number;
   token: string;
+  /** Pas toegekend bij de eerste verzending; null zolang het nog concept is. */
+  invoiceNumber: string | null;
   amountCents: number;
   description: string;
   payBeforeDownload: boolean;

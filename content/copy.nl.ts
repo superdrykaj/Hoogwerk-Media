@@ -601,18 +601,29 @@ export const nl = {
 
     paymentRequestSubject: (kenmerk: string) => `Betaalverzoek (${kenmerk}) — ${site.name}`,
     paymentRequestBody: (bedrag: string) =>
-      `Voor deze opdracht hoort een factuur van ${bedrag}. Je kunt die direct online betalen via onderstaande link.`,
-    paymentRequestLinkLabel: "Betaal deze factuur:",
+      `Bedankt voor de opdracht! Bij dit project hoort een factuur van ${bedrag}, die je ` +
+      `eenvoudig en veilig online kunt betalen via de onderstaande link.`,
+    invoiceNumberLabel: "Factuurnummer",
+    invoiceLinkLabel: "Bekijk of download de factuur:",
+    paymentRequestPayLabel: "Betaal deze factuur online:",
     paymentRequestNotice:
       "Liever pas betalen bij oplevering? Dat kan ook — deze link blijft geldig tot dan.",
+    paymentRequestReply: "Heb je een vraag over deze factuur? Antwoord gerust op deze mail.",
 
     deliverySubject: (kenmerk: string) => `Project afgerond (${kenmerk}) — ${site.name}`,
-    deliveryBodyReady: "Je project is afgerond! De eindproducten staan voor je klaar via onderstaande link.",
+    deliveryBodyReady:
+      "Goed nieuws: je project is afgerond! Ik heb met plezier aan deze opdracht gewerkt " +
+      "en hoop dat je net zo blij bent met het resultaat. De eindproducten staan voor je " +
+      "klaar via onderstaande link.",
     deliveryBodyUnpaid: (bedrag: string) =>
-      `Je project is afgerond! De bijbehorende factuur van ${bedrag} staat nog open; zodra die betaald is, komen de bestanden automatisch vrij via onderstaande link.`,
+      `Goed nieuws: je project is afgerond! Voordat de eindproducten vrijkomen, staat er ` +
+      `nog een factuur van ${bedrag} open; zodra die betaald is, komen ze automatisch ` +
+      `beschikbaar via onderstaande link.`,
     deliveryLinkLabel: "Bekijk en download je bestanden:",
     deliveryRevisionNotice:
-      "Niet helemaal tevreden over de editing? Via dezelfde link kun je een wijziging aanvragen.",
+      "Ben je niet helemaal tevreden over de eerste editing? Laat het gerust weten via " +
+      "dezelfde link — ik denk graag met je mee voor een wijziging.",
+    deliveryReply: "Vragen over de oplevering? Antwoord gerust op deze mail.",
 
     revisionOwnerSubject: (kenmerk: string, naam: string) => `Wijziging aangevraagd (${kenmerk}) — ${naam}`,
     revisionOwnerBody: "Er is een wijziging aangevraagd op een oplevering.",
@@ -624,6 +635,8 @@ export const nl = {
     invalidBody:
       "Controleer of je de volledige link uit de e-mail hebt gebruikt, of neem contact op als je denkt dat dit niet klopt.",
     heading: (kenmerk: string) => `Oplevering — ${kenmerk}`,
+    invoiceNumberLabel: "Factuurnummer",
+    viewInvoiceLabel: "Bekijk of download je factuur (PDF)",
     payTitle: "Betaling vereist",
     payIntro: (bedrag: string) =>
       `Voor dit project staat een factuur van ${bedrag} open. Zodra deze betaald is, komen de bestanden hieronder automatisch vrij.`,

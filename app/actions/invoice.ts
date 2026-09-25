@@ -4,7 +4,12 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { getBooking } from "@/lib/bookings";
-import { getInvoiceByToken, markPaymentSent, setMolliePaymentId } from "@/lib/invoices";
+import {
+  ensureInvoiceNumber,
+  getInvoiceByToken,
+  markPaymentSent,
+  setMolliePaymentId,
+} from "@/lib/invoices";
 import { sendRevisionRequestedMail } from "@/lib/mail";
 import { createMolliePayment } from "@/lib/mollie";
 import { rateLimit } from "@/lib/rate-limit";
@@ -47,6 +52,9 @@ export async function startInvoicePaymentAction(formData: FormData): Promise<voi
 
   setMolliePaymentId(invoice.id, payment.paymentId);
   markPaymentSent(invoice.id);
+  // Normaliter al gezet doordat de opleveringslink pas gemaild wordt na het
+  // versturen van een betaalverzoek of oplevering; hier ter zekerheid.
+  ensureInvoiceNumber(invoice.id);
   redirect(payment.checkoutUrl);
 }
 

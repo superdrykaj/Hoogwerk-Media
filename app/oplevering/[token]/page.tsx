@@ -56,6 +56,21 @@ export default async function DeliveryPage({
       <div className="card p-8">
         <h1 className="display-2 text-xl">{t.heading(booking.reference)}</h1>
 
+        {invoice.invoiceNumber && (
+          <p className="mt-2 text-sm text-mist-500">
+            {t.invoiceNumberLabel}: {invoice.invoiceNumber}
+            {" · "}
+            <a
+              href={`/api/oplevering/${token}/factuur`}
+              target="_blank"
+              rel="noreferrer"
+              className="text-haze-300 hover:underline"
+            >
+              {t.viewInvoiceLabel}
+            </a>
+          </p>
+        )}
+
         {locked ? (
           <div className="mt-6">
             <h2 className="text-sm font-semibold text-mist-100">{t.payTitle}</h2>

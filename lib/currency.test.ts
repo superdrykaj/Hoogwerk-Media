@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { formatAmountCents, parseAmountInput } from "./currency";
+import { calculateVatBreakdown, formatAmountCents, parseAmountInput } from "./currency";
 
 describe("parseAmountInput", () => {
   it("leest een bedrag met komma", () => {
@@ -51,5 +51,31 @@ describe("formatAmountCents", () => {
 
   it("rondt af naar hele centen", () => {
     expect(formatAmountCents(999, "nl")).toBe(`€${NBSP}9,99`);
+  });
+});
+
+describe("calculateVatBreakdown", () => {
+  it("splitst een bedrag inclusief 21% BTW correct", () => {
+    // 121,00 incl. 21% BTW → 100,00 excl. + 21,00 BTW.
+    expect(calculateVatBreakdown(12100, 21)).toEqual({
+      subtotalCents: 10000,
+      vatCents: 2100,
+      totalCents: 12100,
+    });
+  });
+
+  it("subtotaal plus BTW telt altijd op tot het totaal", () => {
+    for (const bedrag of [1, 999, 4250, 9900, 123456]) {
+      const { subtotalCents, vatCents, totalCents } = calculateVatBreakdown(bedrag, 21);
+      expect(subtotalCents + vatCents).toBe(totalCents);
+    }
+  });
+
+  it("geeft 0 BTW bij een tarief van 0%", () => {
+    expect(calculateVatBreakdown(10000, 0)).toEqual({
+      subtotalCents: 10000,
+      vatCents: 0,
+      totalCents: 10000,
+    });
   });
 });

@@ -41,6 +41,7 @@ import { deleteMessage, setMessageHandled } from "@/lib/messages";
 import { saveDeliveryFile, deleteDeliveryFileFromDisk } from "@/lib/deliveries";
 import {
   deleteInvoiceFile,
+  ensureInvoiceNumber,
   getInvoice,
   getInvoiceByBookingId,
   addInvoiceFile,
@@ -67,13 +68,14 @@ import {
 import type { ActionState } from "@/lib/form-state";
 import { rateLimit } from "@/lib/rate-limit";
 import { createService, deleteService, updateService } from "@/lib/services";
-import { saveSettings } from "@/lib/settings";
+import { saveInvoiceSettings, saveSettings } from "@/lib/settings";
 import { setSiteStatus } from "@/lib/site-status";
 import { parseMinutes, zonedToUtc } from "@/lib/time";
 import { leesWeekschema } from "@/lib/week-schedule";
 import { saveUpload } from "@/lib/uploads";
 import {
   fieldErrors,
+  invoiceSettingsFormSchema,
   projectFormSchema,
   serviceFormSchema,
   settingsFormSchema,
@@ -293,7 +295,14 @@ export async function sendPaymentRequestAction(
 
   setMolliePaymentId(invoice.id, payment.paymentId);
   markPaymentSent(invoice.id);
-  const mailStatus = await sendPaymentRequestMail(booking, invoice, payment.checkoutUrl);
+  ensureInvoiceNumber(invoice.id);
+  const genummerd = getInvoice(invoice.id)!;
+  const mailStatus = await sendPaymentRequestMail(
+    booking,
+    genummerd,
+    payment.checkoutUrl,
+    `${origin}/api/oplevering/${invoice.token}/factuur`,
+  );
 
   revalidatePath("/admin/boekingen");
   return {
@@ -355,7 +364,14 @@ export async function sendDeliveryAction(
 
   const origin = await siteOrigin();
   markDeliverySent(invoice.id);
-  const mailStatus = await sendDeliveryMail(booking, invoice, `${origin}/oplevering/${invoice.token}`);
+  ensureInvoiceNumber(invoice.id);
+  const genummerd = getInvoice(invoice.id)!;
+  const mailStatus = await sendDeliveryMail(
+    booking,
+    genummerd,
+    `${origin}/oplevering/${invoice.token}`,
+    `${origin}/api/oplevering/${invoice.token}/factuur`,
+  );
 
   revalidatePath("/admin/boekingen");
   return {
@@ -584,6 +600,37 @@ export async function saveSettingsAction(
   revalidatePath("/admin/instellingen");
   revalidatePath("/");
   return { status: "success", message: "De boekingsregels zijn opgeslagen." };
+}
+
+export async function saveInvoiceSettingsAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  await requireAdmin();
+
+  const parsed = invoiceSettingsFormSchema.safeParse({
+    companyName: formData.get("companyName") ?? "",
+    companyAddress: formData.get("companyAddress") ?? "",
+    companyPostcode: formData.get("companyPostcode") ?? "",
+    companyCity: formData.get("companyCity") ?? "",
+    companyKvk: formData.get("companyKvk") ?? "",
+    companyVatNumber: formData.get("companyVatNumber") ?? "",
+    companyIban: formData.get("companyIban") ?? "",
+    vatRatePercent: formData.get("vatRatePercent"),
+  });
+
+  if (!parsed.success) {
+    return {
+      status: "error",
+      message: "Controleer de gemarkeerde velden.",
+      errors: fieldErrors(parsed.error),
+    };
+  }
+
+  saveInvoiceSettings(parsed.data);
+  revalidatePath("/admin/instellingen");
+  revalidatePath("/admin/boekingen");
+  return { status: "success", message: "De bedrijfsgegevens voor facturen zijn opgeslagen." };
 }
 
 /**

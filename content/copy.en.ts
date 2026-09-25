@@ -586,18 +586,28 @@ export const en: Dictionary = {
 
     paymentRequestSubject: (reference: string) => `Payment request (${reference}) — ${site.name}`,
     paymentRequestBody: (amount: string) =>
-      `This job comes with an invoice of ${amount}. You can pay it online directly via the link below.`,
-    paymentRequestLinkLabel: "Pay this invoice:",
+      `Thanks for the job! This project comes with an invoice of ${amount}, which you can ` +
+      `pay easily and securely online via the link below.`,
+    invoiceNumberLabel: "Invoice number",
+    invoiceLinkLabel: "View or download the invoice:",
+    paymentRequestPayLabel: "Pay this invoice online:",
     paymentRequestNotice:
       "Prefer to pay on delivery instead? That's fine too — this link stays valid until then.",
+    paymentRequestReply: "Have a question about this invoice? Just reply to this e-mail.",
 
     deliverySubject: (reference: string) => `Project completed (${reference}) — ${site.name}`,
-    deliveryBodyReady: "Your project is finished! The final files are ready for you via the link below.",
+    deliveryBodyReady:
+      "Good news: your project is finished! I enjoyed working on it and hope you're just " +
+      "as happy with the result. The final files are ready for you via the link below.",
     deliveryBodyUnpaid: (amount: string) =>
-      `Your project is finished! The invoice of ${amount} is still open; once it's paid, the files will automatically become available via the link below.`,
+      `Good news: your project is finished! Before the files become available, there's ` +
+      `still an invoice of ${amount} open; once it's paid, they'll automatically become ` +
+      `available via the link below.`,
     deliveryLinkLabel: "View and download your files:",
     deliveryRevisionNotice:
-      "Not fully happy with the editing? You can request a change via the same link.",
+      "Not fully happy with the first edit? Let me know via the same link — I'm happy to " +
+      "go over a change with you.",
+    deliveryReply: "Questions about the delivery? Just reply to this e-mail.",
 
     revisionOwnerSubject: (reference: string, name: string) => `Change requested (${reference}) — ${name}`,
     revisionOwnerBody: "A change has been requested on a delivery.",
@@ -609,6 +619,8 @@ export const en: Dictionary = {
     invalidBody:
       "Check that you used the full link from the e-mail, or get in touch if you think this isn't right.",
     heading: (reference: string) => `Delivery — ${reference}`,
+    invoiceNumberLabel: "Invoice number",
+    viewInvoiceLabel: "View or download your invoice (PDF)",
     payTitle: "Payment required",
     payIntro: (amount: string) =>
       `An invoice of ${amount} is open for this project. Once it's paid, the files below will automatically become available.`,
