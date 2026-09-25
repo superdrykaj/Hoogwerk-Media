@@ -119,6 +119,10 @@ export const nl = {
         title: "Locaties en natuur",
         body: "Recreatieterreinen, jachthavens en polder, opgenomen op het juiste uur van de dag.",
       },
+      {
+        title: "Bruiloften",
+        body: "Sfeerbeelden van de trouwlocatie en de aankomst, vanuit de lucht. Nooit een shot boven de gasten.",
+      },
     ],
 
     pricesTitle: "Diensten en tarieven",
@@ -217,6 +221,16 @@ export const nl = {
           "onder de 250 gram; daarmee mag ik niet over mensenmenigten. Een " +
           "evenement kan alleen als de locatie leeg is of met een " +
           "Specific-vergunning, en die heb ik nu niet.",
+      },
+      {
+        question: "Vlieg je ook boven de bruiloft zelf, tijdens de ceremonie of receptie?",
+        answer:
+          "Nee, dat mag ten alle tijden niet — ook niet als alle gasten dat " +
+          "vooraf weten en ermee instemmen. Zodra mensen samen op één plek " +
+          "staan, geldt dat als een menigte, en daar mag in de open categorie " +
+          "nooit overheen gevlogen worden. Ik leg de bruiloft daarom vast van " +
+          "buitenaf: de locatie, de aankomst, het gebouw en de omgeving, en " +
+          "nooit een shot recht boven de samengekomen gasten.",
       },
       {
         question: "Hoe zit het met de privacy van de buren?",

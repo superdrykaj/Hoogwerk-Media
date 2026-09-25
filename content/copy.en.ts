@@ -111,6 +111,10 @@ export const en: Dictionary = {
         title: "Locations and nature",
         body: "Recreation areas, marinas and polders, shot at the right hour of the day.",
       },
+      {
+        title: "Weddings",
+        body: "Aerial footage of the venue and the arrival. Never a shot above the guests.",
+      },
     ],
 
     pricesTitle: "Services and rates",
@@ -208,6 +212,16 @@ export const en: Dictionary = {
           "grams, which means I may not fly over crowds. An event is only " +
           "possible if the site is empty, or with an operational authorisation " +
           "for the ‘specific’ category, which I do not hold at the moment.",
+      },
+      {
+        question: "Do you fly over the wedding itself, during the ceremony or reception?",
+        answer:
+          "No, that is never allowed — not even if every guest knows about it " +
+          "beforehand and agrees to it. Once people are gathered together in " +
+          "one place, that counts as a crowd, and in the open category I may " +
+          "never fly over one. So I capture the wedding from the outside: the " +
+          "venue, the arrival, the building and its surroundings, but never a " +
+          "shot directly above the assembled guests.",
       },
       {
         question: "What about the neighbours' privacy?",

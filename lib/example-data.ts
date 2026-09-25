@@ -98,6 +98,23 @@ export const EXAMPLE_SERVICES = [
     active: 1,
   },
   {
+    slug: "bruiloft",
+    name: "Bruiloft",
+    description:
+      "Sfeerbeelden van de trouwlocatie en de aankomst, vanuit de lucht. Nooit een shot boven de gasten — dat mag niet, ook niet met hun toestemming.",
+    duration_minutes: 60,
+    price_label: "vanaf € 249",
+    name_en: "Wedding",
+    description_en:
+      "Aerial footage of the venue and the arrival. Never a shot above the guests — that isn't allowed, even with their consent.",
+    price_label_en: "from € 249",
+    buffer_minutes: 45,
+    bookable: 1,
+    intro_only: 0,
+    sort_order: 6,
+    active: 1,
+  },
+  {
     slug: "project-op-maat",
     name: "Project op maat",
     description:
@@ -111,7 +128,7 @@ export const EXAMPLE_SERVICES = [
     buffer_minutes: 15,
     bookable: 1,
     intro_only: 1,
-    sort_order: 6,
+    sort_order: 7,
     active: 1,
   },
 ];
