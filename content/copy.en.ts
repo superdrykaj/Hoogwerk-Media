@@ -121,7 +121,7 @@ export const en: Dictionary = {
     chooseMoment: "Pick a time →",
 
     workEyebrow: "Work",
-    workTitle: "See our work",
+    workTitle: "See my work",
     workIntro:
       "A selection of aerial footage over city, landscape and infrastructure.",
     showreelLabel:
@@ -180,14 +180,14 @@ export const en: Dictionary = {
       "Sixty to ninety minutes on location",
       "Selection and editing of the images",
       "Delivery within five working days",
-      "Usage rights for your own website and social channels",
+      "Usage rights for your own website and social channels, and — for property — for the listing portal and the sales brochure",
     ],
     excludedTitle: "Billed separately",
     excluded: [
       "Travel beyond 25 km: € 0.45 per kilometre",
       "Waiting time on location: € 65 per hour",
-      "Use in print, advertising or campaigns: by arrangement",
-      "Flights that require an operational authorisation for the ‘specific’ category",
+      "Use in print, paid advertising or larger campaigns: by arrangement",
+      "Flights that require an operational authorisation for the ‘specific’ category: not offered at the moment",
     ],
 
     faqEyebrow: "Questions",
@@ -219,9 +219,9 @@ export const en: Dictionary = {
       {
         question: "And if the weather is bad?",
         answer:
-          "Then we rebook, at no cost. A light drone gets pushed off course in " +
-          "strong wind, and that produces images you cannot use. I decide the " +
-          "evening before at the latest.",
+          "Then we don't fly, and reschedule at no cost. I only fly in safe " +
+          "weather conditions, so the images come out sharp and usable. I " +
+          "decide the evening before at the latest.",
       },
       {
         question: "When do I get the images?",
@@ -233,8 +233,9 @@ export const en: Dictionary = {
         question: "What may I do with the images?",
         answer:
           "You get the right to use them on your own website and social " +
-          "channels. The copyright stays with me. For a billboard, an advert " +
-          "or a campaign, we agree separate terms.",
+          "channels, and for property also on listing portals and in the " +
+          "sales brochure. The copyright stays with me. For a billboard, a " +
+          "paid advert or a larger campaign, we agree separate terms.",
       },
     ],
 
@@ -299,7 +300,6 @@ export const en: Dictionary = {
     videoEmpty: "The video for this project goes here.",
     videoEmptyHint: "Add a YouTube or Vimeo link to this project in the admin area.",
     galleryTitle: "Photo gallery",
-    galleryEmpty: "No photos for this project yet.",
     moreTitle: "More work",
   },
 

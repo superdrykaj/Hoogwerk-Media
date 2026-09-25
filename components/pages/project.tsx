@@ -157,19 +157,17 @@ export async function ProjectPage({
           )}
         </section>
 
-        {/* Galerij ---------------------------------------------------------- */}
-        <section aria-labelledby="galerij-titel" className="py-16">
-          <h2 id="galerij-titel" className="display-2 mb-6">
-            {t.project.galleryTitle}
-          </h2>
-          {images.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-ink-600 px-6 py-16 text-center">
-              <p className="text-mist-300">{t.project.galleryEmpty}</p>
-            </div>
-          ) : (
+        {/* Galerij ------------------------------------------------------------
+            Zonder foto's is er niets te tonen; de sectie laat dan liever
+            niets zien dan een lege plek benadrukken. */}
+        {images.length > 0 && (
+          <section aria-labelledby="galerij-titel" className="py-16">
+            <h2 id="galerij-titel" className="display-2 mb-6">
+              {t.project.galleryTitle}
+            </h2>
             <ProjectGallery images={images} title={tekst.title} locale={locale} />
-          )}
-        </section>
+          </section>
+        )}
 
         {/* Andere projecten ------------------------------------------------- */}
         {others.length > 0 && (
