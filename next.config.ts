@@ -4,6 +4,16 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   // Zelfstandige serverbundel, zodat het Docker-image klein blijft.
   output: "standalone",
+  experimental: {
+    serverActions: {
+      // Standaard 1 MB — te weinig voor de projectfoto-upload (tot 12 MB,
+      // zie lib/uploads.ts). Opleverbestanden (foto/video) lopen bewust niet
+      // via een Server Action: die buffert de hele upload in het geheugen
+      // van de machine, wat bij een grote video niet houdbaar is. Zie
+      // app/api/admin/opleverbestand/route.ts, dat in plaats daarvan streamt.
+      bodySizeLimit: "20mb",
+    },
+  },
   // De database en de uploads horen op de gekoppelde schijf, nooit in de
   // serverbundel. Zonder deze regel zou een lokale data/-map meegebakken
   // worden, met klantgegevens en al.

@@ -97,6 +97,17 @@ export const settingsFormSchema = z.object({
   maxAdvanceDays: z.coerce.number().int().min(1).max(365),
 });
 
+export const invoiceSettingsFormSchema = z.object({
+  companyName: trimmed(150).min(1, "Vul een bedrijfsnaam in."),
+  companyAddress: trimmed(200).min(1, "Vul een adres in."),
+  companyPostcode: trimmed(20).min(1, "Vul een postcode in."),
+  companyCity: trimmed(100).min(1, "Vul een plaats in."),
+  companyKvk: trimmed(50).min(1, "Vul een KvK-nummer in."),
+  companyVatNumber: trimmed(50).min(1, "Vul een BTW-nummer in."),
+  companyIban: trimmed(50).min(1, "Vul een IBAN in."),
+  vatRatePercent: z.coerce.number().min(0, "Kan niet negatief zijn.").max(100, "Maximaal 100%."),
+});
+
 /** Eerste foutmelding per veld, klaar voor weergave in het formulier. */
 export function fieldErrors(error: z.ZodError): Record<string, string> {
   const out: Record<string, string> = {};

@@ -84,11 +84,11 @@ export const nl = {
 
   /* -- Homepage ------------------------------------------------------------ */
   home: {
-    heroTitle: "Uw locatie professioneel vanuit de lucht",
+    heroTitle: "Je locatie professioneel vanuit de lucht",
     heroIntro:
       "Dronefotografie en dronevideo voor bedrijven, vastgoed en projecten in " +
       "Zaandam en Noord-Holland.",
-    heroCta: "Bespreek uw project",
+    heroCta: "Bespreek je project",
     heroWork: "Bekijk het werk",
     /**
      * Beschrijving van het achtergrondbeeld van de hero, voor wie de video
@@ -112,7 +112,7 @@ export const nl = {
         body: "Overzicht van terrein, opslag en logistiek. Bruikbaar voor site, socials en presentaties.",
       },
       {
-        title: "Bouwvordering",
+        title: "Bouwvoortgang",
         body: "Dezelfde route, elke maand opnieuw. Vaste beeldhoeken die de voortgang zichtbaar maken.",
       },
       {
@@ -133,7 +133,7 @@ export const nl = {
     chooseMoment: "Een moment kiezen →",
 
     workEyebrow: "Werk",
-    workTitle: "Bekijk ons werk",
+    workTitle: "Bekijk mijn werk",
     workIntro:
       "Een selectie van dronebeelden boven stad, landschap en infrastructuur.",
     /** Wat een schermlezer van de videospeler te horen krijgt. */
@@ -194,14 +194,14 @@ export const nl = {
       "Zestig tot negentig minuten op locatie",
       "Selectie en nabewerking van de beelden",
       "Levering binnen vijf werkdagen",
-      "Gebruiksrecht voor je eigen website en socials",
+      "Gebruiksrecht voor je eigen website en socials, en — bij vastgoed — voor Funda en de verkoopbrochure",
     ],
     excludedTitle: "Apart afgerekend",
     excluded: [
       "Voorrijden buiten 25 km: € 0,45 per kilometer",
       "Wachttijd op locatie: € 65 per uur",
-      "Gebruik voor print, advertenties of campagnes: in overleg",
-      "Vluchten die alleen met een Specific-vergunning mogen",
+      "Gebruik in print, betaalde advertenties of grotere campagnes: in overleg",
+      "Vluchten die een vergunning voor de categorie 'specific' vereisen: bied ik op dit moment niet aan",
     ],
 
     faqEyebrow: "Vragen",
@@ -242,9 +242,10 @@ export const nl = {
       {
         question: "En als het weer tegenzit?",
         answer:
-          "Dan boeken we om, zonder kosten. Een lichte drone waait bij harde " +
-          "wind weg van waar hij moet zijn; dat levert geen beeld op waar je " +
-          "iets aan hebt. Ik beslis dat uiterlijk de avond ervoor.",
+          "Dan vliegen we niet, en verzetten we de afspraak kosteloos naar een " +
+          "nieuw moment. Ik vlieg alleen onder veilige weersomstandigheden, " +
+          "zodat de beelden scherp en bruikbaar zijn. Ik beslis dat uiterlijk " +
+          "de avond ervoor.",
       },
       {
         question: "Wanneer heb ik de beelden?",
@@ -255,9 +256,11 @@ export const nl = {
       {
         question: "Wat mag ik met de beelden doen?",
         answer:
-          "Je krijgt het recht ze te gebruiken op je eigen website en socials. " +
-          "Het auteursrecht blijft bij mij. Wil je ze op een billboard, in een " +
-          "advertentie of in een campagne, dan spreken we dat apart af.",
+          "Je krijgt het recht ze te gebruiken op je eigen website en socials, " +
+          "en bij vastgoed ook op Funda en in de verkoopbrochure. Het " +
+          "auteursrecht blijft bij mij. Wil je ze op een billboard, in een " +
+          "betaalde advertentie of in een grotere campagne, dan spreken we dat " +
+          "apart af.",
       },
     ],
 
@@ -302,7 +305,7 @@ export const nl = {
     categories: {
       vastgoed: "Vastgoed",
       bedrijven: "Bedrijven",
-      bouw: "Bouwvordering",
+      bouw: "Bouwvoortgang",
       natuur: "Natuur en locaties",
     } as Record<string, string>,
   },
@@ -327,7 +330,6 @@ export const nl = {
     videoEmptyHint:
       "Voeg in de beheeromgeving een YouTube- of Vimeo-link toe bij dit project.",
     galleryTitle: "Fotogalerij",
-    galleryEmpty: "Nog geen foto's bij dit project.",
     moreTitle: "Meer werk",
   },
 
@@ -612,6 +614,61 @@ export const nl = {
     contactOwnerSubject: (onderwerp: string) => `Contactformulier: ${onderwerp}`,
     contactFrom: "Van:",
     contactRe: "Onderwerp:",
+
+    paymentRequestSubject: (kenmerk: string) => `Betaalverzoek (${kenmerk}) — ${site.name}`,
+    paymentRequestBody: (bedrag: string) =>
+      `Bedankt voor de opdracht! Bij dit project hoort een factuur van ${bedrag}, die je ` +
+      `eenvoudig en veilig online kunt betalen via de onderstaande link.`,
+    invoiceNumberLabel: "Factuurnummer",
+    invoiceLinkLabel: "Bekijk of download de factuur:",
+    paymentRequestPayLabel: "Betaal deze factuur online:",
+    paymentRequestNotice:
+      "Liever pas betalen bij oplevering? Dat kan ook — deze link blijft geldig tot dan.",
+    paymentRequestReply: "Heb je een vraag over deze factuur? Antwoord gerust op deze mail.",
+
+    deliverySubject: (kenmerk: string) => `Project afgerond (${kenmerk}) — ${site.name}`,
+    deliveryBodyReady:
+      "Goed nieuws: je project is afgerond! Ik heb met plezier aan deze opdracht gewerkt " +
+      "en hoop dat je net zo blij bent met het resultaat. De eindproducten staan voor je " +
+      "klaar via onderstaande link.",
+    deliveryBodyUnpaid: (bedrag: string) =>
+      `Goed nieuws: je project is afgerond! Voordat de eindproducten vrijkomen, staat er ` +
+      `nog een factuur van ${bedrag} open; zodra die betaald is, komen ze automatisch ` +
+      `beschikbaar via onderstaande link.`,
+    deliveryLinkLabel: "Bekijk en download je bestanden:",
+    deliveryRevisionNotice:
+      "Ben je niet helemaal tevreden over de eerste editing? Laat het gerust weten via " +
+      "dezelfde link — ik denk graag met je mee voor een wijziging.",
+    deliveryReply: "Vragen over de oplevering? Antwoord gerust op deze mail.",
+
+    revisionOwnerSubject: (kenmerk: string, naam: string) => `Wijziging aangevraagd (${kenmerk}) — ${naam}`,
+    revisionOwnerBody: "Er is een wijziging aangevraagd op een oplevering.",
+  },
+
+  /* -- Opleveringspagina ------------------------------------------------------ */
+  delivery: {
+    invalidTitle: "Deze link is niet (meer) geldig",
+    invalidBody:
+      "Controleer of je de volledige link uit de e-mail hebt gebruikt, of neem contact op als je denkt dat dit niet klopt.",
+    heading: (kenmerk: string) => `Oplevering — ${kenmerk}`,
+    invoiceNumberLabel: "Factuurnummer",
+    viewInvoiceLabel: "Bekijk of download je factuur (PDF)",
+    payTitle: "Betaling vereist",
+    payIntro: (bedrag: string) =>
+      `Voor dit project staat een factuur van ${bedrag} open. Zodra deze betaald is, komen de bestanden hieronder automatisch vrij.`,
+    payButton: "Nu betalen",
+    payError: "Betalen lukte net niet. Probeer het nog eens of neem contact op.",
+    paidNotice: (wanneer: string) => `Betaald op ${wanneer}.`,
+    filesTitle: "Jouw bestanden",
+    filesIntro: "Klik op een bestand om het te downloaden.",
+    downloadLabel: "Downloaden",
+    revisionTitle: "Niet helemaal tevreden?",
+    revisionIntro: "Laat weten wat je anders zou willen zien; ik neem het met je door.",
+    revisionPlaceholder:
+      "Bijvoorbeeld: kun je de kleuren in het tweede fragment iets warmer maken?",
+    revisionSubmit: "Wijziging aanvragen",
+    revisionSuccess: "Bedankt, je verzoek is verstuurd. Ik neem snel contact op.",
+    revisionError: "Vul een bericht van minstens 10 tekens in.",
   },
 };
 
