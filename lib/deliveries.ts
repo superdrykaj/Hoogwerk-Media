@@ -32,7 +32,10 @@ const ALLOWED: Record<string, string> = {
 };
 
 function maxBytes(): number {
-  const mb = Number(process.env.DELIVERY_MAX_UPLOAD_MB) || 1024;
+  // 300 MB: de praktische limiet, want next.config.ts staat Server Actions
+  // niet meer dan serverActions.bodySizeLimit toe. Hoger zetten heeft pas zin
+  // als die limiet én het geheugen van de Fly-machine ook omhoog gaan.
+  const mb = Number(process.env.DELIVERY_MAX_UPLOAD_MB) || 300;
   return mb * 1024 * 1024;
 }
 

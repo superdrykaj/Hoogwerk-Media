@@ -779,10 +779,21 @@ verder niets aan de code te veranderen.
 De eindproducten (foto's, video's, zip's) staan op dezelfde schijf als de
 database en de projectfoto's (zie **Opslaglocatie** hieronder), in een eigen,
 niet-publieke map. Ze zijn alleen te downloaden via de beveiligde link, nooit
-rechtstreeks. Grote bestanden: zet zo nodig een eigen maximum:
+rechtstreeks.
+
+**Uploads zijn beperkt tot 300 MB per bestand.** Dat komt niet alleen door
+`DELIVERY_MAX_UPLOAD_MB`, maar vooral door `serverActions.bodySizeLimit` in
+`next.config.ts`: de uploadknop in de beheeromgeving is een Server Action, en
+die houdt de hele upload in het geheugen van de machine vast. De Fly-machine
+heeft standaard maar 512 MB. Wil je grotere video's kunnen opleveren, dan moet
+je zowel `next.config.ts` als het geheugen ophogen:
+
+```bash
+fly scale memory 2048   # bijvoorbeeld, op de betreffende app
+```
 
 ```
-# DELIVERY_MAX_UPLOAD_MB="1024"
+# DELIVERY_MAX_UPLOAD_MB="300"
 ```
 
 ### Publieke adres van de site
