@@ -164,7 +164,8 @@ export const en: Dictionary = {
 
     aboutEyebrow: "About me",
     aboutTitle: "One point of contact.",
-    aboutImageAlt: "Drone flight over the North Holland landscape",
+    aboutImageAlt:
+      "Portrait of Kai Koster, drone photographer at Hoogbeeld Media",
     pricingEyebrow: "Rates",
     pricingTitle: "Indications, with what's included.",
     pricingNote:

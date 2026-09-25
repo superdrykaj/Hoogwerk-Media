@@ -28,10 +28,13 @@ import {
   signOut,
 } from "@/lib/auth";
 import {
+  mailRecipients,
   sendBookingCancelledMail,
   sendBookingConfirmedMail,
+  sendBookingMovedInvite,
   sendTestMail,
 } from "@/lib/mail";
+import { verklaarMailFout } from "@/lib/mail-error";
 import { deleteMessage, setMessageHandled } from "@/lib/messages";
 import {
   addProjectImage,
@@ -119,6 +122,10 @@ export async function updateBookingStatusAction(
     return { status: "error", message: "Onbekende status." };
   }
 
+  // De stand van vóór de wijziging bepaalt of er een agenda-uitnodiging is
+  // uitgegaan die nu weer moet worden ingetrokken.
+  const wasConfirmed = getBooking(id)?.status === "confirmed";
+
   const result = setBookingStatus(id, status);
   if (!result.ok) {
     return { status: "error", message: describeProblem(result.problem!, copy(DEFAULT_LOCALE).slots) ?? "Wijzigen is niet gelukt." };
@@ -128,17 +135,30 @@ export async function updateBookingStatusAction(
   let mailNote = "";
   if (booking) {
     if (status === "confirmed") {
-      const sent = await sendBookingConfirmedMail(booking);
+      const { customer, calendar } = await sendBookingConfirmedMail(booking);
       mailNote =
-        sent === "sent"
+        customer === "sent"
           ? " De klant heeft een bevestigingsmail gekregen."
-          : " Let op: e-mail is niet ingesteld, dus de klant kreeg géén bericht.";
+          : " Let op: de klant kreeg géén bevestigingsmail.";
+      mailNote +=
+        calendar === "sent"
+          ? ` De agenda-uitnodiging is naar ${mailRecipients().calendar} gestuurd.`
+          : " De agenda-uitnodiging is niet verstuurd.";
     } else if (status === "rejected" || status === "cancelled") {
-      const sent = await sendBookingCancelledMail(booking, status);
+      const { customer, calendar } = await sendBookingCancelledMail(
+        booking,
+        status,
+        { withdrawInvite: wasConfirmed },
+      );
       mailNote =
-        sent === "sent"
+        customer === "sent"
           ? " De klant is per e-mail op de hoogte gebracht."
-          : " Let op: e-mail is niet ingesteld, dus de klant kreeg géén bericht.";
+          : " Let op: de klant kreeg géén bericht.";
+      if (calendar === "sent") {
+        mailNote += " De afspraak is uit je agenda gehaald.";
+      } else if (calendar !== null) {
+        mailNote += " Let op: de afspraak staat nog in je agenda.";
+      }
     }
   }
 
@@ -168,9 +188,22 @@ export async function rescheduleBookingAction(
     return { status: "error", message: describeProblem(result.problem!, copy(DEFAULT_LOCALE).slots) ?? "Verplaatsen is niet gelukt." };
   }
 
+  // Staat de afspraak bevestigd, dan ligt hij al in de agenda op de oude tijd.
+  // De uitnodiging opnieuw sturen schuift die afspraak mee.
+  let mailNote = "";
+  const verplaatst = getBooking(id);
+  if (verplaatst?.status === "confirmed") {
+    const sent = await sendBookingMovedInvite(verplaatst);
+    mailNote =
+      sent === "sent"
+        ? " Je agenda is bijgewerkt."
+        : " Let op: je agenda is niet bijgewerkt.";
+  }
+
   revalidatePath("/admin/boekingen");
+  revalidatePath("/admin");
   revalidatePath("/");
-  return { status: "success", message: "De afspraak is verplaatst." };
+  return { status: "success", message: `De afspraak is verplaatst.${mailNote}` };
 }
 
 export async function saveBookingNoteAction(
@@ -426,9 +459,15 @@ export async function sendTestMailAction(
         "E-mail is nog niet ingesteld, dus er is niets verstuurd. Zet eerst de SMTP-gegevens klaar.",
     };
   }
+  // De melding van de server blijft altijd staan: die vertelt het precieze
+  // geval. Herkennen we hem, dan komt er uitleg en een lijstje stappen bij.
+  const uitleg = verklaarMailFout(detail);
   return {
     status: "error",
-    message: `De mailserver weigerde het bericht: ${detail}`,
+    message: uitleg
+      ? `${uitleg.oorzaak}\n\nMelding van de server: ${detail}`
+      : `De mailserver weigerde het bericht: ${detail}`,
+    details: uitleg?.stappen ?? [],
   };
 }
 

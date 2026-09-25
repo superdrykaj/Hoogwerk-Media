@@ -131,6 +131,20 @@ export const EXAMPLE_WEEKLY: [number, number, number][] = [
   [6, 10 * 60, 14 * 60],
 ];
 
+/**
+ * De projecten waarmee een verse database begint.
+ *
+ * Twee soorten, te herkennen aan `is_example`:
+ *
+ *   - Echt werk (`is_example: 0`) staat gepubliceerd op de site.
+ *   - De verzonnen voorbeelden (`is_example: 1`) komen erin als concept
+ *     (`published: 0`). Ze staan dus wél in de beheeromgeving, als sjabloon om
+ *     van te kopiëren, maar een bezoeker krijgt ze niet te zien. Een portfolio
+ *     met verzonnen opdrachten erin is erger dan een klein portfolio.
+ *
+ * Zet je een voorbeeld in de beheeromgeving op gepubliceerd, dan verschijnt
+ * het met het voorbeeldlabel erbij.
+ */
 export const EXAMPLE_PROJECTS = [
   {
     slug: "de-zaan-in-wormerveer",
@@ -153,6 +167,7 @@ export const EXAMPLE_PROJECTS = [
     cover_alt_en:
       "Aerial view of the River Zaan and the waterfront buildings in Wormerveer",
     video_url: "/media/wormerveer-de-zaan-dronevideo.mp4",
+    published: 1,
     featured: 1,
     sort_order: 1,
     is_example: 0,
@@ -179,6 +194,7 @@ export const EXAMPLE_PROJECTS = [
     cover_alt_en:
       "Aerial view of the motorway near Zaandam interchange at sunset",
     video_url: "/media/knooppunt-zaandam-dronevideo.mp4",
+    published: 1,
     featured: 1,
     sort_order: 2,
     is_example: 0,
@@ -207,6 +223,7 @@ export const EXAMPLE_PROJECTS = [
     cover_alt_en:
       "Example image: aerial photo of a detached house with a garden by the water",
     video_url: "",
+    published: 0,
     featured: 0,
     sort_order: 11,
     is_example: 1,
@@ -245,6 +262,7 @@ export const EXAMPLE_PROJECTS = [
     cover_alt_en:
       "Example image: aerial photo of a housing estate under construction",
     video_url: "",
+    published: 0,
     featured: 0,
     sort_order: 12,
     is_example: 1,
@@ -278,6 +296,7 @@ export const EXAMPLE_PROJECTS = [
     cover_alt_en:
       "Example image: aerial photo of a business park",
     video_url: "",
+    published: 0,
     featured: 0,
     sort_order: 13,
     is_example: 1,
@@ -311,6 +330,7 @@ export const EXAMPLE_PROJECTS = [
     cover_alt_en:
       "Example image: aerial photo of a production site",
     video_url: "",
+    published: 0,
     featured: 0,
     sort_order: 14,
     is_example: 1,
@@ -346,8 +366,8 @@ export function installExampleData(db: Database): {
        video_url, published, featured, sort_order, created_utc)
      VALUES (@slug, @title, @category, @location, @summary, @body, @cover_url,
              @cover_alt, @title_en, @location_en, @summary_en, @body_en,
-             @cover_alt_en, @is_example, @video_url, 1, @featured, @sort_order,
-             @created_utc)
+             @cover_alt_en, @is_example, @video_url, @published, @featured,
+             @sort_order, @created_utc)
      ON CONFLICT(slug) DO NOTHING`,
   );
   const insertImage = db.prepare(

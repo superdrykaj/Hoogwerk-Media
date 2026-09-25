@@ -436,11 +436,15 @@ function About({ t, locale }: { t: Dictionary; locale: Locale }) {
         <Reveal>
           <div className="relative aspect-4/3 overflow-hidden rounded-2xl border border-ink-700">
             <Image
-              src="/images/about.jpg"
+              src="/images/about-kai-torso.jpg"
               alt={t.home.aboutImageAlt}
               fill
               sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover"
+              // Een portret in een liggend kader verliest boven en onder een
+              // stuk. Het zwaartepunt ligt daarom hoger dan het midden, zodat
+              // hoofd en torso in beeld blijven; op mobiel is het kader
+              // smaller en telt dat nog zwaarder.
+              className="object-cover object-[center_25%]"
             />
           </div>
         </Reveal>

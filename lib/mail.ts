@@ -3,6 +3,7 @@ import "server-only";
 import { copy } from "@/content/copy";
 import { site } from "@/content/site";
 import { getDb } from "./db";
+import { bookingIcs, icsFilename, type IcsMethod } from "./ics";
 import { DEFAULT_LOCALE, type Locale } from "./locale";
 import { scopeLines } from "./project-scope";
 import { formatTimestamp } from "./time";
@@ -22,6 +23,8 @@ import type { Booking, ContactMessage } from "./types";
  *   SMTP_USER, SMTP_PASSWORD
  * Optioneel, om de post te scheiden:
  *   MAIL_TO_BOOKINGS, MAIL_TO_CONTACT, of MAIL_TO voor allebei tegelijk
+ * Optioneel, voor de agenda-uitnodigingen:
+ *   MAIL_TO_CALENDAR
  */
 
 export type MailStatus = "sent" | "skipped" | "failed";
@@ -38,13 +41,22 @@ export function isMailConfigured(): boolean {
  * Aanvragen horen bij het boekingenadres en algemene berichten bij het
  * algemene adres. Staat er één MAIL_TO ingesteld, dan gaat alles daarheen;
  * staat er niets, dan worden de adressen uit content/site.ts gebruikt.
+ *
+ * De agenda-uitnodiging is de uitzondering: die gaat naar het persoonlijke
+ * adres, want daar hangt de agenda aan waar de afspraak in moet komen. MAIL_TO
+ * trekt dat bewust niet mee; een verzamelpostvak is geen agenda.
  */
-export function mailRecipients(): { bookings: string; contact: string } {
+export function mailRecipients(): {
+  bookings: string;
+  contact: string;
+  calendar: string;
+} {
   const beide = process.env.MAIL_TO?.trim();
   return {
     bookings:
       process.env.MAIL_TO_BOOKINGS?.trim() || beide || site.bookingEmail,
     contact: process.env.MAIL_TO_CONTACT?.trim() || beide || site.email,
+    calendar: process.env.MAIL_TO_CALENDAR?.trim() || site.personalEmail,
   };
 }
 
@@ -112,12 +124,40 @@ function getTransport() {
   return transportCache;
 }
 
+/**
+ * De fout van de mailserver als één regel tekst.
+ *
+ * De losse melding is vaak te mager om iets mee te kunnen: bij een tijdslimiet
+ * staat er alleen "Connection timeout". De code (ETIMEDOUT, EAUTH) en het
+ * antwoord van de server zeggen wél wat er aan de hand is, dus die gaan mee.
+ * Op die tekst is de uitleg in lib/mail-error.ts gebouwd.
+ */
+function beschrijfFout(error: unknown): string {
+  const delen: string[] = [];
+  if (error && typeof error === "object") {
+    const e = error as { code?: unknown; responseCode?: unknown; response?: unknown };
+    if (typeof e.code === "string") delen.push(e.code);
+    const antwoord = typeof e.response === "string" ? e.response : "";
+    // De code staat meestal al vooraan in het antwoord; niet twee keer zetten.
+    if (typeof e.responseCode === "number" && !antwoord.startsWith(String(e.responseCode))) {
+      delen.push(String(e.responseCode));
+    }
+    if (antwoord) delen.push(antwoord);
+  }
+  delen.push(String(error));
+  return delen.join(" ").slice(0, 500);
+}
+
+/** Een agenda-afspraak die als uitnodiging met het bericht meegaat. */
+type Agendabijlage = { method: IcsMethod; filename: string; content: string };
+
 async function send(
   to: string,
   subject: string,
   text: string,
   /** Adres waarop de ontvanger moet antwoorden, als dat niet de afzender is. */
   replyTo?: string,
+  agenda?: Agendabijlage,
 ): Promise<MailStatus> {
   if (!isMailConfigured()) {
     logMail(to, subject, "skipped", "SMTP nog niet ingesteld; niets verzonden.");
@@ -131,13 +171,59 @@ async function send(
       replyTo,
       subject,
       text,
+      // icalEvent, en niet een gewone bijlage: hiermee zet nodemailer het
+      // juiste inhoudstype met de methode erin. Zonder dat toont Outlook een
+      // bestandje in plaats van een afspraak met een knop erbij.
+      icalEvent: agenda,
     });
     logMail(to, subject, "sent", "");
     return "sent";
   } catch (error) {
-    logMail(to, subject, "failed", String(error).slice(0, 500));
+    logMail(to, subject, "failed", beschrijfFout(error));
     return "failed";
   }
+}
+
+/**
+ * De agenda-uitnodiging voor een bevestigde afspraak.
+ *
+ * Gaat naar het persoonlijke adres, apart van de bevestiging aan de klant. Zo
+ * belandt de afspraak in de agenda zonder dat de klant een uitnodiging krijgt
+ * waarop hij kan antwoorden.
+ */
+async function sendCalendarInvite(
+  booking: Booking,
+  method: IcsMethod,
+): Promise<MailStatus> {
+  const naar = mailRecipients().calendar;
+  const eigen = copy(DEFAULT_LOCALE).mail;
+  const wanneer = formatTimestamp(booking.startUtc, DEFAULT_LOCALE);
+  const geannuleerd = method === "CANCEL";
+
+  return send(
+    naar,
+    geannuleerd
+      ? `Vervalt: ${booking.serviceName} — ${booking.name} (${booking.reference})`
+      : `Agenda: ${booking.serviceName} — ${booking.name} (${booking.reference})`,
+    [
+      geannuleerd
+        ? `Deze afspraak gaat niet door en verdwijnt uit je agenda:`
+        : `Deze afspraak staat bevestigd. Open de bijlage om hem in je agenda te zetten:`,
+      "",
+      wanneer + " (Europe/Amsterdam)",
+      "",
+      bookingSummary(booking, DEFAULT_LOCALE),
+      "",
+      eigen.signature,
+    ].join("\n"),
+    // Antwoorden op de uitnodiging gaat rechtstreeks naar de klant.
+    booking.email,
+    {
+      method,
+      filename: icsFilename(booking),
+      content: bookingIcs(booking, method, naar),
+    },
+  );
 }
 
 /**
@@ -251,53 +337,89 @@ export async function sendBookingRequestMails(booking: Booking): Promise<{
   return { customer, owner };
 }
 
-export async function sendBookingConfirmedMail(
-  booking: Booking,
-): Promise<MailStatus> {
+/**
+ * Bevestiging naar de klant, en tegelijk de agenda-uitnodiging naar jezelf.
+ * De twee berichten gaan naast elkaar de deur uit; dat scheelt de helft van
+ * de wachttijd in de beheeromgeving.
+ */
+export async function sendBookingConfirmedMail(booking: Booking): Promise<{
+  customer: MailStatus;
+  calendar: MailStatus;
+}> {
   const locale = booking.locale;
   const t = copy(locale).mail;
-  return send(
-    booking.email,
-    t.confirmedSubject(booking.reference),
-    [
-      t.greeting(booking.name),
-      "",
-      t.confirmedBody,
-      "",
-      bookingSummary(booking, locale),
-      "",
-      t.confirmedNotice,
-      "",
-      t.signature,
+  const [customer, calendar] = await Promise.all([
+    send(
+      booking.email,
+      t.confirmedSubject(booking.reference),
+      [
+        t.greeting(booking.name),
+        "",
+        t.confirmedBody,
+        "",
+        bookingSummary(booking, locale),
+        "",
+        t.confirmedNotice,
+        "",
+        t.signature,
+        site.bookingEmail,
+      ].join("\n"),
       site.bookingEmail,
-    ].join("\n"),
-    site.bookingEmail,
-  );
+    ),
+    sendCalendarInvite(booking, "REQUEST"),
+  ]);
+  return { customer, calendar };
 }
 
+/**
+ * Een bevestigde afspraak is verplaatst. De uitnodiging gaat opnieuw uit met
+ * hetzelfde UID en een hoger volgnummer, zodat de bestaande afspraak in de
+ * agenda meeschuift in plaats van dat er een tweede naast komt te staan.
+ */
+export async function sendBookingMovedInvite(
+  booking: Booking,
+): Promise<MailStatus> {
+  return sendCalendarInvite(booking, "REQUEST");
+}
+
+/**
+ * Afwijzing of annulering naar de klant.
+ *
+ * Stond de afspraak al bevestigd, dan is er eerder een uitnodiging uitgegaan
+ * en moet die ook weer worden ingetrokken; anders blijft er een afspraak in de
+ * agenda staan die niet doorgaat. Was hij nog niet bevestigd, dan is er niets
+ * in te trekken en blijft het bij het bericht aan de klant.
+ */
 export async function sendBookingCancelledMail(
   booking: Booking,
   reason: "rejected" | "cancelled",
-): Promise<MailStatus> {
+  options: { withdrawInvite?: boolean } = {},
+): Promise<{ customer: MailStatus; calendar: MailStatus | null }> {
   const locale = booking.locale;
   const t = copy(locale).mail;
   const what = reason === "rejected" ? t.rejectedBody : t.cancelledBody;
-  return send(
-    booking.email,
-    t.cancelledSubject(booking.reference),
-    [
-      t.greeting(booking.name),
-      "",
-      what,
-      "",
-      bookingSummary(booking, locale),
-      "",
-      t.cancelledNotice,
-      "",
-      t.signature,
-    ].join("\n"),
-    site.bookingEmail,
-  );
+  const [customer, calendar] = await Promise.all([
+    send(
+      booking.email,
+      t.cancelledSubject(booking.reference),
+      [
+        t.greeting(booking.name),
+        "",
+        what,
+        "",
+        bookingSummary(booking, locale),
+        "",
+        t.cancelledNotice,
+        "",
+        t.signature,
+      ].join("\n"),
+      site.bookingEmail,
+    ),
+    options.withdrawInvite
+      ? sendCalendarInvite(booking, "CANCEL")
+      : Promise.resolve(null),
+  ]);
+  return { customer, calendar };
 }
 
 export async function sendContactMails(

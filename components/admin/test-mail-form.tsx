@@ -37,7 +37,7 @@ export function TestMailForm({ defaultTo }: { defaultTo: string }) {
       </div>
 
       {state.status !== "idle" && (
-        <p
+        <div
           role="status"
           className={`notice mt-4 ${
             state.status === "success"
@@ -47,8 +47,18 @@ export function TestMailForm({ defaultTo }: { defaultTo: string }) {
                 : "notice-error"
           }`}
         >
-          {state.message}
-        </p>
+          <p className="whitespace-pre-line">{state.message}</p>
+          {state.details && state.details.length > 0 && (
+            <>
+              <p className="mt-4 font-semibold">Wat je eraan kunt doen</p>
+              <ol className="mt-2 list-decimal space-y-2 pl-5">
+                {state.details.map((regel) => (
+                  <li key={regel}>{regel}</li>
+                ))}
+              </ol>
+            </>
+          )}
+        </div>
       )}
     </form>
   );

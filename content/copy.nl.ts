@@ -173,7 +173,8 @@ export const nl = {
 
     aboutEyebrow: "Over mij",
     aboutTitle: "Eén aanspreekpunt.",
-    aboutImageAlt: "Dronevlucht boven het Noord-Hollandse landschap",
+    aboutImageAlt:
+      "Portret van Kai Koster, dronefotograaf van Hoogbeeld Media",
     /* -- Tarieven en vragen ------------------------------------------- */
     pricingEyebrow: "Tarieven",
     pricingTitle: "Indicaties, met de inhoud erbij.",
