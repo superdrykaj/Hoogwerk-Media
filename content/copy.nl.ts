@@ -101,7 +101,7 @@ export const nl = {
     heroFacts: ["50 MP, 1-inch sensor", "4K HDR video", "Zaanstreek en Noord-Holland"],
 
     servicesEyebrow: "Wat ik doe",
-    servicesTitle: "Beeld dat op de grond niet past.",
+    servicesTitle: "Beeld dat op de grond niet past",
     highlights: [
       {
         title: "Vastgoed",
@@ -142,15 +142,15 @@ export const nl = {
     workEmptyHint: "Projecten voeg je toe via de beheeromgeving.",
 
     processEyebrow: "Zo werkt het",
-    processTitle: "Van gesprek tot bestand.",
+    processTitle: "Van gesprek tot bestand",
     process: [
       {
         title: "Kennismaken",
         body: "Kort gesprek over de locatie en het beeld dat je zoekt.",
       },
       {
-        title: "Toetsen",
-        body: "Ik check luchtruim, vergunning en weer, en bevestig een datum.",
+        title: "Bevestiging",
+        body: "Je krijgt datum en tijd per e-mail, met wat we hebben afgesproken.",
       },
       {
         title: "Vliegen",
@@ -163,27 +163,30 @@ export const nl = {
     ],
 
     bookingEyebrow: "Plan een afspraak",
-    bookingTitle: "Kies een moment.",
+    bookingTitle: "Kies een moment dat jou uitkomt",
     bookingDisclaimer:
-      "Een aanvraag is nog geen afspraak. Ik toets de locatie in GoDrone, kijk " +
-      "naar het weer en bevestig daarna per e-mail.",
+      "Kies een dag en tijd, vertel kort waar het om gaat, en je krijgt een " +
+      "bevestiging per e-mail. Zit het weer tegen, dan verzetten we de " +
+      "afspraak zonder kosten.",
     timezoneNote: "Alle tijden in de Nederlandse tijdzone.",
     timezoneAsk: "Liever eerst overleggen?",
     timezoneLink: "Stuur een bericht",
 
     aboutEyebrow: "Over mij",
-    aboutTitle: "Eén aanspreekpunt.",
+    aboutTitle: "Eén aanspreekpunt",
     aboutImageAlt:
       "Portret van Kai Koster, dronefotograaf van Hoogbeeld Media",
     /* -- Tarieven en vragen ------------------------------------------- */
     pricingEyebrow: "Tarieven",
-    pricingTitle: "Indicaties, met de inhoud erbij.",
+    pricingTitle: "Indicaties, met de inhoud erbij",
+    /** Staat onder de tarieven. De btw-regel hoort voorop. */
     pricingNote:
-      "Prijzen zijn indicaties, exclusief btw. Wat je precies nodig hebt, " +
-      "spreken we vooraf af.",
+      "Alle genoemde prijzen zijn exclusief btw. Het zijn indicaties; wat je " +
+      "precies nodig hebt, spreken we vooraf samen af.",
+    /** Korte variant, bij de prijzen in de boekingsmodule. */
+    vatNote: "Alle prijzen zijn exclusief btw.",
     includedTitle: "Wat je krijgt",
     included: [
-      "Voorbereiding: luchtruimcheck, weer en route",
       "Zestig tot negentig minuten op locatie",
       "Selectie en nabewerking van de beelden",
       "Levering binnen vijf werkdagen",
@@ -198,12 +201,12 @@ export const nl = {
     ],
 
     faqEyebrow: "Vragen",
-    faqTitle: "Wat mag wel, en wat niet.",
+    faqTitle: "Wat mag wel, en wat niet",
     faq: [
       {
         question: "Mag je overal vliegen?",
         answer:
-          "Nee. Ik toets elke locatie vooraf in GoDrone. Rond Schiphol, boven " +
+          "Nee, en dat zoek ik vooraf voor je uit. Rond Schiphol, boven " +
           "Natura 2000-gebied en op sommige industrieterreinen mag het niet of " +
           "alleen met toestemming. Ik vlieg tot 120 meter en altijd in zicht.",
       },
@@ -260,7 +263,7 @@ export const nl = {
       "vastgoed, bedrijven, evenementen, natuur en locaties in Zaandam en " +
       "Noord-Holland.",
     eyebrow: "Portfolio",
-    title: "Werk vanuit de lucht.",
+    title: "Werk vanuit de lucht",
     intro: (regio: string) =>
       `Werk uit ${regio}. Filter op het soort opdracht.`,
     noticeBefore: "Projecten met het label",

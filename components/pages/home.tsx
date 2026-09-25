@@ -279,7 +279,12 @@ function Pricing({
                 );
               })}
             </ul>
-            <p className="mt-4 text-xs text-mist-600">{t.home.pricingNote}</p>
+            {/* De btw-regel is een voorwaarde, geen voetnoot: groter en
+                lichter dan de oude kleine grijze regel, zodat niemand een
+                bedrag voor een eindprijs aanziet. */}
+            <p className="mt-5 text-sm leading-relaxed text-mist-300">
+              {t.home.pricingNote}
+            </p>
           </Reveal>
 
           <Reveal delay={100}>

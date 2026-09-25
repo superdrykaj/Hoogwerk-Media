@@ -10,7 +10,7 @@ export default function GlobalError({
   return (
     <div className="container-page flex min-h-[60svh] flex-col items-center justify-center py-24 text-center">
       <p className="eyebrow">Er ging iets mis</p>
-      <h1 className="display-2 mt-4">Deze pagina kon niet worden geladen.</h1>
+      <h1 className="display-2 mt-4">Deze pagina kon niet worden geladen</h1>
       <p className="lede mt-5 max-w-md">
         Probeer het opnieuw. Blijft het misgaan, laat het me dan weten.
       </p>
