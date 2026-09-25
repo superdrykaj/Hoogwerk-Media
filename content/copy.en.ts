@@ -93,7 +93,7 @@ export const en: Dictionary = {
     heroFacts: ["50 MP, 1-inch sensor", "4K HDR video", "Zaan region and North Holland"],
 
     servicesEyebrow: "What I do",
-    servicesTitle: "Images that won't fit from the ground.",
+    servicesTitle: "Images that won't fit from the ground",
     highlights: [
       {
         title: "Property",
@@ -133,15 +133,15 @@ export const en: Dictionary = {
     workEmptyHint: "You add projects in the admin area.",
 
     processEyebrow: "How it works",
-    processTitle: "From first conversation to final files.",
+    processTitle: "From first conversation to final files",
     process: [
       {
         title: "Introduction",
         body: "A short call about the location and the images you're after.",
       },
       {
-        title: "Check",
-        body: "I check airspace, permits and weather, and confirm a date.",
+        title: "Confirmation",
+        body: "You get the date and time by e-mail, with what we agreed on.",
       },
       {
         title: "Fly",
@@ -154,26 +154,29 @@ export const en: Dictionary = {
     ],
 
     bookingEyebrow: "Book a slot",
-    bookingTitle: "Pick a moment.",
+    bookingTitle: "Pick a moment that suits you",
     bookingDisclaimer:
-      "A request is not an appointment yet. I check the location in GoDrone, " +
-      "look at the weather and then confirm by e-mail.",
+      "Choose a day and time, tell me briefly what it is about, and you will " +
+      "get a confirmation by e-mail. If the weather turns, we move the " +
+      "appointment at no cost.",
     timezoneNote: "All times in Dutch local time.",
     timezoneAsk: "Would you rather discuss it first?",
     timezoneLink: "Send a message",
 
     aboutEyebrow: "About me",
-    aboutTitle: "One point of contact.",
+    aboutTitle: "One point of contact",
     aboutImageAlt:
       "Portrait of Kai Koster, drone photographer at Hoogbeeld Media",
     pricingEyebrow: "Rates",
-    pricingTitle: "Indications, with what's included.",
+    pricingTitle: "Indications, with what's included",
+    /** Sits under the rates. The VAT line comes first. */
     pricingNote:
-      "Prices are indications, excluding VAT. We agree exactly what you need " +
-      "beforehand.",
+      "All prices listed are excluding VAT. They are indications; we agree " +
+      "exactly what you need beforehand.",
+    /** Short version, next to the prices in the booking module. */
+    vatNote: "All prices are excluding VAT.",
     includedTitle: "What you get",
     included: [
-      "Preparation: airspace check, weather and route",
       "Sixty to ninety minutes on location",
       "Selection and editing of the images",
       "Delivery within five working days",
@@ -188,12 +191,12 @@ export const en: Dictionary = {
     ],
 
     faqEyebrow: "Questions",
-    faqTitle: "What's allowed, and what isn't.",
+    faqTitle: "What's allowed, and what isn't",
     faq: [
       {
         question: "Can you fly anywhere?",
         answer:
-          "No. I check every location beforehand in GoDrone. Around Schiphol, " +
+          "No, and I sort that out for you beforehand. Around Schiphol, " +
           "over Natura 2000 areas and on some industrial estates it is not " +
           "allowed, or only with permission. I fly up to 120 metres and always " +
           "within sight.",
@@ -250,7 +253,7 @@ export const en: Dictionary = {
       `Work by ${site.name}: aerial photography and video for real estate, ` +
       "commercial sites, construction and locations in Zaandam and North Holland.",
     eyebrow: "Portfolio",
-    title: "Work from the air.",
+    title: "Work from the air",
     intro: (region: string) => `Work from ${region}. Filter by type of work.`,
     noticeBefore: "Projects labelled",
     noticeStrong: "Example project",

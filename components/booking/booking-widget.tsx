@@ -253,6 +253,11 @@ export function BookingWidget({
             ))}
           </ul>
         )}
+        {/* Hier kiest de klant op prijs. Dan hoort er ook te staan dat er nog
+            btw bij komt; anders blijft het bedrag uit deze lijst hangen. */}
+        {step === 0 && services.length > 0 && (
+          <p className="mt-4 text-sm text-mist-300">{t.home.vatNote}</p>
+        )}
 
         {/* Stap 2 — datum --------------------------------------------------- */}
         {step === 1 && (
