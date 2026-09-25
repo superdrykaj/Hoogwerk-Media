@@ -22,12 +22,6 @@ export async function ProjectPage({
 
   const t = copy(locale);
   const project = getProjectBySlug(slug);
-  /**
-   * Let op: zet geen `loading.tsx` boven deze route. Dat maakt een
-   * Suspense-grens, en dan stuurt Next de HTTP-status al weg voordat hier
-   * bekend is dat het project niet bestaat. De 404-pagina verschijnt dan wél,
-   * maar met status 200 — en zo'n "soft 404" wordt gewoon geïndexeerd.
-   */
   if (!project || !project.published) notFound();
 
   const tekst = projectText(project, locale);
@@ -36,8 +30,6 @@ export async function ProjectPage({
     .filter((p) => p.id !== project.id)
     .slice(0, 3);
 
-  // Een eigen bestand spelen we zelf af; een YouTube- of Vimeo-link gaat in
-  // een iframe.
   const eigenVideo = project.videoUrl.trim().startsWith("/")
     ? project.videoUrl.trim()
     : null;
@@ -56,18 +48,13 @@ export async function ProjectPage({
             className="-z-10 object-cover"
           />
         )}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 -z-10 bg-gradient-to-b from-ink-950/80 via-ink-950/50 to-ink-950"
-        />
+        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-b from-ink-950/80 via-ink-950/50 to-ink-950" />
         <div className="container-page pb-14 pt-24">
           <nav aria-label={t.project.breadcrumb} className="mb-6 text-sm text-mist-500">
             <Link href={href("/portfolio", locale)} className="hover:text-mist-100">
               {t.nav.portfolio}
             </Link>
-            <span aria-hidden="true" className="mx-2 text-ink-600">
-              /
-            </span>
+            <span aria-hidden="true" className="mx-2 text-ink-600">/</span>
             <span className="text-mist-300">
               {t.portfolio.categories[project.category] ?? project.category}
             </span>
@@ -78,9 +65,8 @@ export async function ProjectPage({
               {t.portfolio.categories[project.category] ?? project.category}
             </span>
             {tekst.location && <span className="chip">{tekst.location}</span>}
-            {/* Alleen verzonnen projecten dragen dit label. */}
             {project.isExample && (
-              <span className="chip border-amber-400/40 text-amber-200/90">
+              <span className="text-xs uppercase tracking-wider text-mist-600">
                 {t.project.exampleChip}
               </span>
             )}
@@ -100,40 +86,23 @@ export async function ProjectPage({
               </div>
             )}
           </div>
-
           <aside className="h-fit rounded-2xl border border-ink-700 bg-ink-900 p-6">
             <h2 className="display-3 text-base">{t.project.asideTitle}</h2>
-            <p className="mt-3 text-sm leading-relaxed text-mist-500">
-              {t.project.asideBody}
-            </p>
-            <Link
-              href={`${href("/", locale)}#boeken`}
-              className="btn btn-primary mt-6 w-full"
-            >
+            <p className="mt-3 text-sm leading-relaxed text-mist-500">{t.project.asideBody}</p>
+            <Link href={`${href("/", locale)}#boeken`} className="btn btn-primary mt-6 w-full">
               {t.nav.book}
               <Arrow />
             </Link>
-            <Link
-              href={href("/contact", locale)}
-              className="btn btn-quiet mt-3 w-full"
-            >
+            <Link href={href("/contact", locale)} className="btn btn-quiet mt-3 w-full">
               {t.project.asideAsk}
             </Link>
           </aside>
         </div>
 
-        {/* Video ------------------------------------------------------------ */}
         <section aria-labelledby="video-titel" className="pb-4">
-          <h2 id="video-titel" className="display-2 mb-6">
-            {t.project.videoTitle}
-          </h2>
+          <h2 id="video-titel" className="display-2 mb-6">{t.project.videoTitle}</h2>
           {eigenVideo ? (
-            <ProjectVideo
-              t={t}
-              src={eigenVideo}
-              poster={project.coverUrl}
-              title={tekst.title}
-            />
+            <ProjectVideo t={t} src={eigenVideo} poster={project.coverUrl} title={tekst.title} />
           ) : videoEmbed ? (
             <div className="aspect-video overflow-hidden rounded-2xl border border-ink-700 bg-ink-900">
               <iframe
@@ -149,32 +118,22 @@ export async function ProjectPage({
             <div className="flex aspect-video items-center justify-center rounded-2xl border border-dashed border-ink-600 bg-ink-900/50 px-6 text-center">
               <div>
                 <p className="text-mist-300">{t.project.videoEmpty}</p>
-                <p className="mt-2 text-sm text-mist-500">
-                  {t.project.videoEmptyHint}
-                </p>
+                <p className="mt-2 text-sm text-mist-500">{t.project.videoEmptyHint}</p>
               </div>
             </div>
           )}
         </section>
 
-        {/* Galerij ------------------------------------------------------------
-            Zonder foto's is er niets te tonen; de sectie laat dan liever
-            niets zien dan een lege plek benadrukken. */}
         {images.length > 0 && (
           <section aria-labelledby="galerij-titel" className="py-16">
-            <h2 id="galerij-titel" className="display-2 mb-6">
-              {t.project.galleryTitle}
-            </h2>
+            <h2 id="galerij-titel" className="display-2 mb-6">{t.project.galleryTitle}</h2>
             <ProjectGallery images={images} title={tekst.title} locale={locale} />
           </section>
         )}
 
-        {/* Andere projecten ------------------------------------------------- */}
         {others.length > 0 && (
           <section aria-labelledby="meer-titel" className="border-t border-ink-700 py-16">
-            <h2 id="meer-titel" className="display-2 mb-8">
-              {t.project.moreTitle}
-            </h2>
+            <h2 id="meer-titel" className="display-2 mb-8">{t.project.moreTitle}</h2>
             <ul className="grid gap-4 sm:grid-cols-3">
               {others.map((other) => (
                 <li key={other.id}>
@@ -184,13 +143,7 @@ export async function ProjectPage({
                   >
                     {other.coverUrl && (
                       <span className="relative h-16 w-20 shrink-0 overflow-hidden rounded-lg">
-                        <Image
-                          src={other.coverUrl}
-                          alt=""
-                          fill
-                          sizes="80px"
-                          className="object-cover"
-                        />
+                        <Image src={other.coverUrl} alt="" fill sizes="80px" className="object-cover" />
                       </span>
                     )}
                     <span>
@@ -212,7 +165,6 @@ export async function ProjectPage({
   );
 }
 
-/** Zet een YouTube- of Vimeo-link om naar een insluitbare URL. */
 function toEmbedUrl(input: string): string | null {
   if (!input) return null;
   try {
