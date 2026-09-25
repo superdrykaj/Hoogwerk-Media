@@ -40,7 +40,7 @@ export function ProjectCard({
         </span>
         {/* Alleen verzonnen projecten dragen dit label. */}
         {project.isExample && (
-          <span className="chip absolute right-4 top-4 border-amber-400/40 bg-ink-950/70 text-amber-200/90 backdrop-blur">
+          <span className="absolute right-4 top-4 text-[10px] uppercase tracking-wider text-mist-500/80">
             {t.project.exampleChip}
           </span>
         )}
