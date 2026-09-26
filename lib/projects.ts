@@ -1,6 +1,6 @@
 import "server-only";
 
-import { getDb } from "./db";
+import { getDb, withWriteTransaction } from "./db";
 import type { Project, ProjectImage } from "./types";
 
 type Row = {
@@ -161,6 +161,18 @@ export function updateProject(id: number, values: ProjectInput): void {
 
 export function deleteProject(id: number): void {
   getDb().prepare("DELETE FROM projects WHERE id = ?").run(id);
+}
+
+/**
+ * Zet de volgorde van projecten in één keer: het eerste id krijgt sort_order
+ * 0, het tweede 1, enzovoort. Voor het drag & drop herordenen in de
+ * beheeromgeving.
+ */
+export function setProjectsOrder(ids: number[]): void {
+  withWriteTransaction((db) => {
+    const stmt = db.prepare("UPDATE projects SET sort_order = ? WHERE id = ?");
+    ids.forEach((id, index) => stmt.run(index, id));
+  });
 }
 
 export function listProjectImages(projectId: number): ProjectImage[] {

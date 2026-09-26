@@ -27,6 +27,16 @@ const nextConfig: NextConfig = {
   // Native module: mag niet door de bundler worden meegenomen.
   serverExternalPackages: ["better-sqlite3"],
 
+  experimental: {
+    serverActions: {
+      // Server actions staan standaard op 1 MB. Een projectvideo (zie
+      // lib/uploads.ts, MAX_VIDEO_BYTES) mag tot 300 MB zijn, dus die limiet
+      // moet mee omhoog. Iets ruimer dan 300 MB vanwege de overhead van de
+      // multipart-envelop eromheen.
+      bodySizeLimit: "310mb",
+    },
+  },
+
   async headers() {
     const ontwikkeling = process.env.NODE_ENV !== "production";
 

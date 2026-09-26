@@ -41,6 +41,7 @@ import {
   createProject,
   deleteProject,
   deleteProjectImage,
+  setProjectsOrder,
   updateProject,
   updateProjectImage,
   uniqueSlug,
@@ -52,7 +53,7 @@ import { saveSettings } from "@/lib/settings";
 import { setSiteStatus } from "@/lib/site-status";
 import { parseMinutes, zonedToUtc } from "@/lib/time";
 import { leesWeekschema } from "@/lib/week-schedule";
-import { saveUpload } from "@/lib/uploads";
+import { saveUpload, saveVideoUpload } from "@/lib/uploads";
 import {
   fieldErrors,
   projectFormSchema,
@@ -517,6 +518,17 @@ export async function saveProjectAction(
     coverUrl = upload.url;
   }
 
+  // Nieuw geüploade video heeft voorrang op de ingevulde link.
+  let videoUrl = parsed.data.videoUrl ?? "";
+  const videoFile = formData.get("videoFile");
+  if (videoFile instanceof File && videoFile.size > 0) {
+    const upload = await saveVideoUpload(videoFile);
+    if (!upload.ok) {
+      return { status: "error", message: upload.error, errors: { videoFile: upload.error } };
+    }
+    videoUrl = upload.url;
+  }
+
   const values = {
     slug: uniqueSlug(parsed.data.title, id),
     title: parsed.data.title,
@@ -531,7 +543,7 @@ export async function saveProjectAction(
     summaryEn: parsed.data.summaryEn ?? "",
     bodyEn: parsed.data.bodyEn ?? "",
     coverAltEn: parsed.data.coverAltEn ?? "",
-    videoUrl: parsed.data.videoUrl ?? "",
+    videoUrl,
     published: parsed.data.published ?? false,
     featured: parsed.data.featured ?? false,
     sortOrder: parsed.data.sortOrder ?? 0,
@@ -555,6 +567,17 @@ export async function saveProjectAction(
     redirect(`/admin/projecten/${projectId}`);
   }
   return { status: "success", message: "Het project is opgeslagen." };
+}
+
+/** Slaat een nieuwe volgorde op na het slepen in de beheeromgeving. */
+export async function reorderProjectsAction(ids: number[]): Promise<void> {
+  await requireAdmin();
+  setProjectsOrder(ids);
+  revalidatePath("/admin/projecten");
+  revalidatePath("/portfolio");
+  revalidatePath("/en/portfolio");
+  revalidatePath("/");
+  revalidatePath("/en");
 }
 
 export async function deleteProjectAction(formData: FormData): Promise<void> {

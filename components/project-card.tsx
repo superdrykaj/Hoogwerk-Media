@@ -10,10 +10,13 @@ export function ProjectCard({
   project,
   locale,
   priority = false,
+  onPreview,
 }: {
   project: Project;
   locale: Locale;
   priority?: boolean;
+  /** Aanwezig op het portfolio-overzicht: opent een video-voorbeeld in een lightbox. */
+  onPreview?: (project: Project) => void;
 }) {
   const t = copy(locale);
   const tekst = projectText(project, locale);
@@ -44,6 +47,22 @@ export function ProjectCard({
             {t.project.exampleChip}
           </span>
         )}
+        {onPreview && project.videoUrl && (
+          <button
+            type="button"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              onPreview(project);
+            }}
+            aria-label={t.portfolio.previewOpen(tekst.title)}
+            className="absolute inset-0 z-10 flex items-center justify-center opacity-0 transition-opacity focus-visible:opacity-100 group-hover:opacity-100"
+          >
+            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-ink-950/70 text-mist-100 backdrop-blur transition-transform group-hover:scale-105">
+              <PlayIcon />
+            </span>
+          </button>
+        )}
       </div>
 
       <div className="p-5">
@@ -71,5 +90,13 @@ export function ProjectCard({
         </p>
       </div>
     </article>
+  );
+}
+
+function PlayIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6 translate-x-0.5 fill-current">
+      <path d="M8 5v14l11-7z" />
+    </svg>
   );
 }

@@ -7,32 +7,43 @@ import path from "node:path";
 import { UPLOAD_DIR } from "./db";
 
 /** Toegestane afbeeldingstypen voor uploads in de beheeromgeving. */
-const ALLOWED: Record<string, string> = {
+const ALLOWED_IMAGE: Record<string, string> = {
   "image/jpeg": ".jpg",
   "image/png": ".png",
   "image/webp": ".webp",
   "image/avif": ".avif",
 };
 
-const MAX_BYTES = 12 * 1024 * 1024; // 12 MB
+const MAX_IMAGE_BYTES = 12 * 1024 * 1024; // 12 MB
+
+/** Toegestane videotypen voor project-video's in de beheeromgeving. */
+const ALLOWED_VIDEO: Record<string, string> = {
+  "video/mp4": ".mp4",
+  "video/webm": ".webm",
+};
+
+const MAX_VIDEO_BYTES = 300 * 1024 * 1024; // 300 MB
 
 export type UploadResult =
   | { ok: true; url: string }
   | { ok: false; error: string };
 
-export async function saveUpload(file: File): Promise<UploadResult> {
+async function saveFile(
+  file: File,
+  allowed: Record<string, string>,
+  maxBytes: number,
+  maxLabel: string,
+  typesLabel: string,
+): Promise<UploadResult> {
   if (!file || file.size === 0) {
     return { ok: false, error: "Geen bestand gekozen." };
   }
-  if (file.size > MAX_BYTES) {
-    return { ok: false, error: "Het bestand is groter dan 12 MB." };
+  if (file.size > maxBytes) {
+    return { ok: false, error: `Het bestand is groter dan ${maxLabel}.` };
   }
-  const extension = ALLOWED[file.type];
+  const extension = allowed[file.type];
   if (!extension) {
-    return {
-      ok: false,
-      error: "Alleen JPG, PNG, WebP of AVIF worden ondersteund.",
-    };
+    return { ok: false, error: `Alleen ${typesLabel} worden ondersteund.` };
   }
 
   const name = `${Date.now().toString(36)}-${crypto
@@ -42,6 +53,15 @@ export async function saveUpload(file: File): Promise<UploadResult> {
   const buffer = Buffer.from(await file.arrayBuffer());
   await fs.writeFile(path.join(UPLOAD_DIR, name), buffer);
   return { ok: true, url: `/api/uploads/${name}` };
+}
+
+export async function saveUpload(file: File): Promise<UploadResult> {
+  return saveFile(file, ALLOWED_IMAGE, MAX_IMAGE_BYTES, "12 MB", "JPG, PNG, WebP of AVIF");
+}
+
+/** Video-upload voor een project. Grotere bestanden, alleen mp4 of webm. */
+export async function saveVideoUpload(file: File): Promise<UploadResult> {
+  return saveFile(file, ALLOWED_VIDEO, MAX_VIDEO_BYTES, "300 MB", "MP4 of WebM");
 }
 
 /** Veilig pad binnen de uploadmap; null bij een poging tot uitbreken. */
@@ -59,4 +79,6 @@ export const UPLOAD_CONTENT_TYPES: Record<string, string> = {
   ".png": "image/png",
   ".webp": "image/webp",
   ".avif": "image/avif",
+  ".mp4": "video/mp4",
+  ".webm": "video/webm",
 };

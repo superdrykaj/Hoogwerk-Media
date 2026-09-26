@@ -223,13 +223,40 @@ export function ProjectForm({ project }: { project?: Project }) {
         </div>
       </fieldset>
 
-      <Text
-        id="videoUrl"
-        name="videoUrl"
-        label="Videolink"
-        defaultValue={project?.videoUrl ?? ""}
-        hint="YouTube- of Vimeo-link. Laat leeg als er nog geen video is."
-      />
+      {/* Video ---------------------------------------------------------- */}
+      <fieldset className="rounded-xl border border-ink-700 p-5">
+        <legend className="px-2 text-sm font-semibold">Video</legend>
+
+        <div className="grid gap-5 sm:grid-cols-2">
+          <div>
+            <label htmlFor="videoFile" className="field-label">
+              Video uploaden
+            </label>
+            <input
+              id="videoFile"
+              name="videoFile"
+              type="file"
+              accept="video/mp4,video/webm"
+              className="field-input file:mr-3 file:rounded file:border-0 file:bg-ink-700 file:px-3 file:py-1.5 file:text-sm file:text-mist-100"
+              aria-describedby="videoFile-hint"
+            />
+            <p id="videoFile-hint" className="field-hint">
+              MP4 of WebM, maximaal 300 MB. Een upload overschrijft de link
+              hiernaast.
+            </p>
+            {state.errors?.videoFile && (
+              <p className="field-error">{state.errors.videoFile}</p>
+            )}
+          </div>
+          <Text
+            id="videoUrl"
+            name="videoUrl"
+            label="Of: YouTube-/Vimeo-link"
+            defaultValue={project?.videoUrl ?? ""}
+            hint="Laat leeg als er nog geen video is."
+          />
+        </div>
+      </fieldset>
 
       <div className="flex flex-wrap gap-6">
         <label htmlFor="published" className="flex items-center gap-2 text-sm">

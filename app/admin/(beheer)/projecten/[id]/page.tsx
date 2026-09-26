@@ -27,15 +27,13 @@ export default async function EditProjectPage({
         intro="Bewerk dit project, beheer de fotogalerij en bepaal of het gepubliceerd is."
         action={
           <div className="flex gap-2">
-            {project.published && (
-              <Link
-                href={`/portfolio/${project.slug}`}
-                target="_blank"
-                className="btn btn-quiet"
-              >
-                Bekijk op de site ↗
-              </Link>
-            )}
+            <Link
+              href={`/portfolio/${project.slug}`}
+              target="_blank"
+              className="btn btn-quiet"
+            >
+              {project.published ? "Bekijk op de site ↗" : "Bekijk als bezoeker (concept) ↗"}
+            </Link>
             <Link href="/admin/projecten" className="btn btn-quiet">
               Terug
             </Link>

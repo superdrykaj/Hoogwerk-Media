@@ -6,10 +6,14 @@ import { Arrow } from "@/components/arrow";
 import { ProjectGallery } from "@/components/project-gallery";
 import { ProjectVideo } from "@/components/project-video";
 import { copy } from "@/content/copy";
+import { isSignedIn } from "@/lib/auth";
 import { href, type Locale } from "@/lib/locale";
 import { projectText } from "@/lib/localised";
 import { getProjectBySlug, listProjectImages, listProjects } from "@/lib/projects";
 import { requireOpenSite } from "@/lib/site-status";
+import { siteOrigin } from "@/lib/site-url";
+import { toEmbedUrl } from "@/lib/video-embed";
+import { videoObjectJsonLd } from "@/lib/video-schema";
 
 export async function ProjectPage({
   slug,
@@ -27,8 +31,13 @@ export async function ProjectPage({
    * Suspense-grens, en dan stuurt Next de HTTP-status al weg voordat hier
    * bekend is dat het project niet bestaat. De 404-pagina verschijnt dan wél,
    * maar met status 200 — en zo'n "soft 404" wordt gewoon geïndexeerd.
+   *
+   * Een beheerder die is ingelogd mag een conceptproject wél zien, om het te
+   * kunnen voorvertonen voordat het live gaat. Iedereen die niet is ingelogd
+   * krijgt gewoon de 404.
    */
-  if (!project || !project.published) notFound();
+  const previewAlsBeheerder = Boolean(project) && !project?.published && (await isSignedIn());
+  if (!project || (!project.published && !previewAlsBeheerder)) notFound();
 
   const tekst = projectText(project, locale);
   const images = listProjectImages(project.id);
@@ -43,8 +52,30 @@ export async function ProjectPage({
     : null;
   const videoEmbed = eigenVideo ? null : toEmbedUrl(project.videoUrl);
 
+  const origin = await siteOrigin();
+  const jsonLd = videoObjectJsonLd({
+    name: tekst.title,
+    description: tekst.summary || tekst.body,
+    thumbnailUrl: project.coverUrl ? `${origin}${project.coverUrl}` : "",
+    uploadDate: project.createdUtc,
+    contentUrl: eigenVideo ? `${origin}${eigenVideo}` : null,
+    embedUrl: videoEmbed,
+  });
+
   return (
     <article className="pb-8">
+      {previewAlsBeheerder && (
+        <p className="container-page mt-4 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-2 text-sm text-amber-300">
+          Concept — dit project is nog niet gepubliceerd. Deze pagina is alleen
+          voor jou als beheerder zichtbaar.
+        </p>
+      )}
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
       <div className="relative isolate -mt-[4.5rem] flex min-h-[62svh] items-end overflow-hidden pt-[4.5rem]">
         {project.coverUrl && (
           <Image
@@ -128,10 +159,10 @@ export async function ProjectPage({
           </h2>
           {eigenVideo ? (
             <ProjectVideo
-              t={t}
               src={eigenVideo}
               poster={project.coverUrl}
-              title={tekst.title}
+              ariaLabel={t.project.videoOf(tekst.title)}
+              fallbackText={t.project.videoFallback}
             />
           ) : videoEmbed ? (
             <div className="aspect-video overflow-hidden rounded-2xl border border-ink-700 bg-ink-900">
@@ -209,28 +240,4 @@ export async function ProjectPage({
       </div>
     </article>
   );
-}
-
-function toEmbedUrl(input: string): string | null {
-  if (!input) return null;
-  try {
-    const url = new URL(input);
-    const host = url.hostname.replace(/^www\./, "");
-    if (host === "youtu.be") {
-      return `https://www.youtube-nocookie.com/embed/${url.pathname.slice(1)}`;
-    }
-    if (host === "youtube.com" || host === "youtube-nocookie.com") {
-      if (url.pathname.startsWith("/embed/")) return url.toString();
-      const id = url.searchParams.get("v");
-      return id ? `https://www.youtube-nocookie.com/embed/${id}` : null;
-    }
-    if (host === "vimeo.com") {
-      const id = url.pathname.split("/").filter(Boolean)[0];
-      return id ? `https://player.vimeo.com/video/${id}` : null;
-    }
-    if (host === "player.vimeo.com") return url.toString();
-    return null;
-  } catch {
-    return null;
-  }
 }

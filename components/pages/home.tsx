@@ -164,7 +164,7 @@ function Work({
             </Link>
           </div>
 
-          <Showreel t={t} />
+          <Showreel ariaLabel={t.home.showreelLabel} fallbackText={t.home.showreelFallback} />
         </Reveal>
 
         {projects.length === 0 ? (

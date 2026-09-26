@@ -2,10 +2,12 @@
 
 import { useMemo, useState } from "react";
 
+import { PortfolioLightbox } from "@/components/portfolio-lightbox";
 import { ProjectCard } from "@/components/project-card";
 import { copy } from "@/content/copy";
 import { site } from "@/content/site";
 import type { Locale } from "@/lib/locale";
+import { projectText } from "@/lib/localised";
 import type { Project } from "@/lib/types";
 
 const ALL = "alle";
@@ -19,6 +21,7 @@ export function PortfolioGrid({
 }) {
   const t = copy(locale);
   const [filter, setFilter] = useState<string>(ALL);
+  const [previewProject, setPreviewProject] = useState<Project | null>(null);
 
   const counts = useMemo(() => {
     const map = new Map<string, number>();
@@ -80,9 +83,19 @@ export function PortfolioGrid({
               project={project}
               locale={locale}
               priority={index < 3}
+              onPreview={setPreviewProject}
             />
           ))}
         </div>
+      )}
+
+      {previewProject && (
+        <PortfolioLightbox
+          project={previewProject}
+          title={projectText(previewProject, locale).title}
+          t={t}
+          onClose={() => setPreviewProject(null)}
+        />
       )}
     </div>
   );
