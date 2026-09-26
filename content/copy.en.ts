@@ -92,7 +92,7 @@ export const en: Dictionary = {
     introDuration: (minutes: number) => `${minutes} min intro call`,
     chooseMoment: "Pick a time →",
     workEyebrow: "Work",
-    workTitle: "See our work",
+    workTitle: "See my work",
     workIntro: "A selection of aerial footage over city, landscape and infrastructure.",
     showreelLabel: "Showreel with aerial footage over city, landscape and infrastructure",
     showreelFallback: "Your browser cannot play this video.",
