@@ -201,6 +201,7 @@ herstart van de server vanzelf weer opkomt.
 | `DATA_DIR` | in productie | Map voor de database en de uploads. In Docker staat die al op `/data`. |
 | `SITE_STATUS` | nee | Alleen de beginstand van een verse installatie. Daarna bepaalt de knop in Beheer → Instellingen of de site open staat. |
 | `SEED_ON_EMPTY` | nee | Staat standaard aan: een lege database wordt bij de eerste start met de voorbeelden gevuld. Zet op `"false"` als je leeg wilt beginnen. |
+| `SERVER_REQUEST_TIMEOUT_MS` | nee | Alleen voor de Docker/standalone-server. Staat standaard op `0`, zodat grote uploads niet na Node's standaardlimiet van vijf minuten worden afgebroken. |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `MAIL_FROM`, `MAIL_TO` | nee | Nodig voor bevestigingsmails. Zonder deze gegevens gaat er geen mail uit, en zegt de site dat er ook bij. |
 
 Geheimen horen in de instellingen van je hosting, nooit in de repository.
@@ -449,9 +450,10 @@ projecten — er is geen apart component voor.
 Hetzelfde geldt voor de diensten: die staan in de database en veranderen niet
 mee met `lib/example-data.ts`. Voor de herziening van de tarieven is er een
 tweede script. Het hernoemt de fotografie- en videodienst, zet de nieuwe
-bedragen erin, voegt *Bedrijfsfilm* en *Bouwvordering* toe, haalt het
-voorbeeldproject over een festival van de site en verplaatst het
-nieuwbouwproject naar de categorie bouwvordering.
+bedragen erin, voegt *Bedrijfsfilm* en *Bouwvoortgang* toe (en hernoemt een
+bestaande *Bouwvordering* naar *Bouwvoortgang*), haalt het voorbeeldproject
+over een festival van de site en verplaatst het nieuwbouwproject naar de
+categorie bouwvordering.
 
 ```bash
 # lokaal
@@ -732,6 +734,9 @@ vijf e-mails of ze zijn verzonden, overgeslagen of mislukt.
 | Bevestiging van de aanvraag, met kenmerk | de klant | `boekingen@` |
 | Melding van een nieuwe aanvraag | jou | de klant |
 | Bevestigen, afwijzen of annuleren | de klant | `boekingen@` |
+| Betaalverzoek voor een factuur | de klant | `boekingen@` |
+| Project afgerond, met opleveringslink | de klant | `boekingen@` |
+| Wijziging aangevraagd op een oplevering | jou | de klant |
 | Ontvangstbevestiging contactformulier | de afzender | `info@` |
 | Het contactbericht zelf | jou | de afzender |
 
@@ -744,6 +749,74 @@ Het SPF-record van `hoogbeeldmedia.nl` eindigt op `-all` en staat alleen
 Microsoft toe. Verstuur je via Microsoft 365, dan klopt dat en hoef je niets te
 doen. Ga je via een andere dienst versturen, dan moet die eerst in het
 SPF-record, anders worden je mails geweigerd in plaats van in de spammap gezet.
+
+### Betalen en opleveren (optioneel)
+
+Bij een **bevestigde boeking** kun je in **Beheer → Boekingen** de sectie
+"Oplevering & factuur" openklappen om een bedrag vast te leggen, eindproducten
+te uploaden en die naar de klant te versturen. Twee momenten om te betalen:
+
+- **Betaalverzoek versturen** — kan meteen na het bevestigen van de boeking,
+  los van de oplevering. Handig als je (een deel van) het bedrag vooraf wilt
+  ontvangen.
+- **Project afronden & opleveren** — verstuurt de eindproducten via een
+  beveiligde link. Staat de paywall aan (standaard) en is er nog niet betaald,
+  dan ziet de klant eerst een betaalscherm; de bestanden komen vrij zodra de
+  betaling binnen is. Vanaf dezelfde link kan de klant ook een wijziging
+  aanvragen als de eerste editing niet bevalt.
+
+Betalen loopt via [Mollie](https://www.mollie.com/), in testmodus zolang je
+een testsleutel gebruikt:
+
+```
+MOLLIE_API_KEY="test_..."
+```
+
+Voor een Mollie-account heb je een **KvK-nummer** nodig. Heb je dat nog niet,
+dan werkt de rest van de oplevering gewoon: zet de paywall-toggle per factuur
+uit, dan zijn de bestanden direct te downloaden zonder dat er een betaling aan
+te pas komt. Zodra je wél een (test)sleutel hebt, vul je die in — er hoeft
+verder niets aan de code te veranderen.
+
+De eindproducten (foto's, video's, zip's) staan op dezelfde schijf als de
+database en de projectfoto's (zie **Opslaglocatie** hieronder), in een eigen,
+niet-publieke map. Ze zijn alleen te downloaden via de beveiligde link, nooit
+rechtstreeks.
+
+**De upload streamt rechtstreeks naar schijf** (`app/api/admin/opleverbestand/route.ts`),
+in plaats van via een Server Action te lopen zoals de projectfoto's. Dat is
+bewust: een Server Action buffert de hele upload in het geheugen van de
+machine, en dat is bij een video van meerdere GB niet houdbaar. Hierdoor is
+het geheugen van de machine geen beperkende factor meer voor de
+bestandsgrootte — standaard mag een opleverbestand tot 4 GB zijn
+(`DELIVERY_MAX_UPLOAD_MB`).
+
+De Docker/standalone-server schakelt daarnaast Node's totale request-timeout
+uit. Zonder die instelling breekt Node een upload standaard na ongeveer vijf
+minuten af, ook als er nog steeds bytes binnenkomen. `headersTimeout` blijft
+wel actief; alleen de tijd voor de grote requestbody is onbeperkt. Wil je toch
+een totale grens instellen, zet dan `SERVER_REQUEST_TIMEOUT_MS` op het gewenste
+aantal milliseconden.
+
+**De schijfruimte van de gekoppelde volume is nu wél de beperking.** Er zit
+geen automatische opruiming op: bestanden blijven staan totdat je een boeking
+verwijdert. Reken bij een paar opdrachten met 4K-beeldmateriaal al snel op
+enkele GB's per maand. Bekijk en vergroot de volume zo nodig:
+
+```bash
+fly volumes list -a hoogbeeld-media-test
+fly volumes extend <volume-id> -s 20   # bijvoorbeeld naar 20 GB
+```
+
+```
+# DELIVERY_MAX_UPLOAD_MB="4096"
+# SERVER_REQUEST_TIMEOUT_MS="0"
+```
+
+(Het geheugen van de machine, standaard 512 MB, mag je los daarvan nog
+steeds ophogen — dat helpt Next.js in het algemeen, bijvoorbeeld bij het
+verkleinen van afbeeldingen, maar is voor de video-uploads zelf niet meer
+nodig: `fly scale memory 1024 -a hoogbeeld-media-test`.)
 
 ### Publieke adres van de site
 

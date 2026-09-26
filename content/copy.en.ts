@@ -11,12 +11,17 @@ import type { Dictionary } from "./copy.nl";
 import { site } from "./site";
 
 export const en: Dictionary = {
+  /* -- General ------------------------------------------------------------- */
   taalnaam: "English",
   taalknop: "View this page in Dutch",
   taalknopKort: "NL",
+
   motto: "A higher perspective",
-  soonLine: "Drone photography in Zaandam and North Holland. Opening soon.",
+
+  soonLine:
+    "Drone photography in Zaandam and North Holland. Opening soon.",
   soonBadge: "Coming soon",
+
   meta: {
     tagline: "Drone photography in Zaandam and North Holland",
     description:
@@ -27,6 +32,7 @@ export const en: Dictionary = {
       "Aerial photos and short films for real estate, commercial sites and " +
       "construction projects in Zaandam and North Holland.",
   },
+
   region: {
     short: "Zaandam and North Holland",
     detail:
@@ -34,6 +40,8 @@ export const en: Dictionary = {
       "Purmerend, Haarlem, Alkmaar, Hoorn and Beverwijk. Beyond that by " +
       "arrangement.",
   },
+
+  /* -- Header and footer --------------------------------------------------- */
   nav: {
     home: "Home",
     portfolio: "Work",
@@ -51,6 +59,7 @@ export const en: Dictionary = {
     menuHeading: "Menu",
     contactHeading: "Contact",
   },
+
   footer: {
     note:
       "Freelance drone pilot in Zaandam. Every flight is checked and confirmed " +
@@ -67,6 +76,8 @@ export const en: Dictionary = {
     instagram: "Instagram",
     rights: (year: number) => `© ${year} ${site.name}`,
   },
+
+  /* -- Home ---------------------------------------------------------------- */
   home: {
     heroTitle: "Your location, professionally filmed from the air",
     heroIntro:
@@ -77,6 +88,7 @@ export const en: Dictionary = {
       "Aerial view of characteristic buildings and boats on the water in the " +
       "Zaan region.",
     heroFacts: ["50 MP, 1-inch sensor", "4K HDR video", "Zaan region and North Holland"],
+
     servicesEyebrow: "What I do",
     servicesTitle: "Images that won't fit from the ground",
     highlights: [
@@ -85,21 +97,26 @@ export const en: Dictionary = {
       { title: "Construction progress", body: "The same route, every month. Fixed angles that make the progress visible." },
       { title: "Locations and nature", body: "Recreation areas, marinas and polders, shot at the right hour of the day." },
     ],
+
     pricesTitle: "Services and rates",
     pricesNote: "Indications. We agree the price before anything is booked.",
     priceOnRequest: "On request",
     duration: (minutes: number) => `${minutes} min`,
     introDuration: (minutes: number) => `${minutes} min intro call`,
     chooseMoment: "Pick a time →",
+
     workEyebrow: "Work",
     workTitle: "See my work",
-    workIntro: "A selection of aerial footage over city, landscape and infrastructure.",
-    showreelLabel: "Showreel with aerial footage over city, landscape and infrastructure",
+    workIntro:
+      "A selection of aerial footage over city, landscape and infrastructure.",
+    showreelLabel:
+      "Showreel with aerial footage over city, landscape and infrastructure",
     showreelFallback: "Your browser cannot play this video.",
     showreelDownload: "Download the showreel",
     workAll: "See everything",
     workEmpty: "The first cases are coming soon.",
     workEmptyHint: "The first cases will appear here.",
+
     processEyebrow: "How it works",
     processTitle: "From first conversation to final files",
     process: [
@@ -108,6 +125,7 @@ export const en: Dictionary = {
       { title: "Fly", body: "Sixty to ninety minutes on location. You don't have to be there." },
       { title: "Deliver", body: "Edited images through a download link, within five working days." },
     ],
+
     bookingEyebrow: "Book a slot",
     bookingTitle: "Pick a moment that suits you",
     bookingDisclaimer:
@@ -117,14 +135,18 @@ export const en: Dictionary = {
     timezoneNote: "All times in Dutch local time.",
     timezoneAsk: "Would you rather discuss it first?",
     timezoneLink: "Send a message",
+
     aboutEyebrow: "About me",
     aboutTitle: "One point of contact",
-    aboutImageAlt: "Portrait of Kai Koster, drone photographer at Hoogbeeld Media",
+    aboutImageAlt:
+      "Portrait of Kai Koster, drone photographer at Hoogbeeld Media",
     pricingEyebrow: "Rates",
     pricingTitle: "Indications, with what's included",
+    /** Sits under the rates. The VAT line comes first. */
     pricingNote:
       "All prices listed are excluding VAT. They are indications; we agree " +
       "exactly what you need beforehand.",
+    /** Short version, next to the prices in the booking module. */
     vatNote: "All prices are excluding VAT.",
     includedTitle: "What you get",
     included: [
@@ -137,9 +159,10 @@ export const en: Dictionary = {
     excluded: [
       "Travel beyond 25 km: € 0.45 per kilometre",
       "Waiting time on location: € 65 per hour",
-      "Use in print, advertising or campaigns: by arrangement",
-      "Flights that require an operational authorisation for the ‘specific’ category",
+      "Use in print, paid advertising or larger campaigns: by arrangement",
+      "Flights that require an operational authorisation for the ‘specific’ category: not offered at the moment",
     ],
+
     faqEyebrow: "Questions",
     faqTitle: "What's allowed, and what isn't",
     faq: [
@@ -148,13 +171,16 @@ export const en: Dictionary = {
       { question: "What about the neighbours' privacy?", answer: "I aim at the client's building and grounds, not at other people's gardens or windows. For low shots in a residential street I would rather fly ten metres higher than have someone feel watched." },
       { question: "And if the weather is bad?", answer: "Then we rebook, at no cost. A light drone gets pushed off course in strong wind, and that produces images you cannot use. I decide the evening before at the latest." },
       { question: "When do I get the images?", answer: "Within five working days, through a download link. Need them sooner? Say so with your request; next-day often works." },
-      { question: "What may I do with the images?", answer: "You get the right to use them on your own website and social channels, and for property also on listing portals and in the sales brochure. The copyright stays with me. For a billboard, an advert or a campaign, we agree separate terms." },
+      { question: "What may I do with the images?", answer: "You get the right to use them on your own website and social channels. The copyright stays with me. For a billboard, an advert or a campaign, we agree separate terms." },
     ],
+
     aboutBody: (region: string, equipment: string) => [
       `I'm Kai, a freelance drone pilot in ${region}. No middlemen: I plan, I ` + "fly and I deliver.",
       `I fly a ${equipment} — compact enough for tight locations, with a ` + "sensor that produces sharp images even at dusk.",
     ],
   },
+
+  /* -- Portfolio ----------------------------------------------------------- */
   portfolio: {
     metaTitle: "Portfolio",
     metaDescription:
@@ -165,12 +191,15 @@ export const en: Dictionary = {
     intro: (region: string) => `Work from ${region}. Filter by type of work.`,
     noticeBefore: "Some of this work is shown as illustration.",
     noticeStrong: "",
-    noticeAfter: "",
+    noticeAfter:
+      "",
     empty: "No projects have been published yet.",
     emptyAction: "Get in touch",
     ctaTitle: "Want a project like this?",
-    ctaBody: "Tell me what you have in mind. A twenty-minute intro call is free and without obligation.",
+    ctaBody:
+      "Tell me what you have in mind. A twenty-minute intro call is free and without obligation.",
     ctaAsk: "Ask a question",
+
     filterLabel: "Filter projects by category",
     filterAll: "All",
     count: (amount: number) => `${amount} ${amount === 1 ? "project" : "projects"}`,
@@ -184,6 +213,7 @@ export const en: Dictionary = {
       natuur: "Nature and locations",
     },
   },
+
   project: {
     notFound: "Project not found",
     metaDescription: (location: string) => `Project by ${site.name} in ${location}.`,
@@ -202,9 +232,9 @@ export const en: Dictionary = {
     videoEmpty: "The video for this project goes here.",
     videoEmptyHint: "Add a YouTube or Vimeo link to this project in the admin area.",
     galleryTitle: "Photo gallery",
-    galleryEmpty: "No photos for this project yet.",
     moreTitle: "More work",
   },
+
   gallery: {
     open: (number: number) => `Enlarge photo ${number}`,
     close: "Close",
@@ -212,12 +242,15 @@ export const en: Dictionary = {
     next: "Next photo",
     counter: (current: number, total: number) => `Photo ${current} of ${total}`,
   },
+
+  /* -- Contact ------------------------------------------------------------- */
   contact: {
     metaTitle: "Contact",
     metaDescription: `Get in touch with ${site.name} for aerial photos and short films in Zaandam and North Holland.`,
     eyebrow: "Contact",
     title: "Let's talk it through",
-    intro: "A building, site or project that comes into its own from the air? Send a message. I usually reply within one working day.",
+    intro:
+      "A building, site or project that comes into its own from the air? Send a message. I usually reply within one working day.",
     emailLabel: "E-mail",
     phoneLabel: "Phone",
     areaLabel: "Working area",
@@ -230,12 +263,17 @@ export const en: Dictionary = {
     formTitle: "Send a message",
     formIntro: "Fill in the form and I'll usually reply within one working day.",
   },
+
+  /* -- Error page ---------------------------------------------------------- */
   notFound: {
     title: "Page not found",
-    body: "This page doesn't exist (any more). The link may be out of date, or there's a typo in the address.",
+    body:
+      "This page doesn't exist (any more). The link may be out of date, or there's a typo in the address.",
     home: "Go to the homepage",
     portfolio: "Browse the portfolio",
   },
+
+  /* -- Booking module ------------------------------------------------------ */
   booking: {
     steps: ["Service", "Date", "Time", "Details", "Review"],
     stepService: "What would you like made?",
@@ -243,14 +281,20 @@ export const en: Dictionary = {
     stepTime: "Pick a time",
     stepDetails: "Your details",
     stepReview: "Check your request",
-    introService: "Choose the service that fits best. Not sure? Start with a free intro call.",
+
+    introService:
+      "Choose the service that fits best. Not sure? Start with a free intro call.",
     introDate: "Only days with free slots can be selected. Times in Europe/Amsterdam.",
-    introDateCustom: "Pick a day for the intro call. We'll plan the shoot days themselves during that call.",
+    introDateCustom:
+      "Pick a day for the intro call. We'll plan the shoot days themselves during that call.",
     introDetails: "I only use these details to get in touch about this request.",
-    introDetailsCustom: "Tell me briefly what the project involves, so I can prepare for our call.",
+    introDetailsCustom:
+      "Tell me briefly what the project involves, so I can prepare for our call.",
     introReview: "All correct? Then you can send the request.",
+
     introChip: "Starts with an intro call",
     minutes: (amount: number) => `${amount} min`,
+
     prev: "← Earlier",
     next: "Later →",
     loading: "Loading available times…",
@@ -258,17 +302,20 @@ export const en: Dictionary = {
     loadError: "The available times could not be loaded. Please try again.",
     retry: "Try again",
     noDays: "No free days in this period",
-    noDaysBody: "Look further ahead with the 'View later dates' button, or send me a message if you have something specific in mind.",
+    noDaysBody:
+      "Look further ahead with the 'View later dates' button, or send me a message if you have something specific in mind.",
     noDaysAction: "View later dates →",
     noTimes: "No free times on this day",
     noTimesBody: "Please pick another date.",
     backToDates: "Back to the dates",
     times: (amount: number) => `${amount} ${amount === 1 ? "slot" : "slots"}`,
+
     toReview: "To the summary",
     back: "Back",
     submit: "Send request",
     submitting: "Sending…",
     editDetails: "Change details",
+
     rowService: "Service",
     rowWhen: "When",
     rowIntro: "Intro call",
@@ -284,19 +331,26 @@ export const en: Dictionary = {
     rowPeriod: "Preferred period",
     rowPreference: "Preference",
     rowProject: "Project",
-    customDisclaimer: "You're booking the intro call here. In it we go through the locations, the number of shoot days and the planning; after that I lock in the shoot days themselves.",
+    customDisclaimer:
+      "You're booking the intro call here. In it we go through the locations, the number of shoot days and the planning; after that I lock in the shoot days themselves.",
+
     noServices: "There are no services available to book online at the moment.",
     mailDirect: "E-mail me directly",
+
     doneTitle: "Your request has been received",
     doneBody: (service: string, when: string) =>
       `Request for ${service} on ${when} received. I'll let you know if it can go ahead.`,
     doneReference: "Reference",
     doneMailSent: "You'll get a confirmation e-mail at the address you gave.",
-    doneMailFailed: "The confirmation e-mail was not sent. Your request is in; I'll contact you.",
-    doneMailOff: "You won't get an e-mail just now. The request has been received.",
+    doneMailFailed:
+      "The confirmation e-mail was not sent. Your request is in; I'll contact you.",
+    doneMailOff:
+      "You won't get an e-mail just now. The request has been received.",
     doneWork: "See my work",
     doneMailMore: "E-mail me an addition",
   },
+
+  /* -- Forms and messages -------------------------------------------------- */
   forms: {
     required: "(required)",
     name: "Name",
@@ -306,7 +360,8 @@ export const en: Dictionary = {
     location: "Shoot location",
     locationHint: "Address or description of the place.",
     locations: "Locations",
-    locationsHint: "Address or description per place. Don't know them all yet? Fill in what you do know.",
+    locationsHint:
+      "Address or description per place. Don't know them all yet? Fill in what you do know.",
     locationPlaceholder: "For example: Gedempte Gracht 12, Zaandam",
     locationNext: "Next location",
     locationAdd: "+ Add location",
@@ -316,6 +371,7 @@ export const en: Dictionary = {
     descriptionHint: "What is it about, and what will you use the images for?",
     subject: "Subject",
     message: "Message",
+
     errName: "Please fill in your name (at least 2 characters).",
     errEmail: "Please fill in a valid e-mail address.",
     errLocation: "Please fill in the shoot location.",
@@ -328,27 +384,42 @@ export const en: Dictionary = {
     errCheck: "Please check the highlighted fields.",
     errRejected: "Request rejected.",
     errRejectedMessage: "Message rejected.",
-    errTooMany: "Too many requests were sent from this address in a short period. Please try again in a few minutes.",
-    errTooManyMessages: "Too many messages were sent from this address in a short period. Please try again in a few minutes.",
+    errTooMany:
+      "Too many requests were sent from this address in a short period. Please try again in a few minutes.",
+    errTooManyMessages:
+      "Too many messages were sent from this address in a short period. Please try again in a few minutes.",
   },
+
+  /* -- Slot messages ------------------------------------------------------- */
   slots: {
     serviceUnavailable: "This service is not available.",
     invalidMoment: "Please choose a valid date and time.",
-    lead: (hours: number) => `That time is too soon. Please book at least ${hours} hours ahead.`,
+    lead: (hours: number) =>
+      `That time is too soon. Please book at least ${hours} hours ahead.`,
     advance: (days: number) => `You can book at most ${days} days ahead.`,
     outside: "That time falls outside the available hours.",
     taken: "That slot has just been taken. Please choose another moment.",
     bookingNotFound: "Booking not found.",
     serviceNotFound: "Service not found.",
   },
+
+  /* -- Custom project ------------------------------------------------------ */
   scope: {
-    intro: "A custom project often spans several days. These answers let me prepare the planning before we speak.",
+    intro:
+      "A custom project often spans several days. These answers let me prepare the planning before we speak.",
     sessionsLabel: "Number of shoot sessions",
-    sessions: { "1": "One shoot session", "2": "Two shoot sessions", "3plus": "Three or more shoot sessions", onbekend: "Not sure yet" },
+    sessions: {
+      "1": "One shoot session",
+      "2": "Two shoot sessions",
+      "3plus": "Three or more shoot sessions",
+      onbekend: "Not sure yet",
+    },
     periodLabel: "Preferred period",
     periodPlaceholder: "For example: the second half of May",
-    periodHint: "A rough idea is fine. A week, a month or \u201cas soon as the weather allows\u201d is enough.",
-    periodRequired: "Please say roughly when the project should take place. An approximation is fine.",
+    periodHint:
+      "A rough idea is fine. A week, a month or \u201cas soon as the weather allows\u201d is enough.",
+    periodRequired:
+      "Please say roughly when the project should take place. An approximation is fine.",
     preferenceLabel: "Preference for the shoots",
     preferenceHint: "You can pick more than one.",
     preferences: {
@@ -364,23 +435,33 @@ export const en: Dictionary = {
     summaryPeriod: "Preferred period",
     summaryPreference: "Preference",
   },
+
+  /* -- Contact form -------------------------------------------------------- */
   contactForm: {
     messageHint: "Briefly tell me what it's about and where the location is.",
     submit: "Send message",
-    privacyNote: "Your details are only used to reply to your message and are not visible to other visitors.",
-    doneStored: "Your message has been saved and is waiting in my admin area. I usually reply within one working day.",
+    privacyNote:
+      "Your details are only used to reply to your message and are not visible to other visitors.",
+    doneStored:
+      "Your message has been saved and is waiting in my admin area. I usually reply within one working day.",
     send: "Send",
     sending: "Sending\u2026",
-    mailOffNotice: "Please note: e-mail has not been set up on this site yet. Your message will be saved and read, but you won't get an automatic confirmation.",
+    mailOffNotice:
+      "Please note: e-mail has not been set up on this site yet. Your message will be saved and read, but you won't get an automatic confirmation.",
     doneTitle: "Thanks for your message",
     doneBody: "It's in. I usually reply within one working day.",
     doneMailSent: "You'll also get a confirmation by e-mail.",
-    doneMailFailed: "The confirmation e-mail was not sent. Your message is in.",
-    doneMailOff: "You won't get an e-mail just now. The message has been received.",
+    doneMailFailed:
+      "The confirmation e-mail was not sent. Your message is in.",
+    doneMailOff:
+      "You won't get an e-mail just now. The message has been received.",
   },
+
+  /* -- E-mail -------------------------------------------------------------- */
   mail: {
     greeting: (name: string) => `Hi ${name},`,
     signature: `Kind regards, Kai \u2014 ${site.name}`,
+
     summaryReference: "Reference",
     summaryService: "Service",
     summaryWhen: "Date and time",
@@ -392,6 +473,7 @@ export const en: Dictionary = {
     summaryProject: "About the project:",
     summaryDescription: "Description:",
     summaryNoDescription: "(no description)",
+
     requestSubject: (reference: string) => `Request received (${reference}) \u2014 ${site.name}`,
     requestBody: `Thanks for your request to ${site.name}. I've received it.`,
     requestNotice: [
@@ -402,18 +484,76 @@ export const en: Dictionary = {
     requestReply: "Questions? Just reply to this e-mail.",
     ownerSubject: (reference: string, name: string) => `New request ${reference} \u2014 ${name}`,
     ownerBody: "A new request has come in.",
+
     confirmedSubject: (reference: string) => `Appointment confirmed (${reference}) \u2014 ${site.name}`,
     confirmedBody: "Your appointment is confirmed. See you then!",
-    confirmedNotice: "If anything changes about the weather or the location, I'll be in touch in good time.",
+    confirmedNotice:
+      "If anything changes about the weather or the location, I'll be in touch in good time.",
+
     cancelledSubject: (reference: string) => `Appointment ${reference} \u2014 ${site.name}`,
     rejectedBody: "Unfortunately I can't fit this request into the schedule.",
     cancelledBody: "This appointment has been cancelled.",
-    cancelledNotice: "Want to try another moment? You can submit a new request through the website.",
+    cancelledNotice:
+      "Want to try another moment? You can submit a new request through the website.",
+
     contactSubject: `Message received \u2014 ${site.name}`,
     contactBody: "Thanks for your message. I'll read it and usually reply within one working day.",
     contactYours: "Your message:",
     contactOwnerSubject: (subject: string) => `Contact form: ${subject}`,
     contactFrom: "From:",
     contactRe: "Subject:",
+
+    paymentRequestSubject: (reference: string) => `Payment request (${reference}) — ${site.name}`,
+    paymentRequestBody: (amount: string) =>
+      `Thanks for the job! This project comes with an invoice of ${amount}, which you can ` +
+      `pay easily and securely online via the link below.`,
+    invoiceNumberLabel: "Invoice number",
+    invoiceLinkLabel: "View or download the invoice:",
+    paymentRequestPayLabel: "Pay this invoice online:",
+    paymentRequestNotice:
+      "Prefer to pay on delivery instead? That's fine too — this link stays valid until then.",
+    paymentRequestReply: "Have a question about this invoice? Just reply to this e-mail.",
+
+    deliverySubject: (reference: string) => `Project completed (${reference}) — ${site.name}`,
+    deliveryBodyReady:
+      "Good news: your project is finished! I enjoyed working on it and hope you're just " +
+      "as happy with the result. The final files are ready for you via the link below.",
+    deliveryBodyUnpaid: (amount: string) =>
+      `Good news: your project is finished! Before the files become available, there's ` +
+      `still an invoice of ${amount} open; once it's paid, they'll automatically become ` +
+      `available via the link below.`,
+    deliveryLinkLabel: "View and download your files:",
+    deliveryRevisionNotice:
+      "Not fully happy with the first edit? Let me know via the same link — I'm happy to " +
+      "go over a change with you.",
+    deliveryReply: "Questions about the delivery? Just reply to this e-mail.",
+
+    revisionOwnerSubject: (reference: string, name: string) => `Change requested (${reference}) — ${name}`,
+    revisionOwnerBody: "A change has been requested on a delivery.",
+  },
+
+  /* -- Delivery page --------------------------------------------------------- */
+  delivery: {
+    invalidTitle: "This link is no longer valid",
+    invalidBody:
+      "Check that you used the full link from the e-mail, or get in touch if you think this isn't right.",
+    heading: (reference: string) => `Delivery — ${reference}`,
+    invoiceNumberLabel: "Invoice number",
+    viewInvoiceLabel: "View or download your invoice (PDF)",
+    payTitle: "Payment required",
+    payIntro: (amount: string) =>
+      `An invoice of ${amount} is open for this project. Once it's paid, the files below will automatically become available.`,
+    payButton: "Pay now",
+    payError: "Payment didn't go through just now. Please try again or get in touch.",
+    paidNotice: (when: string) => `Paid on ${when}.`,
+    filesTitle: "Your files",
+    filesIntro: "Click a file to download it.",
+    downloadLabel: "Download",
+    revisionTitle: "Not fully happy?",
+    revisionIntro: "Let me know what you'd like changed; I'll go through it with you.",
+    revisionPlaceholder: "For example: could the colours in the second clip be a bit warmer?",
+    revisionSubmit: "Request a change",
+    revisionSuccess: "Thanks, your request has been sent. I'll be in touch soon.",
+    revisionError: "Please enter a message of at least 10 characters.",
   },
 };

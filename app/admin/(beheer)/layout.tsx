@@ -5,6 +5,8 @@ import { logoutAction } from "@/app/actions/admin";
 import { AdminNav } from "@/components/admin/admin-nav";
 import { site } from "@/content/site";
 import { isSignedIn } from "@/lib/auth";
+import { countBookings } from "@/lib/bookings";
+import { countUnhandledMessages } from "@/lib/messages";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +22,9 @@ export default async function BeheerLayout({
   if (!(await isSignedIn())) {
     redirect("/admin/login");
   }
+
+  const pendingBookings = countBookings("pending");
+  const unreadMessages = countUnhandledMessages();
 
   return (
     <>
@@ -45,7 +50,7 @@ export default async function BeheerLayout({
             </form>
           </div>
         </div>
-        <AdminNav />
+        <AdminNav pendingBookings={pendingBookings} unreadMessages={unreadMessages} />
       </header>
 
       <div className="container-page py-10">{children}</div>

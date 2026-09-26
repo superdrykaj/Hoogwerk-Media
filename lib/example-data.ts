@@ -82,7 +82,7 @@ export const EXAMPLE_SERVICES = [
   },
   {
     slug: "bouwvordering",
-    name: "Bouwvordering",
+    name: "Bouwvoortgang",
     description:
       "Vaste route en vaste hoogte, elke maand opnieuw. Vanaf vier bezoeken geldt een staffel.",
     duration_minutes: 45,
