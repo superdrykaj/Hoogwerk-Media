@@ -131,7 +131,7 @@ export const en: Dictionary = {
       "Sixty to ninety minutes on location",
       "Selection and editing of the images",
       "Delivery within five working days",
-      "Usage rights for your own website and social channels",
+      "Usage rights for your own website and social channels, and — for property — for the listing portal and the sales brochure",
     ],
     excludedTitle: "Billed separately",
     excluded: [
@@ -148,7 +148,7 @@ export const en: Dictionary = {
       { question: "What about the neighbours' privacy?", answer: "I aim at the client's building and grounds, not at other people's gardens or windows. For low shots in a residential street I would rather fly ten metres higher than have someone feel watched." },
       { question: "And if the weather is bad?", answer: "Then we rebook, at no cost. A light drone gets pushed off course in strong wind, and that produces images you cannot use. I decide the evening before at the latest." },
       { question: "When do I get the images?", answer: "Within five working days, through a download link. Need them sooner? Say so with your request; next-day often works." },
-      { question: "What may I do with the images?", answer: "You get the right to use them on your own website and social channels. The copyright stays with me. For a billboard, an advert or a campaign, we agree separate terms." },
+      { question: "What may I do with the images?", answer: "You get the right to use them on your own website and social channels, and for property also on listing portals and in the sales brochure. The copyright stays with me. For a billboard, an advert or a campaign, we agree separate terms." },
     ],
     aboutBody: (region: string, equipment: string) => [
       `I'm Kai, a freelance drone pilot in ${region}. No middlemen: I plan, I ` + "fly and I deliver.",

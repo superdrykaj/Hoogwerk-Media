@@ -113,7 +113,7 @@ export const nl = {
       "Zestig tot negentig minuten op locatie",
       "Selectie en nabewerking van de beelden",
       "Levering binnen vijf werkdagen",
-      "Gebruiksrecht voor je eigen website en socials",
+      "Gebruiksrecht voor je eigen website en socials, en — bij vastgoed — voor Funda en de verkoopbrochure",
     ],
     excludedTitle: "Apart afgerekend",
     excluded: [
@@ -130,7 +130,7 @@ export const nl = {
       { question: "Hoe zit het met de privacy van de buren?", answer: "Ik richt op het pand en het terrein van de opdrachtgever, niet op tuinen of ramen van anderen. Bij lage opnames in een woonwijk vlieg ik liever tien meter hoger dan dat iemand zich bekeken voelt." },
       { question: "En als het weer tegenzit?", answer: "Dan boeken we om, zonder kosten. Een lichte drone waait bij harde wind weg van waar hij moet zijn; dat levert geen beeld op waar je iets aan hebt. Ik beslis dat uiterlijk de avond ervoor." },
       { question: "Wanneer heb ik de beelden?", answer: "Binnen vijf werkdagen, via een downloadlink. Heb je ze eerder nodig, zeg het bij de aanvraag; vaak lukt de volgende dag ook." },
-      { question: "Wat mag ik met de beelden doen?", answer: "Je krijgt het recht ze te gebruiken op je eigen website en socials. Het auteursrecht blijft bij mij. Wil je ze op een billboard, in een advertentie of in een campagne, dan spreken we dat apart af." },
+      { question: "Wat mag ik met de beelden doen?", answer: "Je krijgt het recht ze te gebruiken op je eigen website en socials, en bij vastgoed ook op Funda en in de verkoopbrochure. Het auteursrecht blijft bij mij. Wil je ze op een billboard, in een advertentie of in een campagne, dan spreken we dat apart af." },
     ],
     aboutBody: (regio: string, apparatuur: string) => [
       `Ik ben Kai, zelfstandig dronepiloot in ${regio}. Geen tussenpersonen: ` + "ik plan, ik vlieg en ik lever op.",
