@@ -13,6 +13,10 @@ import type { Dictionary } from "@/content/copy";
  * en pas na een klik de rest. Het posterbeeld vult tot die tijd het kader.
  */
 export function Showreel({ t }: { t: Dictionary }) {
+  // Bump this version whenever the MP4 is replaced: the media response is
+  // cached for a week, so a new URL prevents browsers reusing an older reel.
+  const showreelSrc = "/media/hoogbeeldmedia-portfolio.mp4?v=2";
+
   return (
     <div className="mt-10 overflow-hidden rounded-2xl border border-ink-700 bg-ink-950">
       {/* Vaste 16:9-verhouding, zodat het kader er al staat voordat er iets is
@@ -27,10 +31,10 @@ export function Showreel({ t }: { t: Dictionary }) {
         aria-label={t.home.showreelLabel}
         className="aspect-video h-auto w-full bg-ink-950"
       >
-        <source src="/media/hoogbeeldmedia-portfolio.mp4" type="video/mp4" />
+        <source src={showreelSrc} type="video/mp4" />
         <p className="p-6 text-sm text-mist-300">
           {t.home.showreelFallback}{" "}
-          <a href="/media/hoogbeeldmedia-portfolio.mp4" className="link-quiet">
+          <a href={showreelSrc} className="link-quiet">
             {t.home.showreelDownload}
           </a>
           .
