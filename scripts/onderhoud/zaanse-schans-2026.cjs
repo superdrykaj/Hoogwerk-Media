@@ -6,10 +6,18 @@
  *  worden alleen in een lege database gezet. Een site die al draait (zoals de
  *  testomgeving) krijgt het project dus niet vanzelf. Dit script regelt dat:
  *
- *    - Het project "zaanse-schans" wordt toegevoegd, of bijgewerkt als het er
- *      al staat.
+ *    - Het project "de-zaanse-schans-vanuit-de-lucht" wordt toegevoegd, of
+ *      bijgewerkt als het er al staat.
  *    - De drie galerijfoto's worden erbij gezet, op url als sleutel: staan ze
  *      er al, dan worden alleen bijschriften en volgorde bijgewerkt.
+ *
+ *  Let op de slug: dit project is op de testomgeving al eens rechtstreeks via
+ *  de beheeromgeving aangemaakt, onder slug "de-zaanse-schans-vanuit-de-lucht".
+ *  Dit script gebruikt bewust dezelfde slug en dezelfde tekst, zodat het op
+ *  die database niets nieuws toevoegt (het matcht het bestaande project en
+ *  ziet dat er niets afwijkt) in plaats van er een tweede, dubbele kaart bij
+ *  te zetten. Op een omgeving waar dit project nog niet bestaat, maakt het
+ *  script het gewoon aan.
  *
  *  Andere projecten blijven ongemoeid.
  *
@@ -41,24 +49,25 @@ const dbPath = process.env.DATABASE_PATH
 const publicDir = path.join(process.cwd(), "public");
 
 const PROJECT = {
-  slug: "zaanse-schans",
-  title: "De Zaanse Schans",
+  slug: "de-zaanse-schans-vanuit-de-lucht",
+  title: "De Zaanse Schans vanuit de lucht",
   category: "natuur",
-  location: "Zaanse Schans, Zaandijk",
+  location: "Zaanstad",
   summary:
-    "Een drone-impressie van de molens, de Zaan en de karakteristieke groene huizen van de Zaanse Schans.",
+    "Een weids dronebeeld van de molens, waterwegen en het dorp op de Zaanse Schans.",
   body:
-    "Bij de Zaanse Schans heb ik de molens langs de Zaan vanuit de lucht vastgelegd, met de karakteristieke groene huisjes en de bezoekers op de paden erlangs.\n\nDe opnames wisselen tussen een overzicht van de hele rij molens over het water en een lagere passage rond de bebouwing van het openluchtmuseum. Zo komen zowel de schaal van de locatie als de details van de molens en de huizen in beeld.\n\nDe losse dronepassages zijn samengevoegd tot een compacte videopresentatie.",
+    "Voor deze locatie-impressie legde ik de molens, waterwegen en karakteristieke houten huizen van de Zaanse Schans vast.\n\nDe montage beweegt van dichtbij langs de molens naar een breder overzicht van het dorp en het omliggende landschap.",
   cover_url: "/media/zaanse-schans-poster.webp",
-  cover_alt: "Dronebeeld van de molens langs de Zaan bij de Zaanse Schans",
-  title_en: "The Zaanse Schans",
-  location_en: "Zaanse Schans, Zaandijk",
+  cover_alt:
+    "Dronebeeld van een groene molen, water en houten huizen op de Zaanse Schans",
+  title_en: "Zaanse Schans from Above",
+  location_en: "Zaanstad",
   summary_en:
-    "An aerial impression of the windmills, the River Zaan and the characteristic green houses of the Zaanse Schans.",
+    "A sweeping aerial view of the windmills, waterways and village at Zaanse Schans.",
   body_en:
-    "At the Zaanse Schans I filmed the windmills along the River Zaan from the air, along with the characteristic green houses and the visitors on the paths alongside them.\n\nThe footage alternates between an overview of the full row of windmills across the water and a lower pass around the open-air museum's buildings, showing both the scale of the location and the detail of the mills and houses.\n\nThe individual drone passes were combined into a compact video presentation.",
+    "This location film captures the windmills, waterways and distinctive wooden houses of Zaanse Schans.\n\nThe edit moves from closer views of the mills to a wider view of the village and surrounding landscape.",
   cover_alt_en:
-    "Aerial view of the windmills along the River Zaan at the Zaanse Schans",
+    "Aerial view of a green windmill, water and wooden houses at Zaanse Schans",
   video_url: "/media/zaanse-schans-dronevideo-v3.mp4",
   published: 1,
   featured: 1,
@@ -69,20 +78,18 @@ const PROJECT = {
 const GALERIJ = [
   {
     url: "/media/zaanse-schans-01.webp",
-    alt: "Rij molens langs de Zaan bij de Zaanse Schans, met een molen op de voorgrond",
-    alt_en:
-      "Row of windmills along the River Zaan at the Zaanse Schans, with a windmill in the foreground",
+    alt: "Molens en waterwegen op de Zaanse Schans vanuit de lucht",
+    alt_en: "Aerial view of windmills and waterways at Zaanse Schans",
   },
   {
     url: "/media/zaanse-schans-02.webp",
-    alt: "Overzicht van de molens en het water bij de Zaanse Schans",
-    alt_en: "Overview of the windmills and the water at the Zaanse Schans",
+    alt: "Uitzicht over het water en de molens van de Zaanse Schans",
+    alt_en: "View across the water towards the windmills of Zaanse Schans",
   },
   {
     url: "/media/zaanse-schans-03.webp",
-    alt: "De groene houten huizen en tuinen van het openluchtmuseum bij de Zaanse Schans",
-    alt_en:
-      "The green wooden houses and gardens of the open-air museum at the Zaanse Schans",
+    alt: "Houten huizen en groen landschap rond de Zaanse Schans",
+    alt_en: "Wooden houses and green landscape around Zaanse Schans",
   },
 ];
 

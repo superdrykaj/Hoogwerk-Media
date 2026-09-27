@@ -10,7 +10,7 @@ import { EXAMPLE_PROJECTS, installExampleData } from "./example-data";
 const ECHT = [
   "de-zaan-in-wormerveer",
   "knooppunt-zaandam-bij-zonsondergang",
-  "zaanse-schans",
+  "de-zaanse-schans-vanuit-de-lucht",
 ];
 
 function verseDatabase() {
