@@ -15,7 +15,7 @@ import type { Dictionary } from "@/content/copy";
 export function Showreel({ t }: { t: Dictionary }) {
   // Bump this version whenever the MP4 is replaced: the media response is
   // cached for a week, so a new URL prevents browsers reusing an older reel.
-  const showreelSrc = "/media/hoogbeeldmedia-portfolio.mp4?v=3";
+  const showreelSrc = "/media/hoogbeeldmedia-portfolio.mp4?v=4";
 
   return (
     <div className="mt-10 overflow-hidden rounded-2xl border border-ink-700 bg-ink-950">
