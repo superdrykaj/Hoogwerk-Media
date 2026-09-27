@@ -6,8 +6,12 @@ import { describe, expect, it } from "vitest";
 import { migrate } from "./db";
 import { EXAMPLE_PROJECTS, installExampleData } from "./example-data";
 
-/** De twee projecten die de homepage moet uitlichten, in deze volgorde. */
-const ECHT = ["de-zaan-in-wormerveer", "knooppunt-zaandam-bij-zonsondergang"];
+/** De projecten die de homepage moet uitlichten, in deze volgorde. */
+const ECHT = [
+  "de-zaan-in-wormerveer",
+  "knooppunt-zaandam-bij-zonsondergang",
+  "zaanse-schans",
+];
 
 function verseDatabase() {
   const db = new Database(":memory:");
@@ -16,7 +20,7 @@ function verseDatabase() {
 }
 
 describe("voorbeeldstatus", () => {
-  it("merkt precies twee projecten aan als echt werk", () => {
+  it("merkt precies de echte projecten aan als echt werk", () => {
     const echt = EXAMPLE_PROJECTS.filter((p) => p.is_example === 0);
     expect(echt.map((p) => p.slug)).toEqual(ECHT);
   });
@@ -107,7 +111,7 @@ describe("projectselectie voor de homepage", () => {
   const UITGELICHT = `SELECT slug FROM projects WHERE published = 1 AND featured = 1
                       ORDER BY featured DESC, sort_order, id DESC`;
 
-  it("licht precies de twee echte projecten uit, in volgorde", () => {
+  it("licht precies de echte projecten uit, in volgorde", () => {
     const db = verseDatabase();
     installExampleData(db);
     const rijen = db.prepare(UITGELICHT).all() as { slug: string }[];
@@ -115,7 +119,7 @@ describe("projectselectie voor de homepage", () => {
     db.close();
   });
 
-  it("toont in het portfolio alleen de twee echte projecten", () => {
+  it("toont in het portfolio alleen de echte projecten", () => {
     const db = verseDatabase();
     installExampleData(db);
     const zichtbaar = db

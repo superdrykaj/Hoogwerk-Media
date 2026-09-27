@@ -243,6 +243,48 @@ export const EXAMPLE_PROJECTS = [
     ],
   },
   {
+    slug: "zaanse-schans",
+    title: "De Zaanse Schans",
+    category: "natuur",
+    location: "Zaanse Schans, Zaandijk",
+    summary:
+      "Een drone-impressie van de molens, de Zaan en de karakteristieke groene huizen van de Zaanse Schans.",
+    body:
+      "Bij de Zaanse Schans heb ik de molens langs de Zaan vanuit de lucht vastgelegd, met de karakteristieke groene huisjes en de bezoekers op de paden erlangs.\n\nDe opnames wisselen tussen een overzicht van de hele rij molens over het water en een lagere passage rond de bebouwing van het openluchtmuseum. Zo komen zowel de schaal van de locatie als de details van de molens en de huizen in beeld.\n\nDe losse dronepassages zijn samengevoegd tot een compacte videopresentatie.",
+    cover_url: "/media/zaanse-schans-poster.webp",
+    cover_alt: "Dronebeeld van de molens langs de Zaan bij de Zaanse Schans",
+    title_en: "The Zaanse Schans",
+    location_en: "Zaanse Schans, Zaandijk",
+    summary_en:
+      "An aerial impression of the windmills, the River Zaan and the characteristic green houses of the Zaanse Schans.",
+    body_en:
+      "At the Zaanse Schans I filmed the windmills along the River Zaan from the air, along with the characteristic green houses and the visitors on the paths alongside them.\n\nThe footage alternates between an overview of the full row of windmills across the water and a lower pass around the open-air museum's buildings, showing both the scale of the location and the detail of the mills and houses.\n\nThe individual drone passes were combined into a compact video presentation.",
+    cover_alt_en:
+      "Aerial view of the windmills along the River Zaan at the Zaanse Schans",
+    video_url: "/media/zaanse-schans-dronevideo-v3.mp4",
+    published: 1,
+    featured: 1,
+    sort_order: 3,
+    is_example: 0,
+    images: [
+      [
+        "/media/zaanse-schans-01.webp",
+        "Rij molens langs de Zaan bij de Zaanse Schans, met een molen op de voorgrond",
+        "Row of windmills along the River Zaan at the Zaanse Schans, with a windmill in the foreground",
+      ],
+      [
+        "/media/zaanse-schans-02.webp",
+        "Overzicht van de molens en het water bij de Zaanse Schans",
+        "Overview of the windmills and the water at the Zaanse Schans",
+      ],
+      [
+        "/media/zaanse-schans-03.webp",
+        "De groene houten huizen en tuinen van het openluchtmuseum bij de Zaanse Schans",
+        "The green wooden houses and gardens of the open-air museum at the Zaanse Schans",
+      ],
+    ],
+  },
+  {
     slug: "herenhuis-aan-de-zaan",
     title: "Herenhuis aan de Zaan",
     category: "vastgoed",
