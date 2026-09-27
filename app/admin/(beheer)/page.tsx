@@ -1,30 +1,46 @@
 import Link from "next/link";
 
+import { ActionRequired } from "@/components/admin/action-required";
 import { DashboardBookings } from "@/components/admin/dashboard-bookings";
 import { PageHeading, Panel } from "@/components/admin/ui";
 import { conflictingBookings } from "@/lib/availability";
 import { countBookings, listBookings } from "@/lib/bookings";
 import { isMailConfigured, recentMailLog } from "@/lib/mail";
-import { countUnhandledMessages } from "@/lib/messages";
+import { countUnhandledMessages, listMessages } from "@/lib/messages";
 import { listProjects } from "@/lib/projects";
+import { countOpenRevisionRequests } from "@/lib/revisions";
 import { formatTimestamp } from "@/lib/time";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
-  const { now, pending, confirmed, unread, published, all, upcoming, conflicts, mailReady, mailLog } =
-    await loadDashboard();
-  return renderDashboard({
-    now,
+  const {
     pending,
     confirmed,
     unread,
+    openRevisions,
     published,
     all,
     upcoming,
     conflicts,
     mailReady,
     mailLog,
+    pendingBookings,
+    unreadMessages,
+  } = await loadDashboard();
+  return renderDashboard({
+    pending,
+    confirmed,
+    unread,
+    openRevisions,
+    published,
+    all,
+    upcoming,
+    conflicts,
+    mailReady,
+    mailLog,
+    pendingBookings,
+    unreadMessages,
   });
 }
 
@@ -34,6 +50,7 @@ async function loadDashboard() {
   const pending = countBookings("pending");
   const confirmed = countBookings("confirmed");
   const unread = countUnhandledMessages();
+  const openRevisions = countOpenRevisionRequests();
   const projects = listProjects();
   const published = projects.filter((p) => p.published).length;
 
@@ -47,17 +64,27 @@ async function loadDashboard() {
   const mailReady = isMailConfigured();
   const mailLog = recentMailLog(5);
 
+  // Oudste eerst: dat is degene die het langst op een reactie wacht.
+  const pendingBookings = listBookings({ status: "pending" }).sort(
+    (a, b) => a.createdUtc - b.createdUtc,
+  );
+  const unreadMessages = listMessages()
+    .filter((m) => !m.handled)
+    .sort((a, b) => a.createdUtc - b.createdUtc);
+
   return {
-    now,
     pending,
     confirmed,
     unread,
+    openRevisions,
     published,
     all,
     upcoming,
     conflicts,
     mailReady,
     mailLog,
+    pendingBookings,
+    unreadMessages,
   };
 }
 
@@ -65,12 +92,15 @@ function renderDashboard({
   pending,
   confirmed,
   unread,
+  openRevisions,
   published,
   all,
   upcoming,
   conflicts,
   mailReady,
   mailLog,
+  pendingBookings,
+  unreadMessages,
 }: Awaited<ReturnType<typeof loadDashboard>>) {
   return (
     <>
@@ -79,43 +109,26 @@ function renderDashboard({
         intro="Wat er nu op je bordje ligt, en hoe de website ervoor staat."
       />
 
-      {!mailReady && (
-        <p className="notice notice-warning mb-6">
-          <strong>E-mail is nog niet ingesteld.</strong> Aanvragen en berichten
-          worden gewoon opgeslagen, maar er gaan geen bevestigingsmails uit. Zie{" "}
-          <Link href="/admin/instellingen" className="underline">
-            Instellingen
-          </Link>{" "}
-          voor wat je nog moet invullen.
-        </p>
-      )}
-
-      {conflicts.length > 0 && (
-        <div className="notice notice-warning mb-6">
-          <p>
-            <strong>Let op:</strong> {conflicts.length}{" "}
-            {conflicts.length === 1 ? "boeking valt" : "boekingen vallen"} buiten
-            je huidige beschikbaarheid. Ze zijn niet verwijderd.
-          </p>
-          <ul className="mt-2 space-y-1 text-xs">
-            {conflicts.slice(0, 5).map((conflict) => (
-              <li key={conflict.id}>
-                {conflict.reference} — {conflict.name},{" "}
-                {formatTimestamp(conflict.startUtc)} ({conflict.reason})
-              </li>
-            ))}
-          </ul>
-          <Link href="/admin/boekingen" className="btn btn-quiet mt-3">
-            Naar de boekingen
-          </Link>
-        </div>
-      )}
+      <div className="mb-8">
+        <ActionRequired
+          pendingBookings={pendingBookings}
+          unreadMessages={unreadMessages}
+          conflictCount={conflicts.length}
+          mailReady={mailReady}
+        />
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Stat label="Open aanvragen" value={pending} href="/admin/boekingen?status=pending" highlight={pending > 0} />
         <Stat label="Bevestigde afspraken" value={confirmed} href="/admin/boekingen?status=confirmed" />
-        <Stat label="Nieuwe berichten" value={unread} href="/admin/berichten" highlight={unread > 0} />
+        <Stat label="Nieuwe berichten" value={unread} href="/admin/berichten?status=open" highlight={unread > 0} />
         <Stat label="Gepubliceerde projecten" value={published} href="/admin/projecten" />
+        <Stat
+          label="Openstaande wijzigingsverzoeken"
+          value={openRevisions}
+          href="/admin/boekingen?status=confirmed"
+          highlight={openRevisions > 0}
+        />
       </div>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-[1.4fr_1fr]">

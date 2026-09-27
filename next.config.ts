@@ -4,6 +4,16 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   // Zelfstandige serverbundel, zodat het Docker-image klein blijft.
   output: "standalone",
+  experimental: {
+    serverActions: {
+      // Standaard 1 MB — te weinig voor de projectfoto-upload (tot 12 MB,
+      // zie lib/uploads.ts). Opleverbestanden (foto/video) lopen bewust niet
+      // via een Server Action: die buffert de hele upload in het geheugen
+      // van de machine, wat bij een grote video niet houdbaar is. Zie
+      // app/api/admin/opleverbestand/route.ts, dat in plaats daarvan streamt.
+      bodySizeLimit: "20mb",
+    },
+  },
   // De database en de uploads horen op de gekoppelde schijf, nooit in de
   // serverbundel. Zonder deze regel zou een lokale data/-map meegebakken
   // worden, met klantgegevens en al.
@@ -26,16 +36,6 @@ const nextConfig: NextConfig = {
   },
   // Native module: mag niet door de bundler worden meegenomen.
   serverExternalPackages: ["better-sqlite3"],
-
-  experimental: {
-    serverActions: {
-      // Server actions staan standaard op 1 MB. Een projectvideo (zie
-      // lib/uploads.ts, MAX_VIDEO_BYTES) mag tot 300 MB zijn, dus die limiet
-      // moet mee omhoog. Iets ruimer dan 300 MB vanwege de overhead van de
-      // multipart-envelop eromheen.
-      bodySizeLimit: "310mb",
-    },
-  },
 
   async headers() {
     const ontwikkeling = process.env.NODE_ENV !== "production";

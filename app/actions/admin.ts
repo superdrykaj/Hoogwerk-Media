@@ -32,10 +32,29 @@ import {
   sendBookingCancelledMail,
   sendBookingConfirmedMail,
   sendBookingMovedInvite,
+  sendDeliveryMail,
+  sendPaymentRequestMail,
   sendTestMail,
 } from "@/lib/mail";
 import { verklaarMailFout } from "@/lib/mail-error";
 import { deleteMessage, setMessageHandled } from "@/lib/messages";
+import { deleteDeliveryFileFromDisk } from "@/lib/deliveries";
+import {
+  deleteInvoiceFile,
+  ensureInvoiceNumber,
+  getInvoice,
+  getInvoiceByBookingId,
+  listInvoiceFiles,
+  markDeliverySent,
+  markPaid,
+  markPaymentSent,
+  parseAmountInput,
+  saveInvoiceDraft,
+  setMolliePaymentId,
+} from "@/lib/invoices";
+import { createMolliePayment, fetchMolliePaymentStatus } from "@/lib/mollie";
+import { setRevisionRequestStatus } from "@/lib/revisions";
+import { siteOrigin } from "@/lib/site-url";
 import {
   addProjectImage,
   createProject,
@@ -49,13 +68,14 @@ import {
 import type { ActionState } from "@/lib/form-state";
 import { rateLimit } from "@/lib/rate-limit";
 import { createService, deleteService, updateService } from "@/lib/services";
-import { saveSettings } from "@/lib/settings";
+import { saveInvoiceSettings, saveSettings } from "@/lib/settings";
 import { setSiteStatus } from "@/lib/site-status";
 import { parseMinutes, zonedToUtc } from "@/lib/time";
 import { leesWeekschema } from "@/lib/week-schedule";
-import { saveUpload, saveVideoUpload } from "@/lib/uploads";
+import { saveUpload } from "@/lib/uploads";
 import {
   fieldErrors,
+  invoiceSettingsFormSchema,
   projectFormSchema,
   serviceFormSchema,
   settingsFormSchema,
@@ -222,6 +242,145 @@ export async function deleteBookingAction(formData: FormData): Promise<void> {
   deleteBooking(Number(formData.get("id")));
   revalidatePath("/admin/boekingen");
   revalidatePath("/");
+}
+
+/* -------------------------------------------------------------------------- */
+/* Oplevering & factuur                                                        */
+/* -------------------------------------------------------------------------- */
+
+export async function saveInvoiceDraftAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  await requireAdmin();
+  const bookingId = Number(formData.get("bookingId"));
+  const amountCents = parseAmountInput(String(formData.get("amount") ?? ""));
+  if (amountCents === null) {
+    return { status: "error", message: "Vul een geldig bedrag in, bijvoorbeeld 250,00." };
+  }
+  const description = String(formData.get("description") ?? "").slice(0, 1000);
+  const payBeforeDownload = formData.get("payBeforeDownload") === "on";
+
+  saveInvoiceDraft(bookingId, { amountCents, description, payBeforeDownload });
+  revalidatePath("/admin/boekingen");
+  return { status: "success", message: "De factuurgegevens zijn opgeslagen." };
+}
+
+export async function sendPaymentRequestAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  await requireAdmin();
+  const bookingId = Number(formData.get("bookingId"));
+  const booking = getBooking(bookingId);
+  const invoice = getInvoiceByBookingId(bookingId);
+  if (!booking || !invoice) {
+    return { status: "error", message: "Sla eerst een bedrag op voordat je een betaalverzoek verstuurt." };
+  }
+  if (invoice.amountCents <= 0) {
+    return { status: "error", message: "Vul eerst een bedrag groter dan € 0,00 in." };
+  }
+
+  const origin = await siteOrigin();
+  const payment = await createMolliePayment({
+    invoiceId: invoice.id,
+    amountCents: invoice.amountCents,
+    description: invoice.description || `${booking.serviceName} — ${booking.reference}`,
+    redirectUrl: `${origin}/oplevering/${invoice.token}`,
+    webhookUrl: `${origin}/api/mollie/webhook`,
+  });
+  if (!payment.ok) {
+    return { status: "error", message: `Mollie weigerde de betaling aan te maken: ${payment.error}` };
+  }
+
+  setMolliePaymentId(invoice.id, payment.paymentId);
+  markPaymentSent(invoice.id);
+  ensureInvoiceNumber(invoice.id);
+  const genummerd = getInvoice(invoice.id)!;
+  const mailStatus = await sendPaymentRequestMail(
+    booking,
+    genummerd,
+    payment.checkoutUrl,
+    `${origin}/api/oplevering/${invoice.token}/factuur`,
+  );
+
+  revalidatePath("/admin/boekingen");
+  return {
+    status: "success",
+    message:
+      mailStatus === "sent"
+        ? "Het betaalverzoek is verstuurd."
+        : "De betaallink is aangemaakt, maar de klant kreeg géén e-mail. Stuur de link zelf door.",
+  };
+}
+
+export async function deleteDeliveryFileAction(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const file = deleteInvoiceFile(Number(formData.get("id")));
+  if (file) await deleteDeliveryFileFromDisk(file.filename);
+  revalidatePath("/admin/boekingen");
+}
+
+export async function sendDeliveryAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  await requireAdmin();
+  const bookingId = Number(formData.get("bookingId"));
+  const booking = getBooking(bookingId);
+  const invoice = getInvoiceByBookingId(bookingId);
+  if (!booking || !invoice) {
+    return { status: "error", message: "Sla eerst het bedrag op." };
+  }
+  if (listInvoiceFiles(invoice.id).length === 0) {
+    return { status: "error", message: "Voeg eerst minstens één bestand toe." };
+  }
+
+  const origin = await siteOrigin();
+  markDeliverySent(invoice.id);
+  ensureInvoiceNumber(invoice.id);
+  const genummerd = getInvoice(invoice.id)!;
+  const mailStatus = await sendDeliveryMail(
+    booking,
+    genummerd,
+    `${origin}/oplevering/${invoice.token}`,
+    `${origin}/api/oplevering/${invoice.token}/factuur`,
+  );
+
+  revalidatePath("/admin/boekingen");
+  return {
+    status: "success",
+    message:
+      mailStatus === "sent"
+        ? "De oplevering is verstuurd."
+        : "De oplevering is klaargezet, maar de klant kreeg géén e-mail. Stuur de link zelf door.",
+  };
+}
+
+/**
+ * Vraagt de actuele status bij Mollie zelf op — nooit de webhook vertrouwen.
+ * Vooral bedoeld als vangnet lokaal of als de webhook nog niet is aangekomen.
+ */
+export async function refreshInvoicePaymentStatusAction(
+  formData: FormData,
+): Promise<void> {
+  await requireAdmin();
+  const invoice = getInvoice(Number(formData.get("invoiceId")));
+  if (invoice?.molliePaymentId) {
+    const status = await fetchMolliePaymentStatus(invoice.molliePaymentId);
+    if (status === "paid") markPaid(invoice.id);
+  }
+  revalidatePath("/admin/boekingen");
+}
+
+export async function setRevisionRequestStatusAction(formData: FormData): Promise<void> {
+  await requireAdmin();
+  setRevisionRequestStatus(
+    Number(formData.get("id")),
+    formData.get("status") === "done" ? "done" : "open",
+  );
+  revalidatePath("/admin/boekingen");
+  revalidatePath("/admin");
 }
 
 /* -------------------------------------------------------------------------- */
@@ -417,6 +576,37 @@ export async function saveSettingsAction(
   return { status: "success", message: "De boekingsregels zijn opgeslagen." };
 }
 
+export async function saveInvoiceSettingsAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  await requireAdmin();
+
+  const parsed = invoiceSettingsFormSchema.safeParse({
+    companyName: formData.get("companyName") ?? "",
+    companyAddress: formData.get("companyAddress") ?? "",
+    companyPostcode: formData.get("companyPostcode") ?? "",
+    companyCity: formData.get("companyCity") ?? "",
+    companyKvk: formData.get("companyKvk") ?? "",
+    companyVatNumber: formData.get("companyVatNumber") ?? "",
+    companyIban: formData.get("companyIban") ?? "",
+    vatRatePercent: formData.get("vatRatePercent"),
+  });
+
+  if (!parsed.success) {
+    return {
+      status: "error",
+      message: "Controleer de gemarkeerde velden.",
+      errors: fieldErrors(parsed.error),
+    };
+  }
+
+  saveInvoiceSettings(parsed.data);
+  revalidatePath("/admin/instellingen");
+  revalidatePath("/admin/boekingen");
+  return { status: "success", message: "De bedrijfsgegevens voor facturen zijn opgeslagen." };
+}
+
 /**
  * Stuurt een proefbericht, zodat je de SMTP-gegevens kunt controleren zonder
  * een echte aanvraag te doen. De foutmelding van de mailserver komt terug in
@@ -518,16 +708,12 @@ export async function saveProjectAction(
     coverUrl = upload.url;
   }
 
-  // Nieuw geüploade video heeft voorrang op de ingevulde link.
-  let videoUrl = parsed.data.videoUrl ?? "";
-  const videoFile = formData.get("videoFile");
-  if (videoFile instanceof File && videoFile.size > 0) {
-    const upload = await saveVideoUpload(videoFile);
-    if (!upload.ok) {
-      return { status: "error", message: upload.error, errors: { videoFile: upload.error } };
-    }
-    videoUrl = upload.url;
-  }
+  // De videolink zelf: een geüploade video is hier al een /api/uploads/-pad,
+  // gezet door het losse uploadveld (zie app/api/admin/project-video/route.ts
+  // en components/admin/video-upload-field.tsx) — dat streamt rechtstreeks
+  // naar schijf i.p.v. te bufferen in deze Server Action, wat voor een video
+  // van meerdere honderd megabytes niet houdbaar zou zijn.
+  const videoUrl = parsed.data.videoUrl ?? "";
 
   const values = {
     slug: uniqueSlug(parsed.data.title, id),

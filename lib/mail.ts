@@ -4,10 +4,11 @@ import { copy } from "@/content/copy";
 import { site } from "@/content/site";
 import { getDb } from "./db";
 import { bookingIcs, icsFilename, type IcsMethod } from "./ics";
+import { formatAmountCents } from "./invoices";
 import { DEFAULT_LOCALE, type Locale } from "./locale";
 import { scopeLines } from "./project-scope";
 import { formatTimestamp } from "./time";
-import type { Booking, ContactMessage } from "./types";
+import type { Booking, ContactMessage, Invoice } from "./types";
 
 /**
  * E-mail versturen via SMTP.
@@ -420,6 +421,104 @@ export async function sendBookingCancelledMail(
       : Promise.resolve(null),
   ]);
   return { customer, calendar };
+}
+
+/**
+ * Betaalverzoek voor een factuur, los van de oplevering: dit kan al direct
+ * nadat de boeking is bevestigd, zodat de klant desgewenst meteen kan betalen
+ * in plaats van pas bij oplevering te hoeven afrekenen.
+ */
+export async function sendPaymentRequestMail(
+  booking: Booking,
+  invoice: Invoice,
+  checkoutUrl: string,
+  invoiceUrl: string,
+): Promise<MailStatus> {
+  const locale = booking.locale;
+  const t = copy(locale).mail;
+  const bedrag = formatAmountCents(invoice.amountCents, locale);
+  return send(
+    booking.email,
+    t.paymentRequestSubject(booking.reference),
+    [
+      t.greeting(booking.name),
+      "",
+      t.paymentRequestBody(bedrag),
+      ...(invoice.description ? ["", invoice.description] : []),
+      ...(invoice.invoiceNumber ? ["", `${t.invoiceNumberLabel}: ${invoice.invoiceNumber}`] : []),
+      "",
+      `${t.paymentRequestPayLabel} ${checkoutUrl}`,
+      `${t.invoiceLinkLabel} ${invoiceUrl}`,
+      "",
+      t.paymentRequestNotice,
+      "",
+      t.paymentRequestReply,
+      "",
+      t.signature,
+      site.bookingEmail,
+    ].join("\n"),
+    site.bookingEmail,
+  );
+}
+
+/**
+ * Het project is afgerond: de mail naar de klant met de opleveringslink.
+ * De tekst verschilt naargelang de factuur al betaald is of de paywall nog
+ * dicht staat, maar de link is in beide gevallen dezelfde.
+ */
+export async function sendDeliveryMail(
+  booking: Booking,
+  invoice: Invoice,
+  deliveryUrl: string,
+  invoiceUrl: string,
+): Promise<MailStatus> {
+  const locale = booking.locale;
+  const t = copy(locale).mail;
+  const locked = invoice.payBeforeDownload && invoice.status !== "paid";
+  const bedrag = formatAmountCents(invoice.amountCents, locale);
+  return send(
+    booking.email,
+    t.deliverySubject(booking.reference),
+    [
+      t.greeting(booking.name),
+      "",
+      locked ? t.deliveryBodyUnpaid(bedrag) : t.deliveryBodyReady,
+      ...(invoice.invoiceNumber ? ["", `${t.invoiceNumberLabel}: ${invoice.invoiceNumber}`] : []),
+      "",
+      `${t.deliveryLinkLabel} ${deliveryUrl}`,
+      `${t.invoiceLinkLabel} ${invoiceUrl}`,
+      "",
+      t.deliveryRevisionNotice,
+      "",
+      t.deliveryReply,
+      "",
+      t.signature,
+      site.bookingEmail,
+    ].join("\n"),
+    site.bookingEmail,
+  );
+}
+
+/** Melding aan de eigenaar dat een klant een wijziging heeft aangevraagd. */
+export async function sendRevisionRequestedMail(
+  booking: Booking,
+  message: string,
+): Promise<MailStatus> {
+  const eigen = copy(DEFAULT_LOCALE).mail;
+  const naarJou = mailRecipients().bookings;
+  return send(
+    naarJou,
+    eigen.revisionOwnerSubject(booking.reference, booking.name),
+    [
+      eigen.revisionOwnerBody,
+      "",
+      bookingSummary(booking, DEFAULT_LOCALE),
+      "",
+      "Bericht van de klant:",
+      message,
+    ].join("\n"),
+    booking.email,
+  );
 }
 
 export async function sendContactMails(

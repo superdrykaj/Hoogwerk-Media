@@ -89,8 +89,17 @@ export const config = {
    * tonen: de Next.js-bundel, de afbeeldingen, het logo en de pictogrammen.
    * robots.txt mag er ook door, anders kan een zoekmachine niet lezen dat hij
    * moet wegblijven.
+   *
+   * Ook /api/ staat hier expliciet buiten: geen enkele API-route rendert de
+   * hoofdlayout, dus de taal-header (x-pathname) is daar zinloos, en de
+   * domeinredirect hierboven doet voor /api/ toch al niets. Belangrijker: de
+   * opleveringsupload (app/api/admin/opleverbestand) streamt een groot
+   * bestand, en die stream liep hier vast op een afkapping van 10 MB zodra
+   * hij door deze proxy heen moest — waarschijnlijk een buffergrens van de
+   * Edge-runtime waar deze proxy op draait. Bestanden horen dus altijd
+   * rechtstreeks bij de route te komen, zonder hier doorheen te gaan.
    */
   matcher: [
-    "/((?!_next/|images/|logo-|icon.png|apple-icon.png|favicon.ico|robots.txt|sitemap.xml).*)",
+    "/((?!_next/|api/|images/|logo-|icon.png|apple-icon.png|favicon.ico|robots.txt|sitemap.xml).*)",
   ],
 };

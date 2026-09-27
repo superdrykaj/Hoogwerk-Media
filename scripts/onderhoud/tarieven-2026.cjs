@@ -9,7 +9,8 @@
  *  Dit script brengt die rijen op de nieuwe indeling:
  *
  *    - Fotografie en video krijgen hun nieuwe naam, omschrijving en tarief.
- *    - "Bedrijfsfilm" en "Bouwvordering" komen erbij als ze nog ontbreken.
+ *    - "Bedrijfsfilm" en "Bouwvoortgang" komen erbij als ze nog ontbreken; een
+ *      bestaande "Bouwvordering" wordt hernoemd naar "Bouwvoortgang".
  *    - Het voorbeeldproject over een festival gaat op non-actief, en het
  *      nieuwbouwproject verhuist naar de categorie bouwvordering. Evenementen
  *      staan niet meer op de site.
@@ -99,7 +100,7 @@ const TOEVOEGEN = [
   },
   {
     slug: "bouwvordering",
-    name: "Bouwvordering",
+    name: "Bouwvoortgang",
     description:
       "Vaste route en vaste hoogte, elke maand opnieuw. Vanaf vier bezoeken geldt een staffel.",
     duration_minutes: 45,
@@ -193,6 +194,26 @@ if (festival && festival.published) {
   gewijzigd++;
 } else {
   console.log("- zomerfestival-in-het-park: niets te doen.");
+}
+
+// De naam "Bouwvordering" is minder gangbaar dan "Bouwvoortgang". Alleen
+// hernoemen als de naam nog exact de oude staat is; heb je zelf al iets
+// aangepast, dan blijft die dienst staan.
+const bouwvoortgang = db
+  .prepare("SELECT id, name FROM services WHERE slug = ?")
+  .get("bouwvordering");
+
+if (bouwvoortgang && bouwvoortgang.name === "Bouwvordering") {
+  db.prepare("UPDATE services SET name = 'Bouwvoortgang' WHERE id = ?").run(
+    bouwvoortgang.id,
+  );
+  console.log("- bouwvordering: naam is nu Bouwvoortgang.");
+  gewijzigd++;
+} else if (bouwvoortgang) {
+  console.log(`- bouwvordering: zelf aangepast ("${bouwvoortgang.name}"), blijft staan.`);
+  overgeslagen++;
+} else {
+  console.log("- bouwvordering: bestaat niet, overgeslagen.");
 }
 
 // Het nieuwbouwproject hoort bij bouwvordering, niet bij vastgoed.

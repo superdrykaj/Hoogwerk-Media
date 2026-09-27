@@ -1,8 +1,11 @@
 import "server-only";
 
 import crypto from "node:crypto";
+import { createWriteStream } from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { Readable, Transform } from "node:stream";
+import { pipeline } from "node:stream/promises";
 
 import { UPLOAD_DIR } from "./db";
 
@@ -22,7 +25,14 @@ const ALLOWED_VIDEO: Record<string, string> = {
   "video/webm": ".webm",
 };
 
-const MAX_VIDEO_BYTES = 300 * 1024 * 1024; // 300 MB
+function maxVideoStreamBytes(): number {
+  // De video streamt rechtstreeks naar schijf (zie saveVideoUploadStream),
+  // dus het geheugen van de machine is geen beperking — alleen de
+  // schijfruimte van de gekoppelde volume. 500 MB als ruime standaard voor
+  // een projectvideo.
+  const mb = Number(process.env.PROJECT_VIDEO_MAX_UPLOAD_MB) || 500;
+  return mb * 1024 * 1024;
+}
 
 export type UploadResult =
   | { ok: true; url: string }
@@ -59,9 +69,69 @@ export async function saveUpload(file: File): Promise<UploadResult> {
   return saveFile(file, ALLOWED_IMAGE, MAX_IMAGE_BYTES, "12 MB", "JPG, PNG, WebP of AVIF");
 }
 
-/** Video-upload voor een project. Grotere bestanden, alleen mp4 of webm. */
-export async function saveVideoUpload(file: File): Promise<UploadResult> {
-  return saveFile(file, ALLOWED_VIDEO, MAX_VIDEO_BYTES, "300 MB", "MP4 of WebM");
+/**
+ * Video-upload voor een project: streamt de binnenkomende data rechtstreeks
+ * naar schijf, zonder het bestand ooit volledig in het geheugen te houden.
+ *
+ * Bewust geen Server Action (zoals bij de afbeeldingen hierboven): Next.js
+ * buffert het hele verzoek van een Server Action in het geheugen vóórdat de
+ * functie draait, wat voor een video van een paar honderd megabyte op een
+ * server met weinig werkgeheugen niet houdbaar is. Zie
+ * app/api/admin/project-video/route.ts, dat deze functie aanroept met de
+ * ruwe request-stream, en components/admin/video-upload-field.tsx, dat de
+ * upload vanuit de browser stuurt.
+ */
+export async function saveVideoUploadStream(
+  webStream: ReadableStream<Uint8Array>,
+  contentType: string,
+): Promise<UploadResult> {
+  const extension = ALLOWED_VIDEO[contentType];
+  if (!extension) {
+    return { ok: false, error: "Alleen MP4 of WebM worden ondersteund." };
+  }
+
+  const limit = maxVideoStreamBytes();
+  const name = `${Date.now().toString(36)}-${crypto
+    .randomBytes(6)
+    .toString("hex")}${extension}`;
+  await fs.mkdir(UPLOAD_DIR, { recursive: true });
+  const destPath = path.join(UPLOAD_DIR, name);
+
+  let total = 0;
+  const bewaakDeGrens = new Transform({
+    transform(chunk: Buffer, _encoding, callback) {
+      total += chunk.length;
+      if (total > limit) {
+        callback(new Error("LIMIET_OVERSCHREDEN"));
+        return;
+      }
+      callback(null, chunk);
+    },
+  });
+
+  try {
+    await pipeline(
+      Readable.fromWeb(webStream as Parameters<typeof Readable.fromWeb>[0]),
+      bewaakDeGrens,
+      createWriteStream(destPath),
+    );
+  } catch (error) {
+    await fs.rm(destPath, { force: true });
+    if (error instanceof Error && error.message === "LIMIET_OVERSCHREDEN") {
+      return {
+        ok: false,
+        error: `Het bestand is groter dan ${Math.round(limit / (1024 * 1024))} MB.`,
+      };
+    }
+    return { ok: false, error: "Uploaden is mislukt. Probeer het nog eens." };
+  }
+
+  if (total === 0) {
+    await fs.rm(destPath, { force: true });
+    return { ok: false, error: "Geen bestand ontvangen." };
+  }
+
+  return { ok: true, url: `/api/uploads/${name}` };
 }
 
 /** Veilig pad binnen de uploadmap; null bij een poging tot uitbreken. */

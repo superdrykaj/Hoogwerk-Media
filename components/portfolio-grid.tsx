@@ -34,6 +34,12 @@ export function PortfolioGrid({
   const shown =
     filter === ALL ? projects : projects.filter((p) => p.category === filter);
 
+  // Een categorie zonder projecten is niets om op te filteren; die knop
+  // benadrukt alleen wat er nog ontbreekt.
+  const filledCategories = site.categories.filter(
+    (category) => (counts.get(category.key) ?? 0) > 0,
+  );
+
   return (
     <div>
       <div
@@ -47,7 +53,7 @@ export function PortfolioGrid({
           label={t.portfolio.filterAll}
           count={projects.length}
         />
-        {site.categories.map((category) => (
+        {filledCategories.map((category) => (
           <FilterButton
             key={category.key}
             active={filter === category.key}

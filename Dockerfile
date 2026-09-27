@@ -41,6 +41,12 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+# Node begrenst standaard de totale duur van een request op vijf minuten. De
+# Next-standalone-server maakt de HTTP-server intern aan, dus laden we vóór
+# server.js een kleine configuratie die alleen requestTimeout uitschakelt.
+# headersTimeout blijft intact. Zie scripts/configure-http-server.cjs.
+COPY --from=builder --chown=nextjs:nodejs /app/scripts/configure-http-server.cjs ./configure-http-server.cjs
+
 # Eenmalig onderhoudsscript, te draaien met `fly ssh console -C "node ..."`.
 # Het hoort niet bij de serverbundel en wordt daarom apart meegenomen.
 COPY --chown=nextjs:nodejs scripts/onderhoud ./scripts/onderhoud
@@ -65,4 +71,4 @@ RUN if ! command -v setpriv >/dev/null; then \
 EXPOSE 3000
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
-CMD ["node", "server.js"]
+CMD ["node", "--require", "./configure-http-server.cjs", "server.js"]

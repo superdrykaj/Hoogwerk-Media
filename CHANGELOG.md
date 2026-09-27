@@ -1,5 +1,28 @@
 # Wijzigingen
 
+## September 2026 — afwerkronde naar aanleiding van extern feedback
+
+- Lege portfoliocategorieën (0 projecten) verschijnen niet langer als filter;
+  wie er toch één had geselecteerd valt automatisch terug op "Alles".
+- De fotogalerij van een project verschijnt alleen nog als er foto's zijn. Een
+  project met uitsluitend video toont die sectie dus niet meer met de tekst
+  "Nog geen foto's bij dit project".
+- Gebruiksrecht bij de tarieven en in de vragen noemt nu expliciet Funda en de
+  verkoopbrochure als inbegrepen bij vastgoed; print, betaalde advertenties en
+  grotere campagnes blijven apart af te spreken.
+- De uitzondering voor vluchten met een Specific-vergunning zegt nu dat ik die
+  op dit moment niet aanbied, in plaats van dat te suggereren als iets wat
+  apart afgerekend kan worden — dat weersprak de vraag daarover.
+- Het antwoord op "en als het weer tegenzit?" benadrukt nu dat ik alleen onder
+  veilige omstandigheden vlieg en kosteloos verzet, in plaats van de suggestie
+  dat de drone wegwaait.
+- "Bouwvordering" is overal hernoemd naar het gangbaardere "Bouwvoortgang"
+  (dienstnaam, dienstcategorie en de kop op de homepage). Bestaande
+  installaties werk je bij met `node scripts/onderhoud/tarieven-2026.cjs`,
+  dat nu ook een reeds aangemaakte "Bouwvordering"-dienst hernoemt.
+- Wisselende aanspreekvorm rechtgezet: "Bekijk mijn werk" in plaats van
+  "Bekijk ons werk", en "je" in plaats van "uw" in de hero.
+
 ## September 2026 — fotogalerijen bij de echte projecten
 
 - Vier foto's bij **De Zaan in Wormerveer** en vier bij **Knooppunt Zaandam bij
