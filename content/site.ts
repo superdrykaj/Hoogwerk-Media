@@ -74,7 +74,7 @@ export const site = {
     /** BTW-identificatienummer. Laat leeg als je de KOR gebruikt. */
     vat: "" as string,
     /** Operatornummer van de RDW, begint met NLD. */
-    droneOperator: "" as string,
+    droneOperator: "NLDeflfyqk6tk2y5" as string,
     /** Naam van de verzekeraar voor de aansprakelijkheidsverzekering. */
     insurer: "" as string,
   },
