@@ -90,7 +90,7 @@ export const nl = {
      * niet te zien krijgt.
      */
     heroPosterAlt:
-      "Dronebeeld van karakteristieke bebouwing en boten aan het water in de Zaanstreek.",
+      "Dronebeeld van een groene molen aan de Zaan op de Zaanse Schans.",
     /** Harde feiten onder de hero. Kort, controleerbaar, geen marketing. */
     heroFacts: ["50 MP, 1-inch sensor", "4K HDR video", "Zaanstreek en Noord-Holland"],
 
@@ -148,9 +148,32 @@ export const nl = {
     pricingTitle: "Indicaties, met de inhoud erbij",
     /** Staat onder de tarieven. De btw-regel hoort voorop. */
     pricingNote:
-      "Alle genoemde prijzen zijn exclusief btw. Het zijn indicaties; wat je precies nodig hebt, spreken we vooraf samen af.",
+      "De genoemde pakketprijzen zijn inclusief btw; de prijs excl. btw voor zakelijke klanten staat eronder. Het zijn indicaties; wat je precies nodig hebt, spreken we vooraf samen af.",
     /** Korte variant, bij de prijzen in de boekingsmodule. */
     vatNote: "Alle prijzen zijn exclusief btw.",
+    /**
+     * Incl.-btw-hoofdprijs met de excl.-btw-prijs erbij, per dienst-slug.
+     * Alleen voor diensten met een vast startbedrag; "Kennismaking" (gratis)
+     * en "Project op maat" (in overleg) staan hier bewust niet in.
+     */
+    packagePricing: {
+      dronefotografie: {
+        primary: "vanaf € 235,95",
+        secondary: "€ 195 excl. 21% btw, voor zakelijke klanten",
+      },
+      dronevideo: {
+        primary: "vanaf € 422,29",
+        secondary: "€ 349 excl. 21% btw, voor zakelijke klanten",
+      },
+      bedrijfsfilm: {
+        primary: "vanaf € 598,95",
+        secondary: "€ 495 excl. 21% btw, voor zakelijke klanten",
+      },
+      bouwvordering: {
+        primary: "vanaf € 180,29 per bezoek",
+        secondary: "€ 149 excl. 21% btw, voor zakelijke klanten",
+      },
+    } as Record<string, { primary: string; secondary: string }>,
     includedTitle: "Wat je krijgt",
     included: [
       "Zestig tot negentig minuten op locatie",
@@ -160,8 +183,8 @@ export const nl = {
     ],
     excludedTitle: "Apart afgerekend",
     excluded: [
-      "Voorrijden buiten 25 km: € 0,45 per kilometer",
-      "Wachttijd op locatie: € 65 per uur",
+      "Voorrijden vanuit Zaandam: de eerste 25 km enkele reis (wegafstand) zijn inbegrepen. Alleen de kilometers daarboven worden doorberekend, voor heen- én terugreis (dus 2× het aantal km boven de grens), à € 0,45 excl. btw per kilometer. De btw (21%) wordt berekend over het totaalbedrag, dat vervolgens wordt afgerond op centen. Bijvoorbeeld bij 40 km enkele reis: 15 km boven de grens × 2 = 30 betaalde km × € 0,45 = € 13,50 excl. btw → € 16,34 incl. btw.",
+      "Wachttijd op locatie: € 78,65 incl. btw per uur (€ 65 excl. 21% btw, voor zakelijke klanten)",
       "Gebruik in print, betaalde advertenties of grotere campagnes: in overleg",
       "Vluchten die een vergunning voor de categorie 'specific' vereisen: bied ik op dit moment niet aan",
     ],

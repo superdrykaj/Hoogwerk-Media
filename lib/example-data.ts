@@ -286,6 +286,52 @@ export const EXAMPLE_PROJECTS = [
     ],
   },
   {
+    slug: "ijburg-vanuit-de-lucht",
+    title: "IJburg vanuit de lucht",
+    category: "vastgoed",
+    location: "IJburg, Amsterdam",
+    summary:
+      "Een drone-impressie van IJburg, met moderne waterfrontarchitectuur, waterwoningen en de jachthaven.",
+    body:
+      "Vanuit de lucht komen de moderne woonblokken, waterwoningen en de jachthaven van IJburg samen in één overzicht van het stadsdeel. De rustige camerabewegingen laten zien hoe de architectuur en het water het karakter van deze Amsterdamse wijk bepalen.",
+    cover_url: "/media/ijburg-poster.webp",
+    cover_alt: "Luchtbeeld van de waterwoningen en jachthaven in IJburg.",
+    title_en: "IJburg from the air",
+    location_en: "IJburg, Amsterdam",
+    summary_en:
+      "An aerial impression of IJburg, featuring modern waterfront architecture, waterside homes and the marina.",
+    body_en:
+      "From above, IJburg's modern apartment blocks, waterside homes and marina come together in a single overview of the district. The calm camera movements show how architecture and water shape the character of this Amsterdam neighbourhood.",
+    cover_alt_en: "Aerial view of IJburg's waterside homes and marina.",
+    video_url: "/media/ijburg-dronevideo.mp4",
+    published: 1,
+    featured: 0,
+    sort_order: 4,
+    is_example: 0,
+    images: [
+      [
+        "/media/ijburg-01.webp",
+        "Moderne woningen en water in IJburg, gefilmd vanuit de lucht.",
+        "Modern homes and waterways in IJburg, filmed from the air.",
+      ],
+      [
+        "/media/ijburg-02.webp",
+        "De jachthaven en open water rond IJburg.",
+        "The marina and open water around IJburg.",
+      ],
+      [
+        "/media/ijburg-03.webp",
+        "Waterwoningen aan een kanaal in IJburg.",
+        "Waterside homes along a canal in IJburg.",
+      ],
+      [
+        "/media/ijburg-04.webp",
+        "Woonarchitectuur en waterwegen in IJburg.",
+        "Residential architecture and waterways in IJburg.",
+      ],
+    ],
+  },
+  {
     slug: "herenhuis-aan-de-zaan",
     title: "Herenhuis aan de Zaan",
     category: "vastgoed",

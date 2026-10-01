@@ -259,6 +259,11 @@ function Pricing({
             <ul className="border-t border-ink-700">
               {services.map((service) => {
                 const tekst = serviceText(service, locale);
+                // Bekende pakketten tonen de incl.-btw-prijs als hoofdprijs,
+                // met de excl.-btw-prijs voor zakelijke klanten eronder.
+                // "Kennismaking" (gratis) en "Project op maat" (in overleg)
+                // staan niet in deze lijst en gebruiken de gewone priceLabel.
+                const pricing = t.home.packagePricing[service.slug];
                 return (
                   <li
                     key={service.id}
@@ -272,9 +277,16 @@ function Pricing({
                         </p>
                       )}
                     </div>
-                    <p className="numeric font-[family-name:var(--font-mono)] text-sm text-haze-300 sm:text-right">
-                      {tekst.priceLabel || t.home.priceOnRequest}
-                    </p>
+                    <div className="sm:text-right">
+                      <p className="numeric font-[family-name:var(--font-mono)] text-sm text-haze-300">
+                        {pricing?.primary || tekst.priceLabel || t.home.priceOnRequest}
+                      </p>
+                      {pricing && (
+                        <p className="mt-0.5 text-xs text-mist-500">
+                          {pricing.secondary}
+                        </p>
+                      )}
+                    </div>
                   </li>
                 );
               })}

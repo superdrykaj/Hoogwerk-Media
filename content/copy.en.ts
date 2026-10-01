@@ -85,8 +85,7 @@ export const en: Dictionary = {
     heroCta: "Discuss your project",
     heroWork: "See the work",
     heroPosterAlt:
-      "Aerial view of characteristic buildings and boats on the water in the " +
-      "Zaan region.",
+      "Aerial view of a green windmill beside the Zaan at Zaanse Schans.",
     heroFacts: ["50 MP, 1-inch sensor", "4K HDR video", "Zaan region and North Holland"],
 
     servicesEyebrow: "What I do",
@@ -143,10 +142,35 @@ export const en: Dictionary = {
     pricingTitle: "Indications, with what's included",
     /** Sits under the rates. The VAT line comes first. */
     pricingNote:
-      "All prices listed are excluding VAT. They are indications; we agree " +
+      "The listed package prices include VAT; the price excl. VAT for " +
+      "business clients is shown underneath. They are indications; we agree " +
       "exactly what you need beforehand.",
     /** Short version, next to the prices in the booking module. */
     vatNote: "All prices are excluding VAT.",
+    /**
+     * Headline price including VAT, with the price excluding VAT alongside,
+     * per service slug. Only for services with a fixed starting amount;
+     * "Intro call" (free) and "Custom project" (on request) are deliberately
+     * not included here.
+     */
+    packagePricing: {
+      dronefotografie: {
+        primary: "from € 235.95",
+        secondary: "€ 195 excl. 21% VAT, for business clients",
+      },
+      dronevideo: {
+        primary: "from € 422.29",
+        secondary: "€ 349 excl. 21% VAT, for business clients",
+      },
+      bedrijfsfilm: {
+        primary: "from € 598.95",
+        secondary: "€ 495 excl. 21% VAT, for business clients",
+      },
+      bouwvordering: {
+        primary: "from € 180.29 per visit",
+        secondary: "€ 149 excl. 21% VAT, for business clients",
+      },
+    } as Record<string, { primary: string; secondary: string }>,
     includedTitle: "What you get",
     included: [
       "Sixty to ninety minutes on location",
@@ -156,8 +180,8 @@ export const en: Dictionary = {
     ],
     excludedTitle: "Billed separately",
     excluded: [
-      "Travel beyond 25 km: € 0.45 per kilometre",
-      "Waiting time on location: € 65 per hour",
+      "Travel from Zaandam: the first 25 km one-way (road distance) is included. Only the kilometres above that are charged, for both the outbound and return trip (so 2× the number of km above the threshold), at € 0.45 excl. VAT per kilometre. VAT (21%) is calculated on the total amount, which is then rounded to the nearest cent. For example, for 40 km one-way: 15 km above the threshold × 2 = 30 billed km × € 0.45 = € 13.50 excl. VAT → € 16.34 incl. VAT.",
+      "Waiting time on location: € 78.65 incl. VAT per hour (€ 65 excl. 21% VAT, for business clients)",
       "Use in print, paid advertising or larger campaigns: by arrangement",
       "Flights that require an operational authorisation for the ‘specific’ category: not offered at the moment",
     ],

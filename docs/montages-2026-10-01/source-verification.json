@@ -1,0 +1,30 @@
+{
+  "all_five_sha256_match": true,
+  "sources": [
+    {
+      "file": "20260924_170800000_iOS.MP4",
+      "bytes": 691105420,
+      "sha256": "80f28c5b5e061b0949a9b6fa02f3992f7ff88ff026b53a4929facfc21fcb00b1"
+    },
+    {
+      "file": "20260924_170936000_iOS.MP4",
+      "bytes": 1533167994,
+      "sha256": "59f68f9b55b303b5ef7127e6ff5f22cb8046180fcfd006933a7567970a02a61d"
+    },
+    {
+      "file": "20260926_125304000_iOS.MP4",
+      "bytes": 693744156,
+      "sha256": "3b4e26cb69074cf63a54a40a392507dacf378e0682a351730725aa362d3f18b8"
+    },
+    {
+      "file": "20260927_132738000_iOS.MP4",
+      "bytes": 443469199,
+      "sha256": "690ce623f354efe00b2989a0a574ee94c1df7b994ead0cbd9d0e726686a585af"
+    },
+    {
+      "file": "20260927_133236000_iOS.MP4",
+      "bytes": 292899835,
+      "sha256": "0b39e77fe91a8114f50f375cf73966e300eaf0c57c52230b080fe493cb8c0ff4"
+    }
+  ]
+}

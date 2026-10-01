@@ -34,6 +34,12 @@ export function Showreel({
   const videoRef = useRef<HTMLVideoElement>(null);
   useMuteIfSilent(videoRef);
 
+  // Media-bestanden in public/media/ krijgen een week Cache-Control
+  // (next.config.ts). Vervang je het bestand, dan blijft een bezoeker zonder
+  // dit versienummer de oude, gecachte versie zien. Ophogen bij elke nieuwe
+  // montage van de showreel.
+  const showreelSrc = "/media/hoogbeeldmedia-portfolio.mp4?v=20261001";
+
   return (
     <div className="relative mt-10 overflow-hidden rounded-2xl border border-ink-700 bg-ink-950">
       {/* Vaste 16:9-verhouding, zodat het kader er al staat voordat er iets is
@@ -44,13 +50,13 @@ export function Showreel({
         controlsList="nodownload"
         preload="none"
         playsInline
-        poster="/media/hoogbeeldmedia-poster.webp"
+        poster="/media/hoogbeeldmedia-portfolio-poster.webp?v=20261001"
         width={1920}
         height={1080}
         aria-label={ariaLabel}
         className="aspect-video h-auto w-full bg-ink-950"
       >
-        <source src="/media/hoogbeeldmedia-portfolio.mp4" type="video/mp4" />
+        <source src={showreelSrc} type="video/mp4" />
         <p className="p-6 text-sm text-mist-300">{fallbackText}</p>
       </video>
       <VideoWatermark />
