@@ -9,7 +9,7 @@ import { copy } from "@/content/copy";
 import { isSignedIn } from "@/lib/auth";
 import { href, type Locale } from "@/lib/locale";
 import { projectText } from "@/lib/localised";
-import { getProjectBySlug, listProjectImages, listProjects } from "@/lib/projects";
+import { getProjectBySlug, listProjectImages, listProjects, onlyExistingImages } from "@/lib/projects";
 import { requireOpenSite } from "@/lib/site-status";
 import { siteOrigin } from "@/lib/site-url";
 import { toEmbedUrl } from "@/lib/video-embed";
@@ -40,7 +40,7 @@ export async function ProjectPage({
   if (!project || (!project.published && !previewAlsBeheerder)) notFound();
 
   const tekst = projectText(project, locale);
-  const images = listProjectImages(project.id);
+  const images = onlyExistingImages(listProjectImages(project.id));
   const others = listProjects({ onlyPublished: true })
     .filter((p) => p.id !== project.id)
     .slice(0, 3);

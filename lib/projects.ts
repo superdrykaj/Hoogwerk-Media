@@ -1,5 +1,8 @@
 import "server-only";
 
+import fs from "node:fs";
+import path from "node:path";
+
 import { getDb, withWriteTransaction } from "./db";
 import type { Project, ProjectImage } from "./types";
 
@@ -250,4 +253,18 @@ export function uniqueSlug(base: string, ignoreId?: number): string {
     if (!row || row.id === ignoreId) return candidate;
     candidate = `${root}-${n++}`;
   }
+}
+
+/**
+ * Alleen de galerijfoto's waarvan het bestand er echt staat. Verwijst een regel
+ * in de database naar een bestand in public/media dat (nog) niet is
+ * meegeleverd, dan tonen we liever geen foto dan een gebroken afbeelding.
+ * Uploads uit de beheeromgeving en externe adressen blijven ongemoeid.
+ */
+export function onlyExistingImages(images: ProjectImage[]): ProjectImage[] {
+  const publicDir = path.join(process.cwd(), "public");
+  return images.filter((image) => {
+    if (!image.url.startsWith("/media/")) return true;
+    return fs.existsSync(path.join(publicDir, image.url.replace(/^\/+/, "")));
+  });
 }
