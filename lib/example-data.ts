@@ -16,12 +16,12 @@ export const EXAMPLE_SERVICES = [
     slug: "kennismaking",
     name: "Kennismaking",
     description:
-      "Kort videogesprek over je locatie en wat je nodig hebt. Vrijblijvend.",
+      "Vrijblijvend videogesprek van maximaal 20 minuten over locatie en wensen.",
     duration_minutes: 20,
     price_label: "Gratis",
     name_en: "Intro call",
     description_en:
-      "A short video call about your location and what you need. No obligation.",
+      "A no-obligation video call of up to 20 minutes about the location and your wishes.",
     price_label_en: "Free",
     buffer_minutes: 15,
     bookable: 1,
@@ -31,15 +31,15 @@ export const EXAMPLE_SERVICES = [
   },
   {
     slug: "dronefotografie",
-    name: "Fotoreportage",
+    name: "Dronefotoreportage",
     description:
-      "Eén object of terrein. Vijftien tot vijfentwintig bewerkte foto's, gebruiksrecht voor web en socials.",
+      "Eén object of terrein, 10–15 bewerkte luchtfoto's.\nTot 60 minuten op locatie.",
     duration_minutes: 60,
-    price_label: "vanaf € 195",
-    name_en: "Photo shoot",
+    price_label: "vanaf € 235,95 incl. btw · € 195 excl. btw",
+    name_en: "Drone photo shoot",
     description_en:
-      "One building or site. Fifteen to twenty-five edited photos, usage rights for web and social.",
-    price_label_en: "from € 195",
+      "One building or site, 10–15 edited aerial photos.\nUp to 60 minutes on location.",
+    price_label_en: "from € 235.95 incl. VAT · € 195 excl. VAT",
     buffer_minutes: 45,
     bookable: 1,
     intro_only: 0,
@@ -50,13 +50,13 @@ export const EXAMPLE_SERVICES = [
     slug: "dronevideo",
     name: "Foto en korte film",
     description:
-      "Dezelfde reportage, plus een gemonteerde clip van dertig tot vijfenveertig seconden.",
+      "10–15 bewerkte luchtfoto's plus een gemonteerde droneclip van 30–45 seconden.\nTot 90 minuten op locatie, passende muziek met gebruikslicentie en één correctieronde.",
     duration_minutes: 90,
-    price_label: "vanaf € 349",
+    price_label: "vanaf € 422,29 incl. btw · € 349 excl. btw",
     name_en: "Photos and short film",
     description_en:
-      "The same shoot, plus an edited clip of thirty to forty-five seconds.",
-    price_label_en: "from € 349",
+      "10–15 edited aerial photos plus an edited drone clip of 30–45 seconds.\nUp to 90 minutes on location, fitting licensed music and one round of corrections.",
+    price_label_en: "from € 422.29 incl. VAT · € 349 excl. VAT",
     buffer_minutes: 45,
     bookable: 1,
     intro_only: 0,
@@ -64,16 +64,18 @@ export const EXAMPLE_SERVICES = [
     active: 1,
   },
   {
+    // De slug blijft "bedrijfsfilm": bestaande boekingen en verwijzingen
+    // hangen eraan. Alleen de zichtbare naam is veranderd.
     slug: "bedrijfsfilm",
-    name: "Bedrijfsfilm",
+    name: "Drone-sfeerfilm",
     description:
-      "Sfeerfilm van zestig tot negentig seconden over je terrein of project. Muziek en voice-over in overleg.",
+      "Film van 60–90 seconden over één terrein, locatie of project, gemaakt met dronebeelden.\nTot 90 minuten op locatie, passende muziek met gebruikslicentie en één correctieronde.",
     duration_minutes: 120,
-    price_label: "vanaf € 495",
-    name_en: "Company film",
+    price_label: "vanaf € 598,95 incl. btw · € 495 excl. btw",
+    name_en: "Drone atmosphere film",
     description_en:
-      "A sixty to ninety second film about your site or project. Music and voice-over by arrangement.",
-    price_label_en: "from € 495",
+      "A 60–90 second film about one site, location or project, made with drone footage.\nUp to 90 minutes on location, fitting licensed music and one round of corrections.",
+    price_label_en: "from € 598.95 incl. VAT · € 495 excl. VAT",
     buffer_minutes: 60,
     bookable: 1,
     intro_only: 0,
@@ -84,13 +86,15 @@ export const EXAMPLE_SERVICES = [
     slug: "bouwvordering",
     name: "Bouwvoortgang",
     description:
-      "Vaste route en vaste hoogte, elke maand opnieuw. Vanaf vier bezoeken geldt een staffel.",
+      "Vaste standpunten, 5–10 bewerkte beelden per bezoek en maximaal 45 minuten op locatie.\nHet eerste bezoek omvat de eerste voorbereiding.",
     duration_minutes: 45,
-    price_label: "vanaf € 149 per bezoek",
+    price_label:
+      "eerste bezoek vanaf € 235,95, vervolgbezoek vanaf € 180,29 (incl. btw)",
     name_en: "Construction progress",
     description_en:
-      "Fixed route and fixed altitude, every month. A discount applies from four visits.",
-    price_label_en: "from € 149 per visit",
+      "Fixed viewpoints, 5–10 edited images per visit and up to 45 minutes on location.\nThe first visit includes the initial preparation.",
+    price_label_en:
+      "first visit from € 235.95, follow-up from € 180.29 (incl. VAT)",
     buffer_minutes: 30,
     bookable: 1,
     intro_only: 0,
@@ -101,12 +105,12 @@ export const EXAMPLE_SERVICES = [
     slug: "project-op-maat",
     name: "Project op maat",
     description:
-      "Meerdere locaties of meerdere dagen. Je plant een kennismaking; in het formulier vraag ik alvast naar de locaties en de periode.",
+      "Meerdere locaties, opnamedagen of een uitgebreidere productie worden vooraf geoffreerd.",
     duration_minutes: 20,
-    price_label: "In overleg",
+    price_label: "Op aanvraag",
     name_en: "Custom project",
     description_en:
-      "Several locations or several days. You book an intro call; the form asks up front about the locations and the period.",
+      "Multiple locations, shooting days or a more extensive production are quoted beforehand.",
     price_label_en: "On request",
     buffer_minutes: 15,
     bookable: 1,
@@ -115,6 +119,7 @@ export const EXAMPLE_SERVICES = [
     active: 1,
   },
 ];
+
 
 
 /** Standaardbeschikbaarheid: [weekdag, begin in minuten, eind in minuten]. */

@@ -1,5 +1,25 @@
 # Wijzigingen
 
+## Oktober 2026 — tarievensectie rustiger en pakketten aangescherpt
+
+- Tarievensectie: titel "Tarieven voor foto en video", de prijstoelichting
+  staat nu direct onder de titel (de dubbele toelichting onderaan is
+  vervallen) en elke prijs toont het bedrag incl. 21% btw als hoofdprijs, met
+  "Vanaf" rustig in de prijsregel en de prijs excl. btw eronder.
+- Pakketten: "Fotoreportage" heet nu "Dronefotoreportage" en "Bedrijfsfilm"
+  heet "Drone-sfeerfilm" (de sleutels blijven gelijk). Omschrijvingen zijn
+  compacter en noemen per pakket wat erbij zit. Bouwvoortgang noemt eerste
+  bezoek en vervolgbezoek; de staffelkorting vanaf vier bezoeken is vervallen.
+  "Project op maat" staat nu op "Op aanvraag".
+- Het blok naast het overzicht heet nu "Altijd inbegrepen" en "Eventuele extra
+  kosten". De reiskosten staan direct leesbaar; het rekenvoorbeeld zit in een
+  uitklapper. Uitbreidingen (extra montage, correctierondes, tweede
+  videoformaat, voice-over) staan er nu ook bij.
+- De prijzen in de boekingsmodule tonen incl. en excl. btw, passend bij de
+  homepage.
+- Bestaande databases: `scripts/onderhoud/tarieven-2026-10.cjs` werkt de zes
+  diensten bij, met een back-up vooraf (zie README).
+
 ## September 2026 — afwerkronde naar aanleiding van extern feedback
 
 - Lege portfoliocategorieën (0 projecten) verschijnen niet langer als filter;

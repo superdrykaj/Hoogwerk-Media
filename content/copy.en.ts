@@ -139,52 +139,48 @@ export const en: Dictionary = {
     aboutImageAlt:
       "Portrait of Kai Koster, drone photographer at Hoogbeeld Media",
     pricingEyebrow: "Rates",
-    pricingTitle: "Indications, with what's included",
-    /** Sits under the rates. The VAT line comes first. */
-    pricingNote:
-      "The listed package prices include VAT; the price excl. VAT for " +
-      "business clients is shown underneath. They are indications; we agree " +
-      "exactly what you need beforehand.",
+    pricingTitle: "Rates for photo and video",
+    /** Sits directly under the title, before the overview. */
+    pricingIntro:
+      "From-prices include 21% VAT. The price excluding VAT is shown underneath. We agree the final price and any extra costs beforehand.",
     /** Short version, next to the prices in the booking module. */
-    vatNote: "All prices are excluding VAT.",
+    vatNote: "Prices include 21% VAT; the price excluding VAT is shown alongside.",
     /**
-     * Headline price including VAT, with the price excluding VAT alongside,
+     * Headline price including VAT, with the price excluding VAT underneath,
      * per service slug. Only for services with a fixed starting amount;
      * "Intro call" (free) and "Custom project" (on request) are deliberately
      * not included here.
      */
     packagePricing: {
-      dronefotografie: {
-        primary: "from € 235.95",
-        secondary: "€ 195 excl. 21% VAT, for business clients",
-      },
-      dronevideo: {
-        primary: "from € 422.29",
-        secondary: "€ 349 excl. 21% VAT, for business clients",
-      },
-      bedrijfsfilm: {
-        primary: "from € 598.95",
-        secondary: "€ 495 excl. 21% VAT, for business clients",
-      },
-      bouwvordering: {
-        primary: "from € 180.29 per visit",
-        secondary: "€ 149 excl. 21% VAT, for business clients",
-      },
-    } as Record<string, { primary: string; secondary: string }>,
-    includedTitle: "What you get",
+      dronefotografie: [{ prefix: "From", amount: "€ 235.95", excl: "€ 195 excl. VAT" }],
+      dronevideo: [{ prefix: "From", amount: "€ 422.29", excl: "€ 349 excl. VAT" }],
+      bedrijfsfilm: [{ prefix: "From", amount: "€ 598.95", excl: "€ 495 excl. VAT" }],
+      bouwvordering: [
+        { prefix: "Follow-up visit from", amount: "€ 180.29", unit: "per visit", excl: "€ 149 excl. VAT" },
+        { prefix: "First visit from", amount: "€ 235.95", excl: "€ 195 excl. VAT" },
+      ],
+    } as Record<string, { prefix: string; amount: string; unit?: string; excl: string }[]>,
+    /** Sits after the amount. */
+    priceInclVat: "incl. VAT",
+    includedTitle: "Always included",
     included: [
-      "Sixty to ninety minutes on location",
+      "Preparation and coordination beforehand",
       "Selection and editing of the images",
       "Delivery within five working days",
       "Usage rights for your own website and social channels, and — for property — for the listing portal and the sales brochure",
     ],
-    excludedTitle: "Billed separately",
+    excludedTitle: "Possible extra costs",
     excluded: [
-      "Travel from Zaandam: the first 25 km one-way (road distance) is included. Only the kilometres above that are charged, for both the outbound and return trip (so 2× the number of km above the threshold), at € 0.45 excl. VAT per kilometre. VAT (21%) is calculated on the total amount, which is then rounded to the nearest cent. For example, for 40 km one-way: 15 km above the threshold × 2 = 30 billed km × € 0.45 = € 13.50 excl. VAT → € 16.34 incl. VAT.",
-      "Waiting time on location: € 78.65 incl. VAT per hour (€ 65 excl. 21% VAT, for business clients)",
-      "Use in print, paid advertising or larger campaigns: by arrangement",
-      "Flights that require an operational authorisation for the ‘specific’ category: not offered at the moment",
-    ],
+      {
+        text: "Travel: the first 25 km one-way from Zaandam are included. Extra kilometres are charged for both the outbound and return trip at € 0.45 excl. VAT per km.",
+        detailsLabel: "Worked example",
+        details: "40 km one-way → 15 extra km × 2 × € 0.45 = € 13.50 excl. VAT (€ 16.34 incl. VAT). Road distance is used; VAT is calculated on the total and rounded to the nearest cent.",
+      },
+      { text: "Extensions such as extra editing, correction rounds, a second video format or voice-over: on request" },
+      { text: "Waiting time on location: € 78.65 incl. VAT per hour", sub: "€ 65 excl. VAT" },
+      { text: "Use in print, advertising and larger campaigns: agreed beforehand" },
+      { text: "Flights that require an operational authorisation for the ‘specific’ category: not offered at the moment" },
+    ] as { text: string; sub?: string; detailsLabel?: string; details?: string }[],
 
     faqEyebrow: "Questions",
     faqTitle: "What's allowed, and what isn't",

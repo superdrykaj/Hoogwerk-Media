@@ -105,7 +105,7 @@ export const nl = {
 
     pricesTitle: "Diensten en tarieven",
     pricesNote: "Indicaties. De prijs spreken we vooraf samen af.",
-    priceOnRequest: "In overleg",
+    priceOnRequest: "Op aanvraag",
     duration: (minuten: number) => `${minuten} min`,
     introDuration: (minuten: number) => `kennismaking van ${minuten} min`,
     chooseMoment: "Een moment kiezen →",
@@ -145,49 +145,47 @@ export const nl = {
       "Portret van Kai Koster, dronefotograaf van Hoogbeeld Media",
     /* -- Tarieven en vragen ------------------------------------------- */
     pricingEyebrow: "Tarieven",
-    pricingTitle: "Indicaties, met de inhoud erbij",
-    /** Staat onder de tarieven. De btw-regel hoort voorop. */
-    pricingNote:
-      "De genoemde pakketprijzen zijn inclusief btw; de prijs excl. btw voor zakelijke klanten staat eronder. Het zijn indicaties; wat je precies nodig hebt, spreken we vooraf samen af.",
+    pricingTitle: "Tarieven voor foto en video",
+    /** Staat direct onder de titel, vóór het overzicht. */
+    pricingIntro:
+      "Vanafprijzen inclusief 21% btw. De prijs exclusief btw staat eronder. De definitieve prijs en eventuele extra kosten spreken we vooraf samen af.",
     /** Korte variant, bij de prijzen in de boekingsmodule. */
-    vatNote: "Alle prijzen zijn exclusief btw.",
+    vatNote: "Prijzen zijn inclusief 21% btw; de prijs exclusief btw staat erbij.",
     /**
-     * Incl.-btw-hoofdprijs met de excl.-btw-prijs erbij, per dienst-slug.
+     * Hoofdprijs incl. btw met de excl.-btw-prijs eronder, per dienst-slug.
      * Alleen voor diensten met een vast startbedrag; "Kennismaking" (gratis)
      * en "Project op maat" (in overleg) staan hier bewust niet in.
      */
     packagePricing: {
-      dronefotografie: {
-        primary: "vanaf € 235,95",
-        secondary: "€ 195 excl. 21% btw, voor zakelijke klanten",
-      },
-      dronevideo: {
-        primary: "vanaf € 422,29",
-        secondary: "€ 349 excl. 21% btw, voor zakelijke klanten",
-      },
-      bedrijfsfilm: {
-        primary: "vanaf € 598,95",
-        secondary: "€ 495 excl. 21% btw, voor zakelijke klanten",
-      },
-      bouwvordering: {
-        primary: "vanaf € 180,29 per bezoek",
-        secondary: "€ 149 excl. 21% btw, voor zakelijke klanten",
-      },
-    } as Record<string, { primary: string; secondary: string }>,
-    includedTitle: "Wat je krijgt",
+      dronefotografie: [{ prefix: "Vanaf", amount: "€ 235,95", excl: "€ 195 excl. btw" }],
+      dronevideo: [{ prefix: "Vanaf", amount: "€ 422,29", excl: "€ 349 excl. btw" }],
+      bedrijfsfilm: [{ prefix: "Vanaf", amount: "€ 598,95", excl: "€ 495 excl. btw" }],
+      bouwvordering: [
+        { prefix: "Vervolgbezoek vanaf", amount: "€ 180,29", unit: "per bezoek", excl: "€ 149 excl. btw" },
+        { prefix: "Eerste bezoek vanaf", amount: "€ 235,95", excl: "€ 195 excl. btw" },
+      ],
+    } as Record<string, { prefix: string; amount: string; unit?: string; excl: string }[]>,
+    /** Staat achter het bedrag. */
+    priceInclVat: "incl. btw",
+    includedTitle: "Altijd inbegrepen",
     included: [
-      "Zestig tot negentig minuten op locatie",
+      "Voorbereiding en afstemming vooraf",
       "Selectie en nabewerking van de beelden",
       "Levering binnen vijf werkdagen",
       "Gebruiksrecht voor je eigen website en socials, en — bij vastgoed — voor Funda en de verkoopbrochure",
     ],
-    excludedTitle: "Apart afgerekend",
+    excludedTitle: "Eventuele extra kosten",
     excluded: [
-      "Voorrijden vanuit Zaandam: de eerste 25 km enkele reis (wegafstand) zijn inbegrepen. Alleen de kilometers daarboven worden doorberekend, voor heen- én terugreis (dus 2× het aantal km boven de grens), à € 0,45 excl. btw per kilometer. De btw (21%) wordt berekend over het totaalbedrag, dat vervolgens wordt afgerond op centen. Bijvoorbeeld bij 40 km enkele reis: 15 km boven de grens × 2 = 30 betaalde km × € 0,45 = € 13,50 excl. btw → € 16,34 incl. btw.",
-      "Wachttijd op locatie: € 78,65 incl. btw per uur (€ 65 excl. 21% btw, voor zakelijke klanten)",
-      "Gebruik in print, betaalde advertenties of grotere campagnes: in overleg",
-      "Vluchten die een vergunning voor de categorie 'specific' vereisen: bied ik op dit moment niet aan",
-    ],
+      {
+        text: "Reiskosten: de eerste 25 km enkele reis vanuit Zaandam zijn inbegrepen. Extra kilometers worden voor heen én terug berekend tegen € 0,45 excl. btw per km.",
+        detailsLabel: "Rekenvoorbeeld",
+        details: "40 km enkele reis → 15 extra km × 2 × € 0,45 = € 13,50 excl. btw (€ 16,34 incl. btw). Gerekend wordt met de wegafstand; de btw wordt over het totaalbedrag berekend en afgerond op centen.",
+      },
+      { text: "Uitbreidingen zoals extra montage, correctierondes, een tweede videoformaat of voice-over: op aanvraag" },
+      { text: "Wachttijd op locatie: € 78,65 incl. btw per uur", sub: "€ 65 excl. btw" },
+      { text: "Gebruik in print, advertenties en grotere campagnes: vooraf in overleg" },
+      { text: "Vluchten die een vergunning voor de categorie 'specific' vereisen: bied ik op dit moment niet aan" },
+    ] as { text: string; sub?: string; detailsLabel?: string; details?: string }[],
 
     faqEyebrow: "Vragen",
     faqTitle: "Wat mag wel, en wat niet",
