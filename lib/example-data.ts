@@ -70,7 +70,7 @@ export const EXAMPLE_SERVICES = [
     name: "Drone-sfeerfilm",
     description:
       "Film van 60–90 seconden over één terrein, locatie of project, gemaakt met dronebeelden.\nTot 90 minuten op locatie, passende muziek met gebruikslicentie en één correctieronde.",
-    duration_minutes: 120,
+    duration_minutes: 90,
     price_label: "vanaf € 598,95 incl. btw · € 495 excl. btw",
     name_en: "Drone atmosphere film",
     description_en:

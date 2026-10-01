@@ -10,7 +10,7 @@ import { copy } from "@/content/copy";
 import { EXAMPLE_SERVICES } from "./example-data";
 
 const require = createRequire(import.meta.url);
-const { bijwerken, NIEUW, VORIG } = require("../scripts/onderhoud/tarieven-2026-10.cjs");
+const { bijwerken, NIEUW, VORIG, DUUR } = require("../scripts/onderhoud/tarieven-2026-10.cjs");
 
 /** Een database zoals de testomgeving die nu heeft: vorige diensten + een boeking. */
 function bestaandeDatabase() {
@@ -25,7 +25,7 @@ function bestaandeDatabase() {
     // Bij meerdere geldige oude namen nemen we de eerste: dat is de staat
     // waarin de testomgeving staat ("Bouwvordering").
     const name = Array.isArray(v.name) ? v.name[0] : v.name;
-    insert.run(slug, name, v.description, 60, v.price_label, order++);
+    insert.run(slug, name, v.description, slug === "bedrijfsfilm" ? DUUR.bedrijfsfilm.van : 60, v.price_label, order++);
   }
   const serviceId = (db.prepare("SELECT id FROM services WHERE slug = 'bedrijfsfilm'").get() as { id: number }).id;
   db.prepare(
@@ -46,6 +46,9 @@ describe("tarieven-2026-10", () => {
         expect(service[veld as keyof typeof service], `${service.slug}.${veld}`).toBe(nieuw[veld]);
       }
     }
+    // Ook de duur van de sfeerfilm moet in beide bronnen gelijk zijn.
+    const film = EXAMPLE_SERVICES.find((s) => s.slug === "bedrijfsfilm");
+    expect(film?.duration_minutes).toBe(DUUR.bedrijfsfilm.naar);
     expect(Object.keys(NIEUW).sort()).toEqual(EXAMPLE_SERVICES.map((s) => s.slug).sort());
   });
 
@@ -93,7 +96,10 @@ describe("tarieven-2026-10", () => {
     const { db, serviceId } = bestaandeDatabase();
     bijwerken(db, { backupDir: tmp() });
     const rij = db.prepare("SELECT id, slug, duration_minutes, buffer_minutes FROM services WHERE slug = 'bedrijfsfilm'").get() as Record<string, unknown>;
-    expect(rij).toEqual({ id: serviceId, slug: "bedrijfsfilm", duration_minutes: 60, buffer_minutes: 15 });
+    // Sleutel en buffer blijven; alleen de duur van de sfeerfilm gaat naar 90.
+    expect(rij).toEqual({ id: serviceId, slug: "bedrijfsfilm", duration_minutes: 90, buffer_minutes: 15 });
+    const foto = db.prepare("SELECT duration_minutes FROM services WHERE slug = 'dronefotografie'").get();
+    expect(foto).toEqual({ duration_minutes: 60 });
     const boeking = db.prepare("SELECT service_id, status FROM bookings WHERE reference = 'HM-TEST'").get();
     expect(boeking).toEqual({ service_id: serviceId, status: "confirmed" });
   });
@@ -108,6 +114,15 @@ describe("tarieven-2026-10", () => {
       expect(rij.name).toBe("Bouwvoortgang");
       expect(rij.description).not.toContain("staffel");
     }
+  });
+
+  it("zet alleen een duur van 120 op 90 en laat een eigen duur staan", () => {
+    const { db } = bestaandeDatabase();
+    db.prepare("UPDATE services SET duration_minutes = 100 WHERE slug = 'bedrijfsfilm'").run();
+    const uitkomst = bijwerken(db, { backupDir: tmp() });
+    expect(uitkomst.duurGewijzigd).toBe(0);
+    expect(uitkomst.regels.join("\n")).toContain("bedrijfsfilm: duur is 100 minuten (zelf aangepast)");
+    expect((db.prepare("SELECT duration_minutes FROM services WHERE slug = 'bedrijfsfilm'").get() as { duration_minutes: number }).duration_minutes).toBe(100);
   });
 
   it("is herhaalbaar: een tweede run verandert niets en maakt geen back-up", () => {

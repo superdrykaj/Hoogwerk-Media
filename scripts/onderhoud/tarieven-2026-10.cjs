@@ -18,7 +18,8 @@
  *    - "Project op maat" staat op "Op aanvraag".
  *
  *  Alleen deze velden van deze zes diensten worden geraakt: naam,
- *  omschrijving, prijslabel en de Engelse varianten. Duur, buffer, volgorde,
+ *  omschrijving, prijslabel en de Engelse varianten, plus de boekingsduur van
+ *  de Drone-sfeerfilm (van 120 naar 90 minuten). Buffer, volgorde,
  *  boekbaarheid en alle boekingen blijven onaangetast.
  *
  *  Veiligheid:
@@ -157,6 +158,13 @@ const NIEUW = {
   },
 };
 
+/**
+ * Boekingsduur (minuten). Alleen aangepast als de dienst nog op de oude duur
+ * staat. Bestaande boekingen bewaren hun eigen eindtijd en veranderen niet.
+ * De Drone-sfeerfilm is "tot 90 minuten op locatie", dus een slot van 90.
+ */
+const DUUR = { bedrijfsfilm: { van: 120, naar: 90 } };
+
 const VELDEN = [
   "name",
   "description",
@@ -206,8 +214,28 @@ function bijwerken(db, { backupDir, dryRun = false, nu = new Date() } = {}) {
     regels.push(`- ${slug}: ${dryRun ? "wordt bijgewerkt" : "bijgewerkt"}.`);
   }
 
+  const duurPlan = [];
+  for (const [slug, { van, naar }] of Object.entries(DUUR)) {
+    const rij = db
+      .prepare("SELECT id, duration_minutes FROM services WHERE slug = ?")
+      .get(slug);
+    if (!rij) continue;
+    if (rij.duration_minutes === naar) {
+      regels.push(`- ${slug}: duur is al ${naar} minuten.`);
+    } else if (rij.duration_minutes === van) {
+      duurPlan.push({ id: rij.id, naar });
+      regels.push(
+        `- ${slug}: duur ${dryRun ? "wordt" : "is nu"} ${naar} minuten (was ${van}).`,
+      );
+    } else {
+      regels.push(
+        `- ${slug}: duur is ${rij.duration_minutes} minuten (zelf aangepast), blijft staan.`,
+      );
+    }
+  }
+
   let backup = null;
-  if (plan.length > 0 && !dryRun) {
+  if ((plan.length > 0 || duurPlan.length > 0) && !dryRun) {
     fs.mkdirSync(backupDir, { recursive: true });
     backup = path.join(
       backupDir,
@@ -220,15 +248,26 @@ function bijwerken(db, { backupDir, dryRun = false, nu = new Date() } = {}) {
     const zet = db.prepare(
       `UPDATE services SET ${VELDEN.map((v) => `${v} = @${v}`).join(", ")} WHERE id = @id`,
     );
+    const zetDuur = db.prepare(
+      "UPDATE services SET duration_minutes = @naar WHERE id = @id",
+    );
     db.transaction(() => {
       for (const { id, nieuw } of plan) zet.run({ ...nieuw, id });
+      for (const { id, naar } of duurPlan) zetDuur.run({ id, naar });
     })();
   }
 
-  return { regels, gewijzigd: dryRun ? 0 : plan.length, gepland: plan.length, backup };
+  return {
+    regels,
+    gewijzigd: dryRun ? 0 : plan.length,
+    gepland: plan.length,
+    duurGewijzigd: dryRun ? 0 : duurPlan.length,
+    duurGepland: duurPlan.length,
+    backup,
+  };
 }
 
-module.exports = { bijwerken, NIEUW, VORIG };
+module.exports = { bijwerken, NIEUW, VORIG, DUUR };
 
 if (require.main === module) {
   const Database = require("better-sqlite3");
@@ -259,7 +298,7 @@ if (require.main === module) {
   if (uitkomst.backup) console.log(`\nBack-up: ${uitkomst.backup}`);
   console.log(
     dryRun
-      ? `\nDry-run klaar. ${uitkomst.gepland} dienst(en) zouden worden bijgewerkt.`
-      : `\nKlaar. ${uitkomst.gewijzigd} bijgewerkt.`,
+      ? `\nDry-run klaar. ${uitkomst.gepland} dienst(en) en ${uitkomst.duurGepland} duur(en) zouden worden bijgewerkt.`
+      : `\nKlaar. ${uitkomst.gewijzigd} dienst(en) en ${uitkomst.duurGewijzigd} duur(en) bijgewerkt.`,
   );
 }

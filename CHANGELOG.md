@@ -17,6 +17,8 @@
   videoformaat, voice-over) staan er nu ook bij.
 - De prijzen in de boekingsmodule tonen incl. en excl. btw, passend bij de
   homepage.
+- De Drone-sfeerfilm heeft een boekingsslot van 90 minuten (was 120), passend
+  bij "tot 90 minuten op locatie". Bestaande boekingen veranderen niet.
 - Bestaande databases: `scripts/onderhoud/tarieven-2026-10.cjs` werkt de zes
   diensten bij, met een back-up vooraf (zie README).
 
