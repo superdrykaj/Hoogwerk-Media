@@ -21,7 +21,7 @@ export function ProjectCard({
   const t = copy(locale);
   const tekst = projectText(project, locale);
   return (
-    <article className="group relative overflow-hidden rounded-2xl border border-ink-700 bg-ink-850">
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-ink-700 bg-ink-850">
       <div className="relative aspect-[4/3] overflow-hidden bg-ink-800">
         {project.coverUrl ? (
           <Image
@@ -63,7 +63,7 @@ export function ProjectCard({
           </button>
         )}
       </div>
-      <div className="p-5">
+      <div className="flex flex-1 flex-col p-5">
         <h3 className="font-[family-name:var(--font-display)] text-lg font-semibold tracking-tight">
           <Link href={href(`/portfolio/${project.slug}`, locale)} className="after:absolute after:inset-0">
             {tekst.title}
@@ -73,7 +73,7 @@ export function ProjectCard({
         {tekst.summary && (
           <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-mist-500">{tekst.summary}</p>
         )}
-        <p className="mt-4 text-sm font-semibold text-haze-300">
+        <p className="mt-auto pt-4 text-sm font-semibold text-haze-300">
           {t.project.cardLink}
           <span aria-hidden="true" className="ml-1 inline-block transition-transform group-hover:translate-x-1">→</span>
         </p>

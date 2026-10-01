@@ -175,7 +175,7 @@ function Work({
         ) : (
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {projects.map((project, index) => (
-              <Reveal key={project.id} delay={index * 90}>
+              <Reveal key={project.id} delay={index * 90} className="h-full">
                 <ProjectCard project={project} locale={locale} />
               </Reveal>
             ))}
