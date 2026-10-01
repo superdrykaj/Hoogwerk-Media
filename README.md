@@ -483,6 +483,11 @@ node scripts/onderhoud/tarieven-2026-10.cjs --dry-run
 fly ssh console --app hoogbeeld-media-test -C "node scripts/onderhoud/tarieven-2026-10.cjs"
 ```
 
+Op de testomgeving draait het script ook zelf bij het opstarten van de
+container, omdat `TARIFF_UPDATE = "2026-10"` in `fly.staging.toml` staat (zie
+`docker-entrypoint.sh`). Productie heeft die schakelaar niet; daar draai je het
+script zelf, als je er klaar voor bent.
+
 ### E-mailadressen
 
 Alle adressen staan in `content/site.ts`. Ze worden zo gebruikt:

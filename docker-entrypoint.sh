@@ -22,4 +22,18 @@ if [ "$(stat -c %u "$DATA_DIR")" != "$APP_UID" ]; then
   chown -R "$APP_UID:$APP_GID" "$DATA_DIR"
 fi
 
+# Optioneel: eenmalig de diensten en tarieven van oktober 2026 bijwerken.
+# Staat alleen aan als TARIFF_UPDATE=2026-10 is gezet (nu alleen in
+# fly.staging.toml, dus niet op productie). Het script maakt eerst een
+# back-up, slaat zelf aangepaste diensten over en doet bij een tweede keer
+# niets. Het draait als de gewone gebruiker, zodat de databasebestanden niet
+# van root worden, en vóór de server start. Mislukt het, dan start de server
+# toch gewoon.
+if [ "${TARIFF_UPDATE:-}" = "2026-10" ]; then
+  echo "[hoogbeeld-media] Tarievenupdate 2026-10 uitvoeren."
+  setpriv --reuid="$APP_UID" --regid="$APP_GID" --init-groups \
+    node scripts/onderhoud/tarieven-2026-10.cjs \
+    || echo "[hoogbeeld-media] Tarievenupdate mislukt; de server start toch."
+fi
+
 exec setpriv --reuid="$APP_UID" --regid="$APP_GID" --init-groups "$@"

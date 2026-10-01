@@ -14,6 +14,10 @@ swap_size_mb = 512
   # Testomgeving toont altijd de volledige site, ook aan bezoekers zonder login.
   SITE_STATUS = "live"
   NEXT_PUBLIC_SITE_URL = "https://hoogbeeld-media-test.fly.dev"
+  # Eenmalige tarievenupdate bij het opstarten (met back-up, zie
+  # scripts/onderhoud/tarieven-2026-10.cjs). Alleen op de testomgeving. Na de
+  # eerste geslaagde run mag deze regel weg; hij is herhaalbaar maar overbodig.
+  TARIFF_UPDATE = "2026-10"
 
 # Eigen, losse schijf voor de testomgeving — nooit dezelfde als productie,
 # anders overschrijven test en live elkaars data.

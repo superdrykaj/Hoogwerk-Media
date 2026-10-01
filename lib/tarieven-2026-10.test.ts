@@ -6,6 +6,7 @@ import { createRequire } from "node:module";
 import { describe, expect, it } from "vitest";
 
 import { migrate } from "./db";
+import { copy } from "@/content/copy";
 import { EXAMPLE_SERVICES } from "./example-data";
 
 const require = createRequire(import.meta.url);
@@ -43,6 +44,26 @@ describe("tarieven-2026-10", () => {
       }
     }
     expect(Object.keys(NIEUW).sort()).toEqual(EXAMPLE_SERVICES.map((s) => s.slug).sort());
+  });
+
+  it("heeft prijslabels die dezelfde bedragen noemen als de homepage", () => {
+    for (const locale of ["nl", "en"] as const) {
+      const pricing = copy(locale).home.packagePricing;
+      for (const [slug, tiers] of Object.entries(pricing)) {
+        const label = NIEUW[slug][locale === "nl" ? "price_label" : "price_label_en"] as string;
+        for (const tier of tiers) {
+          expect(label, `${locale} ${slug}`).toContain(tier.amount);
+          expect(label, `${locale} ${slug}`).toContain(tier.excl.replace(" excl. btw", "").replace(" excl. VAT", ""));
+        }
+      }
+    }
+  });
+
+  it("houdt elk prijslabel binnen de 80 tekens van het beheerformulier", () => {
+    for (const [slug, nieuw] of Object.entries(NIEUW) as [string, Record<string, string>][]) {
+      expect(nieuw.price_label.length, `${slug} nl`).toBeLessThanOrEqual(80);
+      expect(nieuw.price_label_en.length, `${slug} en`).toBeLessThanOrEqual(80);
+    }
   });
 
   it("werkt bestaande diensten bij en maakt eerst een back-up", () => {

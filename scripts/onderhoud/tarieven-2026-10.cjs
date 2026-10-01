@@ -135,12 +135,12 @@ const NIEUW = {
     description:
       "Vaste standpunten, 5–10 bewerkte beelden per bezoek en maximaal 45 minuten op locatie.\nHet eerste bezoek omvat de eerste voorbereiding.",
     price_label:
-      "eerste bezoek vanaf € 235,95, vervolgbezoek vanaf € 180,29 (incl. btw)",
+      "eerste vanaf € 235,95 / vervolg vanaf € 180,29 incl. btw (€ 195 / € 149 excl.)",
     name_en: "Construction progress",
     description_en:
       "Fixed viewpoints, 5–10 edited images per visit and up to 45 minutes on location.\nThe first visit includes the initial preparation.",
     price_label_en:
-      "first visit from € 235.95, follow-up from € 180.29 (incl. VAT)",
+      "first from € 235.95 / follow-up from € 180.29 incl. VAT (€ 195 / € 149 excl.)",
   },
   "project-op-maat": {
     name: "Project op maat",
