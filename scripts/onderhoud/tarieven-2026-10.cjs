@@ -72,7 +72,10 @@ const VORIG = {
     price_label: "vanaf € 495",
   },
   bouwvordering: {
-    name: "Bouwvoortgang",
+    // Op de testomgeving heet deze dienst nog "Bouwvordering": het
+    // hernoemscript van eerder is daar nooit gedraaid. Beide namen zijn dus
+    // een geldige oude staat.
+    name: ["Bouwvordering", "Bouwvoortgang"],
     description:
       "Vaste route en vaste hoogte, elke maand opnieuw. Vanaf vier bezoeken geldt een staffel.",
     price_label: "vanaf € 149 per bezoek",
@@ -189,8 +192,9 @@ function bijwerken(db, { backupDir, dryRun = false, nu = new Date() } = {}) {
       continue;
     }
     const vorig = VORIG[slug];
-    const onveranderd = ["name", "description", "price_label"].every(
-      (veld) => rij[veld] === vorig[veld],
+    // Een vorig veld mag één tekst zijn of een lijst met geldige teksten.
+    const onveranderd = ["name", "description", "price_label"].every((veld) =>
+      [].concat(vorig[veld]).includes(rij[veld]),
     );
     if (!onveranderd) {
       regels.push(

@@ -21,8 +21,11 @@ function bestaandeDatabase() {
      VALUES (?, ?, ?, ?, ?, 15, ?)`,
   );
   let order = 1;
-  for (const [slug, v] of Object.entries(VORIG) as [string, Record<string, string>][]) {
-    insert.run(slug, v.name, v.description, 60, v.price_label, order++);
+  for (const [slug, v] of Object.entries(VORIG) as [string, Record<string, string | string[]>][]) {
+    // Bij meerdere geldige oude namen nemen we de eerste: dat is de staat
+    // waarin de testomgeving staat ("Bouwvordering").
+    const name = Array.isArray(v.name) ? v.name[0] : v.name;
+    insert.run(slug, name, v.description, 60, v.price_label, order++);
   }
   const serviceId = (db.prepare("SELECT id FROM services WHERE slug = 'bedrijfsfilm'").get() as { id: number }).id;
   db.prepare(
@@ -93,6 +96,18 @@ describe("tarieven-2026-10", () => {
     expect(rij).toEqual({ id: serviceId, slug: "bedrijfsfilm", duration_minutes: 60, buffer_minutes: 15 });
     const boeking = db.prepare("SELECT service_id, status FROM bookings WHERE reference = 'HM-TEST'").get();
     expect(boeking).toEqual({ service_id: serviceId, status: "confirmed" });
+  });
+
+  it("werkt Bouwvordering bij onder de oude naam én onder Bouwvoortgang", () => {
+    for (const oudeNaam of ["Bouwvordering", "Bouwvoortgang"]) {
+      const { db } = bestaandeDatabase();
+      db.prepare("UPDATE services SET name = ? WHERE slug = 'bouwvordering'").run(oudeNaam);
+      const uitkomst = bijwerken(db, { backupDir: tmp() });
+      expect(uitkomst.gewijzigd, oudeNaam).toBe(6);
+      const rij = db.prepare("SELECT name, description FROM services WHERE slug = 'bouwvordering'").get() as Record<string, string>;
+      expect(rij.name).toBe("Bouwvoortgang");
+      expect(rij.description).not.toContain("staffel");
+    }
   });
 
   it("is herhaalbaar: een tweede run verandert niets en maakt geen back-up", () => {
