@@ -99,7 +99,7 @@ export const nl = {
     highlights: [
       { title: "Vastgoed", body: "Woningen en bedrijfspanden in hun omgeving. Voor Funda, website en verkoopbrochure." },
       { title: "Bedrijfsterrein", body: "Overzicht van terrein, opslag en logistiek. Bruikbaar voor site, socials en presentaties." },
-      { title: "Bouwvordering", body: "Dezelfde route, elke maand opnieuw. Vaste beeldhoeken die de voortgang zichtbaar maken." },
+      { title: "Bouwvoortgang", body: "Dezelfde route, elke maand opnieuw. Vaste beeldhoeken die de voortgang zichtbaar maken." },
       { title: "Locaties en natuur", body: "Recreatieterreinen, jachthavens en polder, opgenomen op het juiste uur van de dag." },
     ],
 
@@ -231,7 +231,7 @@ export const nl = {
     countEmpty: "Geen projecten in deze categorie.",
     categoryEmpty: "Nog niets in deze categorie.",
     showAll: "Toon alle projecten",
-    categories: { vastgoed: "Vastgoed", bedrijven: "Bedrijven", bouw: "Bouwvordering", natuur: "Natuur en locaties" } as Record<string, string>,
+    categories: { vastgoed: "Vastgoed", bedrijven: "Bedrijven", bouw: "Bouwvoortgang", natuur: "Natuur en locaties" } as Record<string, string>,
     previewOpen: (titel: string) => `Voorbeeld van ${titel} bekijken`,
     previewClose: "Voorbeeld sluiten",
   },
