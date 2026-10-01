@@ -85,8 +85,7 @@ export const en: Dictionary = {
     heroCta: "Discuss your project",
     heroWork: "See the work",
     heroPosterAlt:
-      "Aerial view of characteristic buildings and boats on the water in the " +
-      "Zaan region.",
+      "Aerial view of a green windmill beside the Zaan at Zaanse Schans.",
     heroFacts: ["50 MP, 1-inch sensor", "4K HDR video", "Zaan region and North Holland"],
 
     servicesEyebrow: "What I do",

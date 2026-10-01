@@ -90,7 +90,7 @@ export const nl = {
      * niet te zien krijgt.
      */
     heroPosterAlt:
-      "Dronebeeld van karakteristieke bebouwing en boten aan het water in de Zaanstreek.",
+      "Dronebeeld van een groene molen aan de Zaan op de Zaanse Schans.",
     /** Harde feiten onder de hero. Kort, controleerbaar, geen marketing. */
     heroFacts: ["50 MP, 1-inch sensor", "4K HDR video", "Zaanstreek en Noord-Holland"],
 

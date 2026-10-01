@@ -38,7 +38,7 @@ export function Showreel({
   // (next.config.ts). Vervang je het bestand, dan blijft een bezoeker zonder
   // dit versienummer de oude, gecachte versie zien. Ophogen bij elke nieuwe
   // montage van de showreel.
-  const showreelSrc = "/media/hoogbeeldmedia-portfolio.mp4?v=2";
+  const showreelSrc = "/media/hoogbeeldmedia-portfolio.mp4?v=20261001";
 
   return (
     <div className="relative mt-10 overflow-hidden rounded-2xl border border-ink-700 bg-ink-950">
@@ -50,7 +50,7 @@ export function Showreel({
         controlsList="nodownload"
         preload="none"
         playsInline
-        poster="/media/hoogbeeldmedia-poster.webp"
+        poster="/media/hoogbeeldmedia-portfolio-poster.webp?v=20261001"
         width={1920}
         height={1080}
         aria-label={ariaLabel}
