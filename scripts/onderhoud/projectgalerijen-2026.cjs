@@ -69,27 +69,26 @@ const GALERIJEN = {
       alt_en: "Bend in the River Zaan along the Wormerveer quay",
     },
   ],
-  "knooppunt-zaandam-bij-zonsondergang": [
+  "ijburg-vanuit-de-lucht": [
     {
-      url: "/media/knooppunt-zaandam-01.webp",
-      alt: "Snelweg door het groene landschap bij knooppunt Zaandam in de avond",
-      alt_en:
-        "Motorway through the green landscape near Zaandam interchange in the evening",
+      url: "/media/ijburg-01.webp",
+      alt: "Moderne woningen en water in IJburg, gefilmd vanuit de lucht.",
+      alt_en: "Modern homes and waterways in IJburg, filmed from the air.",
     },
     {
-      url: "/media/knooppunt-zaandam-02.webp",
-      alt: "Rijbanen en verkeer bij knooppunt Zaandam vanuit de lucht",
-      alt_en: "Aerial view of the carriageways and traffic near Zaandam interchange",
+      url: "/media/ijburg-02.webp",
+      alt: "De jachthaven en open water rond IJburg.",
+      alt_en: "The marina and open water around IJburg.",
     },
     {
-      url: "/media/knooppunt-zaandam-03.webp",
-      alt: "Snelweg en watergang bij knooppunt Zaandam rond zonsondergang",
-      alt_en: "Motorway and waterway near Zaandam interchange around sunset",
+      url: "/media/ijburg-03.webp",
+      alt: "Waterwoningen aan een kanaal in IJburg.",
+      alt_en: "Waterside homes along a canal in IJburg.",
     },
     {
-      url: "/media/knooppunt-zaandam-04.webp",
-      alt: "Avondverkeer op de snelweg richting Zaandam",
-      alt_en: "Evening traffic on the motorway towards Zaandam",
+      url: "/media/ijburg-04.webp",
+      alt: "Woonarchitectuur en waterwegen in IJburg.",
+      alt_en: "Residential architecture and waterways in IJburg.",
     },
   ],
 };

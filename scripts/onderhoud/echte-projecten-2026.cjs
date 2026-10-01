@@ -6,7 +6,7 @@
  *  in een lege database gezet, dus een site die al draait krijgt de twee echte
  *  projecten niet vanzelf. Dit script regelt dat:
  *
- *    - De Zaan in Wormerveer en Knooppunt Zaandam worden toegevoegd, of
+ *    - De Zaan in Wormerveer en IJburg worden toegevoegd, of
  *      bijgewerkt als ze er al staan.
  *    - Het verzonnen project "veenweide-bij-zonsopkomst" verdwijnt, met zijn
  *      galerijbeelden erbij.
@@ -62,25 +62,25 @@ const ECHT = [
     is_example: 0,
   },
   {
-    slug: "knooppunt-zaandam-bij-zonsondergang",
-    title: "Knooppunt Zaandam bij zonsondergang",
-    category: "bedrijven",
-    location: "Zaandam",
+    slug: "ijburg-vanuit-de-lucht",
+    title: "IJburg vanuit de lucht",
+    category: "vastgoed",
+    location: "IJburg, Amsterdam",
     summary:
-      "Een dynamische drone-impressie van de snelweg bij knooppunt Zaandam tijdens de avondspits.",
-    body: "Rond zonsondergang heb ik de snelweg bij knooppunt Zaandam vanuit verschillende hoogtes en richtingen vastgelegd.\n\nDe combinatie van verkeer, infrastructuur, water en avondlucht laat de schaal en dynamiek van de locatie zien. De montage blijft rustig en professioneel, terwijl de beweging van het verkeer voor visuele energie zorgt.",
-    cover_url: "/media/knooppunt-zaandam-poster.webp",
+      "Een drone-impressie van IJburg, met moderne waterfrontarchitectuur, waterwoningen en de jachthaven.",
+    body: "Vanuit de lucht komen de moderne woonblokken, waterwoningen en de jachthaven van IJburg samen in één overzicht van het stadsdeel. De rustige camerabewegingen laten zien hoe de architectuur en het water het karakter van deze Amsterdamse wijk bepalen.",
+    cover_url: "/media/ijburg-poster.webp",
     cover_alt:
-      "Dronebeeld van de snelweg bij knooppunt Zaandam tijdens zonsondergang",
-    title_en: "Zaandam interchange at sunset",
-    location_en: "Zaandam",
+      "Luchtbeeld van de waterwoningen en jachthaven in IJburg.",
+    title_en: "IJburg from the air",
+    location_en: "IJburg, Amsterdam",
     summary_en:
-      "A dynamic aerial impression of the motorway near Zaandam interchange during the evening rush hour.",
+      "An aerial impression of IJburg, featuring modern waterfront architecture, waterside homes and the marina.",
     body_en:
-      "Around sunset, I filmed the motorway near Zaandam interchange from several heights and directions.\n\nThe combination of traffic, infrastructure, water and the evening sky shows the scale and movement of the location. The edit remains calm and professional, while the traffic adds visual energy.",
+      "From above, IJburg's modern apartment blocks, waterside homes and marina come together in a single overview of the district. The calm camera movements show how architecture and water shape the character of this Amsterdam neighbourhood.",
     cover_alt_en:
-      "Aerial view of the motorway near Zaandam interchange at sunset",
-    video_url: "/media/knooppunt-zaandam-dronevideo.mp4",
+      "Aerial view of IJburg's waterside homes and marina.",
+    video_url: "/media/ijburg-dronevideo.mp4",
     published: 1,
     featured: 1,
     sort_order: 2,

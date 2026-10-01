@@ -9,7 +9,7 @@ import { EXAMPLE_PROJECTS, installExampleData } from "./example-data";
 /** De projecten die de homepage moet uitlichten, in deze volgorde. */
 const ECHT = [
   "de-zaan-in-wormerveer",
-  "knooppunt-zaandam-bij-zonsondergang",
+  "ijburg-vanuit-de-lucht",
   "de-zaanse-schans-vanuit-de-lucht",
 ];
 

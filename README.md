@@ -397,7 +397,7 @@ blijft dat staan.
 
 ### Echte projecten in een bestaande database zetten
 
-De twee echte projecten (De Zaan in Wormerveer en Knooppunt Zaandam) staan in
+De twee echte projecten (De Zaan in Wormerveer en IJburg) staan in
 de database, niet in de code. Een site die al draait krijgt ze dus niet vanzelf.
 
 ```bash
@@ -429,7 +429,7 @@ fly ssh console -C "node scripts/onderhoud/projectgalerijen-2026.cjs"
 | Project | Foto's |
 | --- | --- |
 | De Zaan in Wormerveer | `/media/wormerveer-de-zaan-01…04.webp` |
-| Knooppunt Zaandam bij zonsondergang | `/media/knooppunt-zaandam-01…04.webp` |
+| IJburg vanuit de lucht | `/media/ijburg-01…04.webp` |
 
 Het script werkt per foto op de bestandsnaam: staat hij er nog niet, dan komt
 hij erbij; staat hij er al, dan worden alleen een afwijkend bijschrift of een

@@ -23,6 +23,17 @@
 - Wisselende aanspreekvorm rechtgezet: "Bekijk mijn werk" in plaats van
   "Bekijk ons werk", en "je" in plaats van "uw" in de hero.
 
+## Oktober 2026 — galerijfoto's hersteld, IJburg in plaats van Knooppunt Zaandam
+
+- De galerijfoto's van **De Zaan in Wormerveer** waren nooit meegecommit,
+  waardoor de galerij vol gebroken afbeeldingen stond. De vier foto's zijn nu
+  stills uit de dronevideo (`wormerveer-de-zaan-01…04.webp`).
+- **IJburg vanuit de lucht** (video, poster en vier galerijfoto's) staat in de
+  plaats van Knooppunt Zaandam bij zonsondergang in de voorbeeldgegevens en de
+  onderhoudsscripts.
+- Galerijregels waarvan het bestand in `public/media` ontbreekt, worden op de
+  projectpagina niet meer getoond.
+
 ## September 2026 — fotogalerijen bij de echte projecten
 
 - Vier foto's bij **De Zaan in Wormerveer** en vier bij **Knooppunt Zaandam bij
