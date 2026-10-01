@@ -397,7 +397,7 @@ blijft dat staan.
 
 ### Echte projecten in een bestaande database zetten
 
-De twee echte projecten (De Zaan in Wormerveer en Knooppunt Zaandam) staan in
+De twee echte projecten (De Zaan in Wormerveer en IJburg) staan in
 de database, niet in de code. Een site die al draait krijgt ze dus niet vanzelf.
 
 ```bash
@@ -429,7 +429,7 @@ fly ssh console -C "node scripts/onderhoud/projectgalerijen-2026.cjs"
 | Project | Foto's |
 | --- | --- |
 | De Zaan in Wormerveer | `/media/wormerveer-de-zaan-01…04.webp` |
-| Knooppunt Zaandam bij zonsondergang | `/media/knooppunt-zaandam-01…04.webp` |
+| IJburg vanuit de lucht | `/media/ijburg-01…04.webp` |
 
 Het script werkt per foto op de bestandsnaam: staat hij er nog niet, dan komt
 hij erbij; staat hij er al, dan worden alleen een afwijkend bijschrift of een
@@ -465,6 +465,28 @@ fly ssh console -C "node scripts/onderhoud/tarieven-2026.cjs"
 
 Een dienst die je zelf al hebt aangepast, blijft staan; het script zegt dat er
 per regel bij. Nog een keer draaien verandert niets meer.
+
+### Pakketten en tarieven van oktober 2026 in een bestaande database
+
+Ook hiervoor geldt: de diensten staan in de database en veranderen niet mee
+met `lib/example-data.ts`. Het script `scripts/onderhoud/tarieven-2026-10.cjs`
+zet de zes diensten op de nieuwe pakketten (namen, omschrijvingen en
+prijslabels, ook de Engelse). Het maakt eerst een back-up in
+`<DATA_DIR>/backups/`, raakt alleen die velden aan, laat een dienst staan die
+je zelf hebt aangepast en is opnieuw te draaien zonder effect.
+
+```bash
+# eerst kijken wat er zou gebeuren
+node scripts/onderhoud/tarieven-2026-10.cjs --dry-run
+
+# testomgeving, nadat de nieuwe versie is uitgerold
+fly ssh console --app hoogbeeld-media-test -C "node scripts/onderhoud/tarieven-2026-10.cjs"
+```
+
+Op de testomgeving draait het script ook zelf bij het opstarten van de
+container, omdat `TARIFF_UPDATE = "2026-10"` in `fly.staging.toml` staat (zie
+`docker-entrypoint.sh`). Productie heeft die schakelaar niet; daar draai je het
+script zelf, als je er klaar voor bent.
 
 ### E-mailadressen
 

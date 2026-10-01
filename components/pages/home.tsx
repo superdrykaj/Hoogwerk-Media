@@ -175,7 +175,7 @@ function Work({
         ) : (
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {projects.map((project, index) => (
-              <Reveal key={project.id} delay={index * 90}>
+              <Reveal key={project.id} delay={index * 90} className="h-full">
                 <ProjectCard project={project} locale={locale} />
               </Reveal>
             ))}
@@ -252,13 +252,19 @@ function Pricing({
           <h2 id="tarieven-titel" className="display-2 mt-4 max-w-2xl">
             {t.home.pricingTitle}
           </h2>
+          <p className="lede mt-5">{t.home.pricingIntro}</p>
         </Reveal>
 
-        <div className="mt-12 grid gap-10 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:gap-16">
+        <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:gap-16">
           <Reveal>
             <ul className="border-t border-ink-700">
               {services.map((service) => {
                 const tekst = serviceText(service, locale);
+                // Bekende pakketten tonen de incl.-btw-prijs als hoofdprijs,
+                // met de excl.-btw-prijs eronder.
+                // "Kennismaking" (gratis) en "Project op maat" (in overleg)
+                // staan niet in deze lijst en gebruiken de gewone priceLabel.
+                const pricing = t.home.packagePricing[service.slug];
                 return (
                   <li
                     key={service.id}
@@ -267,24 +273,40 @@ function Pricing({
                     <div>
                       <p className="font-medium">{tekst.name}</p>
                       {tekst.description && (
-                        <p className="mt-1 max-w-prose text-sm leading-relaxed text-mist-500">
+                        <p className="mt-1 max-w-prose whitespace-pre-line text-sm leading-relaxed text-mist-500">
                           {tekst.description}
                         </p>
                       )}
                     </div>
-                    <p className="numeric font-[family-name:var(--font-mono)] text-sm text-haze-300 sm:text-right">
-                      {tekst.priceLabel || t.home.priceOnRequest}
-                    </p>
+                    <div className="sm:text-right">
+                      {pricing ? (
+                        <div className="space-y-3">
+                          {pricing.map((tier) => (
+                            <div key={tier.prefix}>
+                              <p className="numeric text-xl font-semibold leading-tight text-mist-100">
+                                <span className="mr-1.5 text-sm font-normal text-mist-500">
+                                  {tier.prefix}
+                                </span>
+                                {tier.amount}
+                                <span className="ml-1.5 text-sm font-normal text-mist-300">
+                                  {t.home.priceInclVat}
+                                  {tier.unit && ` ${tier.unit}`}
+                                </span>
+                              </p>
+                              <p className="mt-1 text-sm text-mist-300">{tier.excl}</p>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="numeric text-xl font-semibold leading-tight text-mist-100">
+                          {tekst.priceLabel || t.home.priceOnRequest}
+                        </p>
+                      )}
+                    </div>
                   </li>
                 );
               })}
             </ul>
-            {/* De btw-regel is een voorwaarde, geen voetnoot: groter en
-                lichter dan de oude kleine grijze regel, zodat niemand een
-                bedrag voor een eindprijs aanziet. */}
-            <p className="mt-5 text-sm leading-relaxed text-mist-300">
-              {t.home.pricingNote}
-            </p>
           </Reveal>
 
           <Reveal delay={100}>
@@ -312,7 +334,7 @@ function Pricing({
               <h3 className="display-3 mt-8">{t.home.excludedTitle}</h3>
               <ul className="mt-4 space-y-2.5 text-sm leading-relaxed text-mist-500">
                 {t.home.excluded.map((item) => (
-                  <li key={item} className="grid grid-cols-[1rem_minmax(0,1fr)] gap-x-2">
+                  <li key={item.text} className="grid grid-cols-[1rem_minmax(0,1fr)] gap-x-2">
                     <span aria-hidden="true" className="pt-2.5 text-mist-600">
                       <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
                         <path
@@ -323,7 +345,36 @@ function Pricing({
                         />
                       </svg>
                     </span>
-                    <span>{item}</span>
+                    <span>
+                      {item.text}
+                      {item.sub && (
+                        <span className="mt-0.5 block text-xs text-mist-500">{item.sub}</span>
+                      )}
+                      {item.details && (
+                        <details className="group mt-1.5 text-xs">
+                          <summary className="inline-flex w-fit cursor-pointer list-none items-center gap-1 text-haze-300 underline decoration-haze-300/40 underline-offset-4 hover:decoration-haze-300 [&::-webkit-details-marker]:hidden">
+                            {item.detailsLabel}
+                            <svg
+                              aria-hidden="true"
+                              width="8"
+                              height="8"
+                              viewBox="0 0 10 10"
+                              fill="none"
+                              className="transition-transform group-open:rotate-180"
+                            >
+                              <path
+                                d="m1.5 3.5 3.5 3.5 3.5-3.5"
+                                stroke="currentColor"
+                                strokeWidth="1.6"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </summary>
+                          <p className="mt-1.5 leading-relaxed text-mist-300">{item.details}</p>
+                        </details>
+                      )}
+                    </span>
                   </li>
                 ))}
               </ul>

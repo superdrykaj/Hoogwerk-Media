@@ -90,7 +90,7 @@ export const nl = {
      * niet te zien krijgt.
      */
     heroPosterAlt:
-      "Dronebeeld van karakteristieke bebouwing en boten aan het water in de Zaanstreek.",
+      "Dronebeeld van een groene molen aan de Zaan op de Zaanse Schans.",
     /** Harde feiten onder de hero. Kort, controleerbaar, geen marketing. */
     heroFacts: ["50 MP, 1-inch sensor", "4K HDR video", "Zaanstreek en Noord-Holland"],
 
@@ -99,13 +99,13 @@ export const nl = {
     highlights: [
       { title: "Vastgoed", body: "Woningen en bedrijfspanden in hun omgeving. Voor Funda, website en verkoopbrochure." },
       { title: "Bedrijfsterrein", body: "Overzicht van terrein, opslag en logistiek. Bruikbaar voor site, socials en presentaties." },
-      { title: "Bouwvordering", body: "Dezelfde route, elke maand opnieuw. Vaste beeldhoeken die de voortgang zichtbaar maken." },
+      { title: "Bouwvoortgang", body: "Dezelfde route, elke maand opnieuw. Vaste beeldhoeken die de voortgang zichtbaar maken." },
       { title: "Locaties en natuur", body: "Recreatieterreinen, jachthavens en polder, opgenomen op het juiste uur van de dag." },
     ],
 
     pricesTitle: "Diensten en tarieven",
     pricesNote: "Indicaties. De prijs spreken we vooraf samen af.",
-    priceOnRequest: "In overleg",
+    priceOnRequest: "Op aanvraag",
     duration: (minuten: number) => `${minuten} min`,
     introDuration: (minuten: number) => `kennismaking van ${minuten} min`,
     chooseMoment: "Een moment kiezen →",
@@ -145,26 +145,47 @@ export const nl = {
       "Portret van Kai Koster, dronefotograaf van Hoogbeeld Media",
     /* -- Tarieven en vragen ------------------------------------------- */
     pricingEyebrow: "Tarieven",
-    pricingTitle: "Indicaties, met de inhoud erbij",
-    /** Staat onder de tarieven. De btw-regel hoort voorop. */
-    pricingNote:
-      "Alle genoemde prijzen zijn exclusief btw. Het zijn indicaties; wat je precies nodig hebt, spreken we vooraf samen af.",
+    pricingTitle: "Tarieven voor foto en video",
+    /** Staat direct onder de titel, vóór het overzicht. */
+    pricingIntro:
+      "Vanafprijzen inclusief 21% btw. De prijs exclusief btw staat eronder. De definitieve prijs en eventuele extra kosten spreken we vooraf samen af.",
     /** Korte variant, bij de prijzen in de boekingsmodule. */
-    vatNote: "Alle prijzen zijn exclusief btw.",
-    includedTitle: "Wat je krijgt",
+    vatNote: "Prijzen zijn inclusief 21% btw; de prijs exclusief btw staat erbij.",
+    /**
+     * Hoofdprijs incl. btw met de excl.-btw-prijs eronder, per dienst-slug.
+     * Alleen voor diensten met een vast startbedrag; "Kennismaking" (gratis)
+     * en "Project op maat" (in overleg) staan hier bewust niet in.
+     */
+    packagePricing: {
+      dronefotografie: [{ prefix: "Vanaf", amount: "€ 235,95", excl: "€ 195 excl. btw" }],
+      dronevideo: [{ prefix: "Vanaf", amount: "€ 422,29", excl: "€ 349 excl. btw" }],
+      bedrijfsfilm: [{ prefix: "Vanaf", amount: "€ 598,95", excl: "€ 495 excl. btw" }],
+      bouwvordering: [
+        { prefix: "Vervolgbezoek vanaf", amount: "€ 180,29", unit: "per bezoek", excl: "€ 149 excl. btw" },
+        { prefix: "Eerste bezoek vanaf", amount: "€ 235,95", excl: "€ 195 excl. btw" },
+      ],
+    } as Record<string, { prefix: string; amount: string; unit?: string; excl: string }[]>,
+    /** Staat achter het bedrag. */
+    priceInclVat: "incl. btw",
+    includedTitle: "Altijd inbegrepen",
     included: [
-      "Zestig tot negentig minuten op locatie",
+      "Voorbereiding en afstemming vooraf",
       "Selectie en nabewerking van de beelden",
       "Levering binnen vijf werkdagen",
       "Gebruiksrecht voor je eigen website en socials, en — bij vastgoed — voor Funda en de verkoopbrochure",
     ],
-    excludedTitle: "Apart afgerekend",
+    excludedTitle: "Eventuele extra kosten",
     excluded: [
-      "Voorrijden buiten 25 km: € 0,45 per kilometer",
-      "Wachttijd op locatie: € 65 per uur",
-      "Gebruik in print, betaalde advertenties of grotere campagnes: in overleg",
-      "Vluchten die een vergunning voor de categorie 'specific' vereisen: bied ik op dit moment niet aan",
-    ],
+      {
+        text: "Reiskosten: de eerste 25 km enkele reis vanuit Zaandam zijn inbegrepen. Extra kilometers worden voor heen én terug berekend tegen € 0,45 excl. btw per km.",
+        detailsLabel: "Rekenvoorbeeld",
+        details: "40 km enkele reis → 15 extra km × 2 × € 0,45 = € 13,50 excl. btw (€ 16,34 incl. btw). Gerekend wordt met de wegafstand; de btw wordt over het totaalbedrag berekend en afgerond op centen.",
+      },
+      { text: "Uitbreidingen zoals extra montage, correctierondes, een tweede videoformaat of voice-over: op aanvraag" },
+      { text: "Wachttijd op locatie: € 78,65 incl. btw per uur", sub: "€ 65 excl. btw" },
+      { text: "Gebruik in print, advertenties en grotere campagnes: vooraf in overleg" },
+      { text: "Vluchten die een vergunning voor de categorie 'specific' vereisen: bied ik op dit moment niet aan" },
+    ] as { text: string; sub?: string; detailsLabel?: string; details?: string }[],
 
     faqEyebrow: "Vragen",
     faqTitle: "Wat mag wel, en wat niet",
@@ -210,7 +231,7 @@ export const nl = {
     countEmpty: "Geen projecten in deze categorie.",
     categoryEmpty: "Nog niets in deze categorie.",
     showAll: "Toon alle projecten",
-    categories: { vastgoed: "Vastgoed", bedrijven: "Bedrijven", bouw: "Bouwvordering", natuur: "Natuur en locaties" } as Record<string, string>,
+    categories: { vastgoed: "Vastgoed", bedrijven: "Bedrijven", bouw: "Bouwvoortgang", natuur: "Natuur en locaties" } as Record<string, string>,
     previewOpen: (titel: string) => `Voorbeeld van ${titel} bekijken`,
     previewClose: "Voorbeeld sluiten",
   },

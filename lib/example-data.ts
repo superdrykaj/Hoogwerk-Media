@@ -16,12 +16,12 @@ export const EXAMPLE_SERVICES = [
     slug: "kennismaking",
     name: "Kennismaking",
     description:
-      "Kort videogesprek over je locatie en wat je nodig hebt. Vrijblijvend.",
+      "Vrijblijvend videogesprek van maximaal 20 minuten over locatie en wensen.",
     duration_minutes: 20,
     price_label: "Gratis",
     name_en: "Intro call",
     description_en:
-      "A short video call about your location and what you need. No obligation.",
+      "A no-obligation video call of up to 20 minutes about the location and your wishes.",
     price_label_en: "Free",
     buffer_minutes: 15,
     bookable: 1,
@@ -31,15 +31,15 @@ export const EXAMPLE_SERVICES = [
   },
   {
     slug: "dronefotografie",
-    name: "Fotoreportage",
+    name: "Dronefotoreportage",
     description:
-      "Eén object of terrein. Vijftien tot vijfentwintig bewerkte foto's, gebruiksrecht voor web en socials.",
+      "Eén object of terrein, 10–15 bewerkte luchtfoto's.\nTot 60 minuten op locatie.",
     duration_minutes: 60,
-    price_label: "vanaf € 195",
-    name_en: "Photo shoot",
+    price_label: "vanaf € 235,95 incl. btw · € 195 excl. btw",
+    name_en: "Drone photo shoot",
     description_en:
-      "One building or site. Fifteen to twenty-five edited photos, usage rights for web and social.",
-    price_label_en: "from € 195",
+      "One building or site, 10–15 edited aerial photos.\nUp to 60 minutes on location.",
+    price_label_en: "from € 235.95 incl. VAT · € 195 excl. VAT",
     buffer_minutes: 45,
     bookable: 1,
     intro_only: 0,
@@ -50,13 +50,13 @@ export const EXAMPLE_SERVICES = [
     slug: "dronevideo",
     name: "Foto en korte film",
     description:
-      "Dezelfde reportage, plus een gemonteerde clip van dertig tot vijfenveertig seconden.",
+      "10–15 bewerkte luchtfoto's plus een gemonteerde droneclip van 30–45 seconden.\nTot 90 minuten op locatie, passende muziek met gebruikslicentie en één correctieronde.",
     duration_minutes: 90,
-    price_label: "vanaf € 349",
+    price_label: "vanaf € 422,29 incl. btw · € 349 excl. btw",
     name_en: "Photos and short film",
     description_en:
-      "The same shoot, plus an edited clip of thirty to forty-five seconds.",
-    price_label_en: "from € 349",
+      "10–15 edited aerial photos plus an edited drone clip of 30–45 seconds.\nUp to 90 minutes on location, fitting licensed music and one round of corrections.",
+    price_label_en: "from € 422.29 incl. VAT · € 349 excl. VAT",
     buffer_minutes: 45,
     bookable: 1,
     intro_only: 0,
@@ -64,16 +64,18 @@ export const EXAMPLE_SERVICES = [
     active: 1,
   },
   {
+    // De slug blijft "bedrijfsfilm": bestaande boekingen en verwijzingen
+    // hangen eraan. Alleen de zichtbare naam is veranderd.
     slug: "bedrijfsfilm",
-    name: "Bedrijfsfilm",
+    name: "Drone-sfeerfilm",
     description:
-      "Sfeerfilm van zestig tot negentig seconden over je terrein of project. Muziek en voice-over in overleg.",
-    duration_minutes: 120,
-    price_label: "vanaf € 495",
-    name_en: "Company film",
+      "Film van 60–90 seconden over één terrein, locatie of project, gemaakt met dronebeelden.\nTot 90 minuten op locatie, passende muziek met gebruikslicentie en één correctieronde.",
+    duration_minutes: 90,
+    price_label: "vanaf € 598,95 incl. btw · € 495 excl. btw",
+    name_en: "Drone atmosphere film",
     description_en:
-      "A sixty to ninety second film about your site or project. Music and voice-over by arrangement.",
-    price_label_en: "from € 495",
+      "A 60–90 second film about one site, location or project, made with drone footage.\nUp to 90 minutes on location, fitting licensed music and one round of corrections.",
+    price_label_en: "from € 598.95 incl. VAT · € 495 excl. VAT",
     buffer_minutes: 60,
     bookable: 1,
     intro_only: 0,
@@ -84,13 +86,15 @@ export const EXAMPLE_SERVICES = [
     slug: "bouwvordering",
     name: "Bouwvoortgang",
     description:
-      "Vaste route en vaste hoogte, elke maand opnieuw. Vanaf vier bezoeken geldt een staffel.",
+      "Vaste standpunten, 5–10 bewerkte beelden per bezoek en maximaal 45 minuten op locatie.\nHet eerste bezoek omvat de eerste voorbereiding.",
     duration_minutes: 45,
-    price_label: "vanaf € 149 per bezoek",
+    price_label:
+      "eerste vanaf € 235,95 / vervolg vanaf € 180,29 incl. btw (€ 195 / € 149 excl.)",
     name_en: "Construction progress",
     description_en:
-      "Fixed route and fixed altitude, every month. A discount applies from four visits.",
-    price_label_en: "from € 149 per visit",
+      "Fixed viewpoints, 5–10 edited images per visit and up to 45 minutes on location.\nThe first visit includes the initial preparation.",
+    price_label_en:
+      "first from € 235.95 / follow-up from € 180.29 incl. VAT (€ 195 / € 149 excl.)",
     buffer_minutes: 30,
     bookable: 1,
     intro_only: 0,
@@ -101,12 +105,12 @@ export const EXAMPLE_SERVICES = [
     slug: "project-op-maat",
     name: "Project op maat",
     description:
-      "Meerdere locaties of meerdere dagen. Je plant een kennismaking; in het formulier vraag ik alvast naar de locaties en de periode.",
+      "Meerdere locaties, opnamedagen of een uitgebreidere productie worden vooraf geoffreerd.",
     duration_minutes: 20,
-    price_label: "In overleg",
+    price_label: "Op aanvraag",
     name_en: "Custom project",
     description_en:
-      "Several locations or several days. You book an intro call; the form asks up front about the locations and the period.",
+      "Multiple locations, shooting days or a more extensive production are quoted beforehand.",
     price_label_en: "On request",
     buffer_minutes: 15,
     bookable: 1,
@@ -115,6 +119,7 @@ export const EXAMPLE_SERVICES = [
     active: 1,
   },
 ];
+
 
 
 /** Standaardbeschikbaarheid: [weekdag, begin in minuten, eind in minuten]. */
@@ -195,50 +200,48 @@ export const EXAMPLE_PROJECTS = [
     ],
   },
   {
-    slug: "knooppunt-zaandam-bij-zonsondergang",
-    title: "Knooppunt Zaandam bij zonsondergang",
-    category: "bedrijven",
-    location: "Zaandam",
+    slug: "ijburg-vanuit-de-lucht",
+    title: "IJburg vanuit de lucht",
+    category: "vastgoed",
+    location: "IJburg, Amsterdam",
     summary:
-      "Een dynamische drone-impressie van de snelweg bij knooppunt Zaandam tijdens de avondspits.",
+      "Een drone-impressie van IJburg, met moderne waterfrontarchitectuur, waterwoningen en de jachthaven.",
     body:
-      "Rond zonsondergang heb ik de snelweg bij knooppunt Zaandam vanuit verschillende hoogtes en richtingen vastgelegd.\n\nDe combinatie van verkeer, infrastructuur, water en avondlucht laat de schaal en dynamiek van de locatie zien. De montage blijft rustig en professioneel, terwijl de beweging van het verkeer voor visuele energie zorgt.",
-    cover_url: "/media/knooppunt-zaandam-poster.webp",
-    cover_alt:
-      "Dronebeeld van de snelweg bij knooppunt Zaandam tijdens zonsondergang",
-    title_en: "Zaandam interchange at sunset",
-    location_en: "Zaandam",
+      "Vanuit de lucht komen de moderne woonblokken, waterwoningen en de jachthaven van IJburg samen in één overzicht van het stadsdeel. De rustige camerabewegingen laten zien hoe de architectuur en het water het karakter van deze Amsterdamse wijk bepalen.",
+    cover_url: "/media/ijburg-poster.webp",
+    cover_alt: "Luchtbeeld van de waterwoningen en jachthaven in IJburg.",
+    title_en: "IJburg from the air",
+    location_en: "IJburg, Amsterdam",
     summary_en:
-      "A dynamic aerial impression of the motorway near Zaandam interchange during the evening rush hour.",
+      "An aerial impression of IJburg, featuring modern waterfront architecture, waterside homes and the marina.",
     body_en:
-      "Around sunset, I filmed the motorway near Zaandam interchange from several heights and directions.\n\nThe combination of traffic, infrastructure, water and the evening sky shows the scale and movement of the location. The edit remains calm and professional, while the traffic adds visual energy.",
-    cover_alt_en:
-      "Aerial view of the motorway near Zaandam interchange at sunset",
-    video_url: "/media/knooppunt-zaandam-dronevideo.mp4",
+      "From above, IJburg's modern apartment blocks, waterside homes and marina come together in a single overview of the district. The calm camera movements show how architecture and water shape the character of this Amsterdam neighbourhood.",
+    cover_alt_en: "Aerial view of IJburg's waterside homes and marina.",
+    video_url: "/media/ijburg-dronevideo.mp4",
     published: 1,
     featured: 1,
     sort_order: 2,
     is_example: 0,
     images: [
       [
-        "/media/knooppunt-zaandam-01.webp",
-        "Snelweg door het groene landschap bij knooppunt Zaandam in de avond",
-        "Motorway through the green landscape near Zaandam interchange in the evening",
+        "/media/ijburg-01.webp",
+        "Moderne woningen en water in IJburg, gefilmd vanuit de lucht.",
+        "Modern homes and waterways in IJburg, filmed from the air.",
       ],
       [
-        "/media/knooppunt-zaandam-02.webp",
-        "Rijbanen en verkeer bij knooppunt Zaandam vanuit de lucht",
-        "Aerial view of the carriageways and traffic near Zaandam interchange",
+        "/media/ijburg-02.webp",
+        "De jachthaven en open water rond IJburg.",
+        "The marina and open water around IJburg.",
       ],
       [
-        "/media/knooppunt-zaandam-03.webp",
-        "Snelweg en watergang bij knooppunt Zaandam rond zonsondergang",
-        "Motorway and waterway near Zaandam interchange around sunset",
+        "/media/ijburg-03.webp",
+        "Waterwoningen aan een kanaal in IJburg.",
+        "Waterside homes along a canal in IJburg.",
       ],
       [
-        "/media/knooppunt-zaandam-04.webp",
-        "Avondverkeer op de snelweg richting Zaandam",
-        "Evening traffic on the motorway towards Zaandam",
+        "/media/ijburg-04.webp",
+        "Woonarchitectuur en waterwegen in IJburg.",
+        "Residential architecture and waterways in IJburg.",
       ],
     ],
   },

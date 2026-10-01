@@ -63,9 +63,8 @@ function DutchBody() {
           <section>
             <h2 className="display-3 mb-3">Wie is verantwoordelijk?</h2>
             <p>
-              {site.name}, gevestigd in <Fill locale="nl">vestigingsplaats</Fill>, is
-              verantwoordelijk voor de verwerking van persoonsgegevens via deze
-              website.
+              {site.name}, gevestigd in Zaandam, is verantwoordelijk voor de
+              verwerking van persoonsgegevens via deze website.
             </p>
             <p>
               KvK-nummer: <Fill locale="nl">KvK-nummer</Fill>. Btw-nummer:{" "}
@@ -111,10 +110,13 @@ function DutchBody() {
             <h2 className="display-3 mb-3">Grondslag en bewaartermijn</h2>
             <p>
               De verwerking is nodig om je verzoek te beantwoorden en om een
-              overeenkomst voor te bereiden of uit te voeren. Gegevens van
-              afspraken en berichten worden bewaard gedurende{" "}
-              <Fill locale="nl">bewaartermijn, bijvoorbeeld 24 maanden</Fill>. Facturen worden
-              bewaard zolang de wettelijke bewaarplicht geldt.
+              overeenkomst voor te bereiden of uit te voeren. Het
+              uitgangspunt: contactaanvragen die niet tot een opdracht leiden
+              worden 12 maanden na het laatste contact verwijderd; aanvragen
+              die wel tot een opdracht of factuur leiden, worden 7 jaar
+              bewaard vanwege de wettelijke fiscale bewaarplicht (dit is geen
+              keuze). Deze termijnen zijn een aanbeveling en nog niet
+              definitief vastgesteld.
             </p>
           </section>
 
@@ -122,20 +124,19 @@ function DutchBody() {
             <h2 className="display-3 mb-3">Delen met anderen</h2>
             <p>
               Gegevens worden niet verkocht. Ze worden alleen gedeeld met partijen
-              die nodig zijn om de website te laten werken:{" "}
-              <Fill locale="nl">hostingpartij</Fill> en <Fill locale="nl">e-maildienst</Fill>. Met deze
-              partijen sluit je een verwerkersovereenkomst.
+              die nodig zijn om de website te laten werken: de hostingpartij
+              (Fly.io, Inc. — verwerkersovereenkomst (DPA): ondertekening niet
+              bevestigd) en <Fill locale="nl">e-maildienst</Fill>.
             </p>
           </section>
 
           <section>
             <h2 className="display-3 mb-3">Cookies</h2>
             <p>
-              Deze website plaatst geen trackingcookies. Er wordt één technisch
-              noodzakelijk cookie gebruikt, en alleen voor de beheerder: het
-              cookie dat de beheerder ingelogd houdt. Gebruik je later statistieken
-              of ingesloten video&apos;s, vul dan hier aan welke cookies dat plaatst:{" "}
-              <Fill locale="nl">eventuele statistiek- of videocookies</Fill>.
+              Deze website gebruikt geen statistiek- of trackingcookies. Er
+              wordt uitsluitend één technisch noodzakelijk cookie gebruikt, en
+              alleen voor de beheerder: het cookie dat de beheerder ingelogd
+              houdt.
             </p>
           </section>
 
@@ -180,9 +181,8 @@ function EnglishBody() {
       <section>
         <h2 className="display-3 mb-3">Who is responsible?</h2>
         <p>
-          {site.name}, established in <Fill locale="en">place of business</Fill>,
-          is responsible for the processing of personal data through this
-          website.
+          {site.name}, established in Zaandam, is responsible for the
+          processing of personal data through this website.
         </p>
         <p>
           Chamber of Commerce number: <Fill locale="en">KvK number</Fill>. VAT
@@ -226,10 +226,12 @@ function EnglishBody() {
         <h2 className="display-3 mb-3">Legal basis and retention</h2>
         <p>
           The processing is necessary to answer your request and to prepare or
-          perform an agreement. Data from appointments and messages is kept for{" "}
-          <Fill locale="en">retention period, for example 24 months</Fill>.
-          Invoices are kept for as long as the statutory retention obligation
-          applies.
+          perform an agreement. The starting point: contact requests that do
+          not lead to an assignment are deleted 12 months after the last
+          contact; requests that do lead to an assignment or invoice are kept
+          for 7 years because of the statutory tax retention obligation (this
+          is not a choice). These retention periods are a recommendation and
+          have not yet been finally confirmed.
         </p>
       </section>
 
@@ -237,20 +239,18 @@ function EnglishBody() {
         <h2 className="display-3 mb-3">Sharing with others</h2>
         <p>
           Data is never sold. It is only shared with the parties needed to run
-          the website: <Fill locale="en">hosting provider</Fill> and{" "}
-          <Fill locale="en">e-mail service</Fill>. A data processing agreement is
-          concluded with these parties.
+          the website: the hosting provider (Fly.io, Inc. — data processing
+          agreement (DPA): signing not confirmed) and{" "}
+          <Fill locale="en">e-mail service</Fill>.
         </p>
       </section>
 
       <section>
         <h2 className="display-3 mb-3">Cookies</h2>
         <p>
-          This website sets no tracking cookies. One technically necessary cookie
-          is used, and only for the site owner: the cookie that keeps the admin
-          signed in. If you later add statistics or embedded video, add here
-          which cookies they set:{" "}
-          <Fill locale="en">any statistics or video cookies</Fill>.
+          This website uses no statistics or tracking cookies. Only one
+          technically necessary cookie is used, and only for the site owner:
+          the cookie that keeps the admin signed in.
         </p>
       </section>
 

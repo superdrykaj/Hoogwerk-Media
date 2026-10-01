@@ -6,10 +6,20 @@ import { describe, expect, it } from "vitest";
 import { migrate } from "./db";
 import { EXAMPLE_PROJECTS, installExampleData } from "./example-data";
 
-/** De projecten die de homepage moet uitlichten, in deze volgorde. */
+/** Alle echte (niet-verzonnen) projecten. */
 const ECHT = [
   "de-zaan-in-wormerveer",
-  "knooppunt-zaandam-bij-zonsondergang",
+  "ijburg-vanuit-de-lucht",
+  "de-zaanse-schans-vanuit-de-lucht",
+];
+
+/**
+ * De projecten die de homepage moet uitlichten, in deze volgorde. Een subset
+ * van ECHT: niet elk echt project staat ook op "uitgelicht".
+ */
+const UITGELICHT_SLUGS = [
+  "de-zaan-in-wormerveer",
+  "ijburg-vanuit-de-lucht",
   "de-zaanse-schans-vanuit-de-lucht",
 ];
 
@@ -115,7 +125,7 @@ describe("projectselectie voor de homepage", () => {
     const db = verseDatabase();
     installExampleData(db);
     const rijen = db.prepare(UITGELICHT).all() as { slug: string }[];
-    expect(rijen.map((r) => r.slug)).toEqual(ECHT);
+    expect(rijen.map((r) => r.slug)).toEqual(UITGELICHT_SLUGS);
     db.close();
   });
 

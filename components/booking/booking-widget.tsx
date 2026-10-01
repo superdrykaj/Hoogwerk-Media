@@ -241,7 +241,7 @@ export function BookingWidget({
                     </span>
                   )}
                   {item.description && (
-                    <span className="mt-2 block text-sm leading-relaxed text-mist-500">
+                    <span className="mt-2 block whitespace-pre-line text-sm leading-relaxed text-mist-500">
                       {item.description}
                     </span>
                   )}

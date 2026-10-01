@@ -22,7 +22,8 @@ import { useEffect, useRef } from "react";
  * ============================================================================
  */
 
-const POSTER = "/media/hoogbeeldmedia-poster.webp";
+const POSTER = "/media/hoogbeeldmedia-poster.webp?v=20261001";
+const POSTER_MOBIEL = "/media/hoogbeeldmedia-hero-mobile-poster.webp?v=20261001";
 
 /** Tot en met 767 px staand beeld, daarboven liggend. */
 const MOBIEL = "(max-width: 767px)";
@@ -30,12 +31,12 @@ const MINDER_BEWEGING = "(prefers-reduced-motion: reduce)";
 
 const BRONNEN = {
   mobiel: {
-    webm: "/media/hoogbeeldmedia-hero-mobile.webm",
-    mp4: "/media/hoogbeeldmedia-hero-mobile.mp4",
+    webm: "/media/hoogbeeldmedia-hero-mobile.webm?v=20261001",
+    mp4: "/media/hoogbeeldmedia-hero-mobile.mp4?v=20261001",
   },
   breed: {
-    webm: "/media/hoogbeeldmedia-hero-desktop.webm",
-    mp4: "/media/hoogbeeldmedia-hero-desktop.mp4",
+    webm: "/media/hoogbeeldmedia-hero-desktop.webm?v=20261001",
+    mp4: "/media/hoogbeeldmedia-hero-desktop.mp4?v=20261001",
   },
 };
 
@@ -71,7 +72,7 @@ function zuinigOfTraag(): boolean {
 
 /**
  * Welke van de vier bestanden deze browser moet ophalen.
- * De WebM-bestanden zijn VP9 en ongeveer de helft kleiner dan de MP4's; kan de
+ * De WebM-bestanden zijn VP9 en kleiner dan de MP4's; kan de
  * browser daar niets mee, dan pakken we H.264.
  */
 function kiesBron(video: HTMLVideoElement, mobiel: boolean): string {
@@ -93,16 +94,25 @@ export function HeroVideo({ alt }: { alt: string }) {
     const video = videoRef.current;
     if (!video) return;
 
+    const breekpunt = window.matchMedia(MOBIEL);
+    const zetPoster = () => {
+      video.poster = breekpunt.matches ? POSTER_MOBIEL : POSTER;
+    };
+    zetPoster();
+    breekpunt.addEventListener("change", zetPoster);
+
     // Minder beweging gevraagd: niets ophalen, niets afspelen. Het posterbeeld
     // eronder is dan het hele verhaal.
-    if (window.matchMedia(MINDER_BEWEGING).matches) return;
+    if (window.matchMedia(MINDER_BEWEGING).matches) {
+      return () => breekpunt.removeEventListener("change", zetPoster);
+    }
 
     // Hetzelfde bij databesparing of een 2G-verbinding. Bewust niet alleen op
     // een klein scherm: databesparing is iets wat de bezoeker zelf aanzet, en
     // dat geldt net zo goed achter een laptop op een gedeelde hotspot.
-    if (zuinigOfTraag()) return;
-
-    const breekpunt = window.matchMedia(MOBIEL);
+    if (zuinigOfTraag()) {
+      return () => breekpunt.removeEventListener("change", zetPoster);
+    }
 
     const zetBron = () => {
       const bron = kiesBron(video, breekpunt.matches);
@@ -118,7 +128,10 @@ export function HeroVideo({ alt }: { alt: string }) {
 
     zetBron();
     breekpunt.addEventListener("change", zetBron);
-    return () => breekpunt.removeEventListener("change", zetBron);
+    return () => {
+      breekpunt.removeEventListener("change", zetBron);
+      breekpunt.removeEventListener("change", zetPoster);
+    };
   }, []);
 
   return (
@@ -128,20 +141,21 @@ export function HeroVideo({ alt }: { alt: string }) {
         vanuit public/media komen, en het moet exact dezelfde URL zijn als het
         poster hieronder, anders haalt de browser hem twee keer op.
       */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={POSTER}
-        alt={alt}
-        width={1920}
-        height={1080}
-        fetchPriority="high"
-        decoding="async"
-        className="absolute inset-0 h-full w-full object-cover"
-      />
+      <picture>
+        <source media={MOBIEL} srcSet={POSTER_MOBIEL} />
+        <img
+          src={POSTER}
+          alt={alt}
+          width={1280}
+          height={720}
+          fetchPriority="high"
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+      </picture>
 
       <video
         ref={videoRef}
-        poster={POSTER}
         autoPlay
         muted
         loop
