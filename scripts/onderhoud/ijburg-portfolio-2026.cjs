@@ -10,7 +10,10 @@
  * Op de testomgeving:
  *   fly ssh console --app hoogbeeld-media-test -C "node scripts/onderhoud/ijburg-portfolio-2026.cjs"
  *
- * Raakt alleen het IJburg-project en zijn eigen galerijrecords. Opnieuw te
+ * Raakt alleen het IJburg-project en zijn eigen galerijrecords. IJburg staat
+ * op de homepage in de plaats van Knooppunt Zaandam: dat project wordt
+ * ongepubliceerd en niet meer uitgelicht (niet verwijderd; in Beheer weer aan
+ * te zetten). Opnieuw te
  * draaien zonder gevolgen: een tweede keer verandert er niets meer.
  */
 const fs = require("node:fs");
@@ -44,8 +47,8 @@ const project = {
   cover_alt_en: "Aerial view of IJburg's waterside homes and marina.",
   video_url: "/media/ijburg-dronevideo.mp4",
   published: 1,
-  featured: 0,
-  sort_order: 4,
+  featured: 1,
+  sort_order: 2,
   is_example: 0,
 };
 
@@ -136,6 +139,9 @@ try {
         ).run(projectId, image.url, image.alt, image.alt_en, image.sort_order);
       }
     }
+    db.prepare(
+      "UPDATE projects SET published = 0, featured = 0 WHERE slug = ?",
+    ).run("knooppunt-zaandam-bij-zonsondergang");
     return { projectId, galleryCount: images.length };
   });
 

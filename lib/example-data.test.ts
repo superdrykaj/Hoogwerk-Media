@@ -11,17 +11,15 @@ const ECHT = [
   "de-zaan-in-wormerveer",
   "ijburg-vanuit-de-lucht",
   "de-zaanse-schans-vanuit-de-lucht",
-  "ijburg-vanuit-de-lucht",
 ];
 
 /**
  * De projecten die de homepage moet uitlichten, in deze volgorde. Een subset
- * van ECHT: niet elk echt project staat ook op "uitgelicht" (IJburg bijv.
- * niet, om de homepage niet vol te zetten).
+ * van ECHT: niet elk echt project staat ook op "uitgelicht".
  */
 const UITGELICHT_SLUGS = [
   "de-zaan-in-wormerveer",
-  "knooppunt-zaandam-bij-zonsondergang",
+  "ijburg-vanuit-de-lucht",
   "de-zaanse-schans-vanuit-de-lucht",
 ];
 
