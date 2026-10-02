@@ -19,8 +19,12 @@
   homepage.
 - De Drone-sfeerfilm heeft een boekingsslot van 90 minuten (was 120), passend
   bij "tot 90 minuten op locatie". Bestaande boekingen veranderen niet.
-- Bestaande databases: `scripts/onderhoud/tarieven-2026-10.cjs` werkt de zes
-  diensten bij, met een back-up vooraf (zie README).
+- Bestaande databases: `scripts/onderhoud/productie-bijwerken-2026-10.cjs`
+  brengt een database die nog op de oudste voorbeeldstand staat (zoals
+  productie) in één keer op de nieuwste stand: back-up, diensten en tarieven,
+  echte projecten en galerijen, voorbeeldprojecten naar concept. Het
+  dienstenscript `tarieven-2026-10.cjs` werkt nu ook vanaf de oudste stand en
+  voegt ontbrekende diensten toe (zie README).
 
 ## September 2026 — afwerkronde naar aanleiding van extern feedback
 
