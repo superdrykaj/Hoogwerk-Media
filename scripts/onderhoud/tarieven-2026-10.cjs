@@ -17,6 +17,10 @@
  *      vanaf vier bezoeken is vervallen.
  *    - "Project op maat" staat op "Op aanvraag".
  *
+ *  Werkt vanaf zowel de allereerste voorbeeldstaat (productie) als de
+ *  tussenstaat van de eerste tarievenherziening (test). Ontbreken
+ *  "Bedrijfsfilm" of "Bouwvoortgang" nog, dan worden ze toegevoegd.
+ *
  *  Alleen deze velden van deze zes diensten worden geraakt: naam,
  *  omschrijving, prijslabel en de Engelse varianten, plus de boekingsduur van
  *  de Drone-sfeerfilm (van 120 naar 90 minuten). Buffer, volgorde,
@@ -46,25 +50,40 @@
 const fs = require("node:fs");
 const path = require("node:path");
 
-/** Wat een dienst vóór deze update was (de vorige voorbeeldtekst). */
+/**
+ * Wat een dienst vóór deze update was. Per veld mag er één tekst staan of een
+ * lijst met geldige oude teksten, want er zijn twee bekende uitgangspunten:
+ *
+ *   - de allereerste voorbeeldstaat (zo staat de productiedatabase nu), en
+ *   - de tussenstaat van de eerste tarievenherziening (zo stond de test).
+ *
+ * Een dienst die op geen van beide lijkt, is door jou aangepast en blijft
+ * staan.
+ */
 const VORIG = {
   kennismaking: {
     name: "Kennismaking",
-    description:
+    description: [
+      "Een kort videogesprek of telefoongesprek waarin we je plannen doornemen. Vrijblijvend.",
       "Kort videogesprek over je locatie en wat je nodig hebt. Vrijblijvend.",
+    ],
     price_label: "Gratis",
   },
   dronefotografie: {
-    name: "Fotoreportage",
-    description:
+    name: ["Dronefotografie", "Fotoreportage"],
+    description: [
+      "Een fotosessie op locatie. Je ontvangt een selectie bewerkte foto's in hoge resolutie.",
       "Eén object of terrein. Vijftien tot vijfentwintig bewerkte foto's, gebruiksrecht voor web en socials.",
-    price_label: "vanaf € 195",
+    ],
+    price_label: ["Indicatie vanaf € 149", "vanaf € 195"],
   },
   dronevideo: {
-    name: "Foto en korte film",
-    description:
+    name: ["Dronevideo", "Foto en korte film"],
+    description: [
+      "Videobeelden op locatie, inclusief montage tot een korte film voor je website of socials.",
       "Dezelfde reportage, plus een gemonteerde clip van dertig tot vijfenveertig seconden.",
-    price_label: "vanaf € 349",
+    ],
+    price_label: ["Indicatie vanaf € 249", "vanaf € 349"],
   },
   bedrijfsfilm: {
     name: "Bedrijfsfilm",
@@ -73,7 +92,7 @@ const VORIG = {
     price_label: "vanaf € 495",
   },
   bouwvordering: {
-    // Op de testomgeving heet deze dienst nog "Bouwvordering": het
+    // Op de testomgeving heette deze dienst nog "Bouwvordering": het
     // hernoemscript van eerder is daar nooit gedraaid. Beide namen zijn dus
     // een geldige oude staat.
     name: ["Bouwvordering", "Bouwvoortgang"],
@@ -83,11 +102,40 @@ const VORIG = {
   },
   "project-op-maat": {
     name: "Project op maat",
-    description:
+    description: [
+      "Meerdere locaties, meerdere dagen of een combinatie van foto en video. Je plant een kennismaking; in het formulier vraag ik alvast naar de locaties en de gewenste periode.",
       "Meerdere locaties of meerdere dagen. Je plant een kennismaking; in het formulier vraag ik alvast naar de locaties en de periode.",
-    price_label: "In overleg",
+    ],
+    price_label: ["Prijs in overleg", "In overleg"],
   },
 };
+
+/**
+ * Diensten die op een oudere database nog ontbreken en dan worden toegevoegd,
+ * met de velden die niet in NIEUW staan. Moet gelijk blijven aan
+ * EXAMPLE_SERVICES; de test bewaakt dat.
+ */
+const TOEVOEGEN = {
+  bedrijfsfilm: {
+    duration_minutes: 90,
+    buffer_minutes: 60,
+    bookable: 1,
+    intro_only: 0,
+    sort_order: 4,
+    active: 1,
+  },
+  bouwvordering: {
+    duration_minutes: 45,
+    buffer_minutes: 30,
+    bookable: 1,
+    intro_only: 0,
+    sort_order: 5,
+    active: 1,
+  },
+};
+
+/** Extra velden die mee veranderen als de dienst wordt bijgewerkt. */
+const EXTRA = { "project-op-maat": { sort_order: 6 } };
 
 /**
  * De nieuwe staat. Moet gelijk blijven aan EXAMPLE_SERVICES in
@@ -185,6 +233,7 @@ function tijdstempel(nu) {
 function bijwerken(db, { backupDir, dryRun = false, nu = new Date() } = {}) {
   const regels = [];
   const plan = [];
+  const toevoegPlan = [];
 
   for (const [slug, nieuw] of Object.entries(NIEUW)) {
     const rij = db
@@ -192,7 +241,12 @@ function bijwerken(db, { backupDir, dryRun = false, nu = new Date() } = {}) {
       .get(slug);
 
     if (!rij) {
-      regels.push(`- ${slug}: bestaat niet, overgeslagen.`);
+      if (TOEVOEGEN[slug]) {
+        toevoegPlan.push({ slug, nieuw: { ...nieuw, ...TOEVOEGEN[slug], slug } });
+        regels.push(`- ${slug}: ${dryRun ? "wordt toegevoegd" : "toegevoegd"}.`);
+      } else {
+        regels.push(`- ${slug}: bestaat niet, overgeslagen.`);
+      }
       continue;
     }
     if (VELDEN.every((veld) => rij[veld] === nieuw[veld])) {
@@ -210,7 +264,7 @@ function bijwerken(db, { backupDir, dryRun = false, nu = new Date() } = {}) {
       );
       continue;
     }
-    plan.push({ slug, id: rij.id, nieuw });
+    plan.push({ slug, id: rij.id, nieuw: { ...nieuw, ...(EXTRA[slug] ?? {}) } });
     regels.push(`- ${slug}: ${dryRun ? "wordt bijgewerkt" : "bijgewerkt"}.`);
   }
 
@@ -235,7 +289,7 @@ function bijwerken(db, { backupDir, dryRun = false, nu = new Date() } = {}) {
   }
 
   let backup = null;
-  if ((plan.length > 0 || duurPlan.length > 0) && !dryRun) {
+  if ((plan.length + toevoegPlan.length + duurPlan.length > 0) && !dryRun) {
     fs.mkdirSync(backupDir, { recursive: true });
     backup = path.join(
       backupDir,
@@ -245,14 +299,23 @@ function bijwerken(db, { backupDir, dryRun = false, nu = new Date() } = {}) {
     // WAL-modus draait en er nog niet-weggeschreven wijzigingen zijn.
     db.prepare("VACUUM INTO ?").run(backup);
 
-    const zet = db.prepare(
-      `UPDATE services SET ${VELDEN.map((v) => `${v} = @${v}`).join(", ")} WHERE id = @id`,
-    );
+    const zet = (nieuw) =>
+      db.prepare(
+        `UPDATE services SET ${Object.keys(nieuw)
+          .map((v) => `${v} = @${v}`)
+          .join(", ")} WHERE id = @id`,
+      );
+    const voegToe = (nieuw) =>
+      db.prepare(
+        `INSERT INTO services (${Object.keys(nieuw).join(", ")})
+         VALUES (${Object.keys(nieuw).map((v) => `@${v}`).join(", ")})`,
+      );
     const zetDuur = db.prepare(
       "UPDATE services SET duration_minutes = @naar WHERE id = @id",
     );
     db.transaction(() => {
-      for (const { id, nieuw } of plan) zet.run({ ...nieuw, id });
+      for (const { id, nieuw } of plan) zet(nieuw).run({ ...nieuw, id });
+      for (const { nieuw } of toevoegPlan) voegToe(nieuw).run(nieuw);
       for (const { id, naar } of duurPlan) zetDuur.run({ id, naar });
     })();
   }
@@ -261,13 +324,15 @@ function bijwerken(db, { backupDir, dryRun = false, nu = new Date() } = {}) {
     regels,
     gewijzigd: dryRun ? 0 : plan.length,
     gepland: plan.length,
+    toegevoegd: dryRun ? 0 : toevoegPlan.length,
+    toevoegGepland: toevoegPlan.length,
     duurGewijzigd: dryRun ? 0 : duurPlan.length,
     duurGepland: duurPlan.length,
     backup,
   };
 }
 
-module.exports = { bijwerken, NIEUW, VORIG, DUUR };
+module.exports = { bijwerken, NIEUW, VORIG, DUUR, TOEVOEGEN, EXTRA };
 
 if (require.main === module) {
   const Database = require("better-sqlite3");
@@ -298,7 +363,7 @@ if (require.main === module) {
   if (uitkomst.backup) console.log(`\nBack-up: ${uitkomst.backup}`);
   console.log(
     dryRun
-      ? `\nDry-run klaar. ${uitkomst.gepland} dienst(en) en ${uitkomst.duurGepland} duur(en) zouden worden bijgewerkt.`
-      : `\nKlaar. ${uitkomst.gewijzigd} dienst(en) en ${uitkomst.duurGewijzigd} duur(en) bijgewerkt.`,
+      ? `\nDry-run klaar. ${uitkomst.gepland} dienst(en) zouden worden bijgewerkt, ${uitkomst.toevoegGepland} toegevoegd en ${uitkomst.duurGepland} duur(en) aangepast.`
+      : `\nKlaar. ${uitkomst.gewijzigd} dienst(en) bijgewerkt, ${uitkomst.toegevoegd} toegevoegd en ${uitkomst.duurGewijzigd} duur(en) aangepast.`,
   );
 }

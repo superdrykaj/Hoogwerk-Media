@@ -466,27 +466,38 @@ fly ssh console -C "node scripts/onderhoud/tarieven-2026.cjs"
 Een dienst die je zelf al hebt aangepast, blijft staan; het script zegt dat er
 per regel bij. Nog een keer draaien verandert niets meer.
 
-### Pakketten en tarieven van oktober 2026 in een bestaande database
+### Een bestaande database op de stand van oktober 2026 brengen
 
-Ook hiervoor geldt: de diensten staan in de database en veranderen niet mee
-met `lib/example-data.ts`. Het script `scripts/onderhoud/tarieven-2026-10.cjs`
-zet de zes diensten op de nieuwe pakketten (namen, omschrijvingen en
-prijslabels, ook de Engelse). Het maakt eerst een back-up in
-`<DATA_DIR>/backups/`, raakt alleen die velden aan, laat een dienst staan die
-je zelf hebt aangepast en is opnieuw te draaien zonder effect.
+Ook hiervoor geldt: de diensten en projecten staan in de database en
+veranderen niet mee met `lib/example-data.ts`. Een site die al draait, zoals
+productie, mist daardoor de nieuwe pakketten en prijzen én de echte projecten.
+Eén opdracht regelt alles in de juiste volgorde:
 
 ```bash
-# eerst kijken wat er zou gebeuren
-node scripts/onderhoud/tarieven-2026-10.cjs --dry-run
+# eerst kijken wat er met de diensten zou gebeuren (er wordt niets geschreven)
+fly ssh console --app hoogbeeld-media -C "node scripts/onderhoud/productie-bijwerken-2026-10.cjs --dry-run"
 
-# testomgeving, nadat de nieuwe versie is uitgerold
-fly ssh console --app hoogbeeld-media-test -C "node scripts/onderhoud/tarieven-2026-10.cjs"
+# uitvoeren
+fly ssh console --app hoogbeeld-media -C "node scripts/onderhoud/productie-bijwerken-2026-10.cjs"
 ```
 
-Op de testomgeving draait het script ook zelf bij het opstarten van de
-container, omdat `TARIFF_UPDATE = "2026-10"` in `fly.staging.toml` staat (zie
-`docker-entrypoint.sh`). Productie heeft die schakelaar niet; daar draai je het
-script zelf, als je er klaar voor bent.
+Het script maakt eerst een back-up in `/data/backups/`, draait dan de
+onderhoudsscripts één voor één (zie de kop van het script voor de volgorde),
+stopt bij de eerste fout en is opnieuw te draaien: de eindstand is na elke run
+gelijk en gegevens die je zelf hebt aangepast blijven staan.
+
+Alleen de diensten en tarieven kun je ook los doen met
+`scripts/onderhoud/tarieven-2026-10.cjs` (ook met `--dry-run`). Dat script werkt
+vanaf de oudste voorbeeldstand en vanaf de tussenstand, voegt ontbrekende
+diensten toe, maakt eerst een back-up en raakt alleen naam, omschrijving en
+prijslabel (NL en EN) en de duur van de Drone-sfeerfilm aan.
+
+Op de testomgeving draait het dienstenscript ook zelf bij het opstarten,
+omdat `TARIFF_UPDATE = "2026-10"` in `fly.staging.toml` staat (zie
+`docker-entrypoint.sh`). Productie heeft die schakelaar niet.
+
+De site open of dicht zetten doe je niet met een uitrol maar met de knop in
+**Beheer → Instellingen**: die stand staat in de database.
 
 ### E-mailadressen
 

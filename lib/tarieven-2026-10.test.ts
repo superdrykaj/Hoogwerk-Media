@@ -10,10 +10,19 @@ import { copy } from "@/content/copy";
 import { EXAMPLE_SERVICES } from "./example-data";
 
 const require = createRequire(import.meta.url);
-const { bijwerken, NIEUW, VORIG, DUUR } = require("../scripts/onderhoud/tarieven-2026-10.cjs");
+const { bijwerken, NIEUW, VORIG, DUUR, TOEVOEGEN } = require("../scripts/onderhoud/tarieven-2026-10.cjs");
 
-/** Een database zoals de testomgeving die nu heeft: vorige diensten + een boeking. */
-function bestaandeDatabase() {
+/** Kiest uit een veld met één of meer oude teksten; staat 0 = oudste, 1 = tussenstaat. */
+const kies = (waarde: string | string[], staat: number) => {
+  const lijst = ([] as string[]).concat(waarde);
+  return lijst[Math.min(staat, lijst.length - 1)];
+};
+
+/**
+ * Een database zoals die nu draait, plus een boeking. Staat 1 is de testomgeving
+ * (tussenstaat), staat 0 de allereerste voorbeeldstaat zoals productie die heeft.
+ */
+function bestaandeDatabase(staat = 1) {
   const db = new Database(":memory:");
   migrate(db);
   const insert = db.prepare(
@@ -22,10 +31,7 @@ function bestaandeDatabase() {
   );
   let order = 1;
   for (const [slug, v] of Object.entries(VORIG) as [string, Record<string, string | string[]>][]) {
-    // Bij meerdere geldige oude namen nemen we de eerste: dat is de staat
-    // waarin de testomgeving staat ("Bouwvordering").
-    const name = Array.isArray(v.name) ? v.name[0] : v.name;
-    insert.run(slug, name, v.description, slug === "bedrijfsfilm" ? DUUR.bedrijfsfilm.van : 60, v.price_label, order++);
+    insert.run(slug, kies(v.name, staat), kies(v.description, staat), slug === "bedrijfsfilm" ? DUUR.bedrijfsfilm.van : 60, kies(v.price_label, staat), order++);
   }
   const serviceId = (db.prepare("SELECT id FROM services WHERE slug = 'bedrijfsfilm'").get() as { id: number }).id;
   db.prepare(
@@ -123,6 +129,45 @@ describe("tarieven-2026-10", () => {
     expect(uitkomst.duurGewijzigd).toBe(0);
     expect(uitkomst.regels.join("\n")).toContain("bedrijfsfilm: duur is 100 minuten (zelf aangepast)");
     expect((db.prepare("SELECT duration_minutes FROM services WHERE slug = 'bedrijfsfilm'").get() as { duration_minutes: number }).duration_minutes).toBe(100);
+  });
+
+  it("werkt de allereerste voorbeeldstaat bij en voegt ontbrekende diensten toe (productie)", () => {
+    const { db } = bestaandeDatabase(0);
+    // Productie heeft Bedrijfsfilm en Bouwvoortgang nog niet.
+    db.prepare("DELETE FROM bookings").run();
+    db.prepare("DELETE FROM services WHERE slug IN ('bedrijfsfilm', 'bouwvordering')").run();
+    db.prepare("UPDATE services SET sort_order = 5 WHERE slug = 'project-op-maat'").run();
+
+    const dir = tmp();
+    const droog = bijwerken(db, { backupDir: dir, dryRun: true });
+    expect(droog.gepland).toBe(4);
+    expect(droog.toevoegGepland).toBe(2);
+    expect(fs.readdirSync(dir)).toHaveLength(0);
+
+    const uitkomst = bijwerken(db, { backupDir: dir });
+    expect(uitkomst.gewijzigd).toBe(4);
+    expect(uitkomst.toegevoegd).toBe(2);
+    expect(uitkomst.backup && fs.existsSync(uitkomst.backup)).toBe(true);
+
+    // Bestaande diensten: precies de velden die het script beheert. Duur en
+    // buffer van die diensten blijven zoals ze waren.
+    for (const service of EXAMPLE_SERVICES) {
+      const rij = db.prepare("SELECT * FROM services WHERE slug = ?").get(service.slug) as Record<string, unknown>;
+      expect(rij, service.slug).toBeDefined();
+      const toegevoegd = service.slug in TOEVOEGEN;
+      const velden = toegevoegd ? Object.keys(service) : Object.keys(NIEUW[service.slug]);
+      for (const veld of velden) {
+        expect(rij[veld], `${service.slug}.${veld}`).toBe(service[veld as keyof typeof service]);
+      }
+    }
+    // Project op maat schuift naar plek 6, zoals in de voorbeeldgegevens.
+    expect((db.prepare("SELECT sort_order FROM services WHERE slug = 'project-op-maat'").get() as { sort_order: number }).sort_order).toBe(6);
+
+    // Tweede run: niets meer te doen, geen nieuwe back-up.
+    const dir2 = tmp();
+    const tweede = bijwerken(db, { backupDir: dir2 });
+    expect(tweede.gewijzigd + tweede.toegevoegd + tweede.duurGewijzigd).toBe(0);
+    expect(fs.readdirSync(dir2)).toHaveLength(0);
   });
 
   it("is herhaalbaar: een tweede run verandert niets en maakt geen back-up", () => {
