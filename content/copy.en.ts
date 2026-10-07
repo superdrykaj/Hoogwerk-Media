@@ -156,8 +156,8 @@ export const en: Dictionary = {
       dronevideo: [{ prefix: "From", amount: "€ 422.29", excl: "€ 349 excl. VAT" }],
       bedrijfsfilm: [{ prefix: "From", amount: "€ 598.95", excl: "€ 495 excl. VAT" }],
       bouwvordering: [
-        { prefix: "Follow-up visit from", amount: "€ 180.29", unit: "per visit", excl: "€ 149 excl. VAT" },
         { prefix: "First visit from", amount: "€ 235.95", excl: "€ 195 excl. VAT" },
+        { prefix: "Follow-up visit from", amount: "€ 180.29", unit: "per visit", excl: "€ 149 excl. VAT" },
       ],
     } as Record<string, { prefix: string; amount: string; unit?: string; excl: string }[]>,
     /** Sits after the amount. */

@@ -255,7 +255,7 @@ function Pricing({
           <p className="lede mt-5">{t.home.pricingIntro}</p>
         </Reveal>
 
-        <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:gap-16">
+        <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)] lg:gap-16">
           <Reveal>
             <ul className="border-t border-ink-700">
               {services.map((service) => {
@@ -266,41 +266,46 @@ function Pricing({
                 // staan niet in deze lijst en gebruiken de gewone priceLabel.
                 const pricing = t.home.packagePricing[service.slug];
                 return (
-                  <li
-                    key={service.id}
-                    className="grid gap-x-6 gap-y-1 border-b border-ink-700 py-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-baseline"
-                  >
-                    <div>
-                      <p className="font-medium">{tekst.name}</p>
-                      {tekst.description && (
-                        <p className="mt-1 max-w-prose whitespace-pre-line text-sm leading-relaxed text-mist-500">
-                          {tekst.description}
-                        </p>
-                      )}
-                    </div>
-                    <div className="sm:text-right">
+                  // @container: het prijsgedeelte kiest op de breedte van deze
+                  // rij (niet van het scherm) of het naast of onder de tekst staat.
+                  <li key={service.id} className="@container border-b border-ink-700 py-7">
+                    <div className="grid gap-5 @min-[40rem]:grid-cols-[minmax(0,1fr)_auto] @min-[40rem]:items-start @min-[40rem]:gap-8">
+                      <div>
+                        <p className="font-medium">{tekst.name}</p>
+                        {tekst.description && (
+                          <p className="mt-1.5 max-w-prose whitespace-pre-line text-sm leading-relaxed text-mist-500">
+                            {tekst.description}
+                          </p>
+                        )}
+                      </div>
                       {pricing ? (
-                        <div className="space-y-3">
+                        <div
+                          className={
+                            pricing.length > 1
+                              ? "grid gap-3 @min-[28rem]:grid-cols-2 @min-[40rem]:grid-cols-[repeat(2,11rem)]"
+                              : "grid gap-3 @min-[28rem]:w-44"
+                          }
+                        >
                           {pricing.map((tier) => (
-                            <div key={tier.prefix}>
-                              <p className="numeric text-xl font-semibold leading-tight text-mist-100">
-                                <span className="mr-1.5 text-sm font-normal text-mist-500">
-                                  {tier.prefix}
-                                </span>
+                            <div key={tier.prefix} className="rounded-xl bg-ink-800/50 px-4 py-3.5">
+                              <p className="text-xs text-mist-500">{tier.prefix}</p>
+                              <p className="numeric mt-1.5 text-2xl font-semibold leading-none tracking-tight text-mist-100">
                                 {tier.amount}
-                                <span className="ml-1.5 text-sm font-normal text-mist-300">
-                                  {t.home.priceInclVat}
-                                  {tier.unit && ` ${tier.unit}`}
-                                </span>
                               </p>
-                              <p className="mt-1 text-sm text-mist-300">{tier.excl}</p>
+                              <p className="mt-2 text-xs text-mist-300">
+                                {t.home.priceInclVat}
+                                {tier.unit && ` ${tier.unit}`}
+                              </p>
+                              <p className="numeric mt-0.5 text-xs text-mist-500">{tier.excl}</p>
                             </div>
                           ))}
                         </div>
                       ) : (
-                        <p className="numeric text-xl font-semibold leading-tight text-mist-100">
-                          {tekst.priceLabel || t.home.priceOnRequest}
-                        </p>
+                        <div className="@min-[28rem]:w-44">
+                          <p className="numeric rounded-xl bg-ink-800/50 px-4 py-3.5 text-lg font-semibold leading-tight text-mist-100">
+                            {tekst.priceLabel || t.home.priceOnRequest}
+                          </p>
+                        </div>
                       )}
                     </div>
                   </li>

@@ -161,8 +161,8 @@ export const nl = {
       dronevideo: [{ prefix: "Vanaf", amount: "€ 422,29", excl: "€ 349 excl. btw" }],
       bedrijfsfilm: [{ prefix: "Vanaf", amount: "€ 598,95", excl: "€ 495 excl. btw" }],
       bouwvordering: [
-        { prefix: "Vervolgbezoek vanaf", amount: "€ 180,29", unit: "per bezoek", excl: "€ 149 excl. btw" },
         { prefix: "Eerste bezoek vanaf", amount: "€ 235,95", excl: "€ 195 excl. btw" },
+        { prefix: "Vervolgbezoek vanaf", amount: "€ 180,29", unit: "per bezoek", excl: "€ 149 excl. btw" },
       ],
     } as Record<string, { prefix: string; amount: string; unit?: string; excl: string }[]>,
     /** Staat achter het bedrag. */
