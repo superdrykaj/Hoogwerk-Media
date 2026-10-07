@@ -35,7 +35,10 @@ export async function PortfolioPage({ locale }: { locale: Locale }) {
             </Link>
           </div>
         ) : (
-          <PortfolioGrid projects={projects} locale={locale} />
+          <>
+            <h2 className="sr-only">{t.portfolio.listTitle}</h2>
+            <PortfolioGrid projects={projects} locale={locale} />
+          </>
         )}
       </div>
 

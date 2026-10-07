@@ -60,6 +60,11 @@ export const projectFormSchema = z.object({
   summaryEn: trimmed(400).optional().default(""),
   bodyEn: trimmed(5000).optional().default(""),
   coverAltEn: trimmed(300).optional().default(""),
+  /* Eigen titel en omschrijving voor zoekmachines. Leeg = de gewone tekst. */
+  metaTitle: trimmed(70).optional().default(""),
+  metaTitleEn: trimmed(70).optional().default(""),
+  metaDescription: trimmed(170).optional().default(""),
+  metaDescriptionEn: trimmed(170).optional().default(""),
   videoUrl: trimmed(500).optional().default(""),
   published: z.boolean().optional().default(false),
   featured: z.boolean().optional().default(false),

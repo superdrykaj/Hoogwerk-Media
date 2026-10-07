@@ -10,7 +10,41 @@
  *  content/site.ts, want die zijn in beide talen hetzelfde.
  * ============================================================================
  */
+import type { ServicePageKey } from "@/lib/service-pages";
+
 import { site } from "./site";
+
+/** De tekst van één dienstpagina. Zie `servicePages` hieronder. */
+export type ServicePageCopy = {
+  metaTitle: string;
+  metaDescription: string;
+  /** Korte naam: kruimelpad, footer en koppelingen. */
+  breadcrumb: string;
+  eyebrow: string;
+  h1: string;
+  /** Eén zin voor de verwijzing vanaf andere pagina's. */
+  teaser: string;
+  lede: string;
+  intro: string[];
+  audienceTitle: string;
+  audience: { title: string; body: string }[];
+  offerTitle: string;
+  offerIntro: string;
+  processTitle: string;
+  process: { title: string; body: string }[];
+  deliveryTitle: string;
+  delivery: string[];
+  limitsTitle: string;
+  limits: string[];
+  workTitle: string;
+  workIntro: string;
+  workNote: string;
+  termsTitle: string;
+  faqTitle: string;
+  faq: { question: string; answer: string }[];
+  ctaTitle: string;
+  ctaBody: string;
+};
 
 export const nl = {
   /* -- Algemeen ------------------------------------------------------------ */
@@ -60,6 +94,7 @@ export const nl = {
     skipToContent: "Naar de hoofdinhoud",
     homeAria: `${site.name} — naar de homepage`,
     menuHeading: "Menu",
+    servicesHeading: "Diensten",
     contactHeading: "Contact",
   },
 
@@ -80,9 +115,10 @@ export const nl = {
 
   /* -- Homepage ------------------------------------------------------------ */
   home: {
-    heroTitle: "Je locatie professioneel vanuit de lucht",
+    heroTitle: "Dronefotografie en dronevideo in Zaandam en Noord-Holland",
+    /** De slogan van het bedrijf, als ondersteunende tekst onder de kop. */
     heroIntro:
-      "Luchtbeelden voor vastgoed, bedrijven en bouw in Zaandam en Noord-Holland.",
+      "Je locatie professioneel vanuit de lucht: luchtbeelden voor vastgoed, bedrijven en bouw.",
     heroCta: "Bespreek je project",
     heroWork: "Bekijk het werk",
     /**
@@ -96,12 +132,13 @@ export const nl = {
 
     servicesEyebrow: "Wat ik doe",
     servicesTitle: "Beeld dat op de grond niet past",
+    /** `page` verwijst naar de dienstpagina (lib/service-pages.ts), zo die er is. */
     highlights: [
-      { title: "Vastgoed", body: "Woningen en bedrijfspanden in hun omgeving. Voor Funda, website en verkoopbrochure." },
-      { title: "Bedrijfsterrein", body: "Overzicht van terrein, opslag en logistiek. Bruikbaar voor site, socials en presentaties." },
-      { title: "Bouwvoortgang", body: "Dezelfde route, elke maand opnieuw. Vaste beeldhoeken die de voortgang zichtbaar maken." },
-      { title: "Locaties en natuur", body: "Recreatieterreinen, jachthavens en polder, opgenomen op het juiste uur van de dag." },
-    ],
+      { title: "Vastgoed", body: "Woningen en bedrijfspanden in hun omgeving. Voor Funda, website en verkoopbrochure.", page: "vastgoed" },
+      { title: "Bedrijfsterrein", body: "Overzicht van terrein, opslag en logistiek. Bruikbaar voor site, socials en presentaties.", page: "bedrijven" },
+      { title: "Bouwvoortgang", body: "Dezelfde route, elke maand opnieuw. Vaste beeldhoeken die de voortgang zichtbaar maken.", page: "bouw" },
+      { title: "Locaties en natuur", body: "Recreatieterreinen, jachthavens en polder, opgenomen op het juiste uur van de dag.", page: "bedrijven" },
+    ] as { title: string; body: string; page?: ServicePageKey }[],
 
     pricesTitle: "Diensten en tarieven",
     pricesNote: "Indicaties. De prijs spreken we vooraf samen af.",
@@ -204,13 +241,247 @@ export const nl = {
     ],
   },
 
+  /* -- Dienstpagina's ------------------------------------------------------ */
+  /**
+   * Eén blok per dienstpagina (zie lib/service-pages.ts voor de adressen). De
+   * prijzen en voorwaarden staan hier bewust NIET: die komen uit
+   * `home.packagePricing`, `home.included` en `home.excluded` en uit de diensten
+   * in de beheeromgeving, zodat ze op alle pagina's gelijk blijven.
+   */
+  servicePageUi: {
+    startLabel: "Start",
+    breadcrumbLabel: "Kruimelpad",
+    offerEyebrow: "Aanbod",
+    processEyebrow: "Werkwijze",
+    deliveryEyebrow: "Oplevering",
+    limitsEyebrow: "Vliegen",
+    workEyebrow: "Portfolio",
+    termsEyebrow: "Tarieven",
+    faqEyebrow: "Vragen",
+    audienceEyebrow: "Voor wie",
+    relatedTitle: "Andere diensten",
+    allRates: "Alle tarieven en voorwaarden",
+    workAll: "Bekijk het hele portfolio",
+    asideTitle: "Plan een vlucht",
+    asideBody:
+      "Kies een moment in de agenda, of stel eerst een vraag. Een kennismaking van twintig minuten is gratis.",
+    asideAsk: "Eerst een vraag stellen",
+    moreAbout: "Lees meer",
+  },
+  servicePages: {
+    vastgoed: {
+      metaTitle: "Dronefotografie voor vastgoed in Zaandam",
+      metaDescription:
+        "Luchtfoto's van woningen en bedrijfspanden voor Funda, je website en de verkoopbrochure. Dronepiloot in Zaandam, werkgebied Noord-Holland.",
+      breadcrumb: "Vastgoed",
+      eyebrow: "Vastgoed",
+      h1: "Dronefotografie voor vastgoed",
+      teaser: "Luchtfoto's van woningen en bedrijfspanden in hun omgeving.",
+      lede: "Een woning of bedrijfspand is op de grond nooit helemaal te vangen. Vanuit de lucht zie je de ligging, het perceel en de omgeving in één beeld.",
+      intro: [
+        "Ik ben Kai, zelfstandig dronepiloot in Zaandam. Voor vastgoed maak ik luchtfoto's van één object of terrein: het pand zelf, maar vooral hoe het in zijn omgeving ligt. Dat is vaak precies wat een kijker op een gewone foto mist.",
+        "De beelden zijn bedoeld voor Funda, je eigen website en de verkoopbrochure. Ik kies de beste hoeken en werk de foto's na, zodat je een selectie ontvangt en geen bak losse opnames.",
+      ],
+      audienceTitle: "Voor wie is dit?",
+      audience: [
+        {
+          title: "Makelaars en verkopers",
+          body: "Een woning of pand waarvan de ligging een argument is: aan het water, met een diepe tuin of in een groene omgeving.",
+        },
+        {
+          title: "Verhuurders en beleggers",
+          body: "Bedrijfspanden, kantoren en complexen waarbij parkeren, bereikbaarheid en omgeving ertoe doen.",
+        },
+        {
+          title: "Eigenaren en beheerders",
+          body: "Een overzicht van je eigen pand of terrein voor je website, een brochure of een presentatie.",
+        },
+      ],
+      offerTitle: "Wat je krijgt",
+      offerIntro:
+        "Twee pakketten passen bij vastgoed. Kies alleen de foto's, of voeg een korte film toe voor je website of social media. Wat erbij hoort en wat het kost, staat hieronder.",
+      processTitle: "Zo werkt het",
+      process: [
+        { title: "Kennismaken", body: "Je vertelt me over het object en waar de beelden voor zijn. Dat kan in een gratis videogesprek van maximaal 20 minuten, of via het boekingsformulier." },
+        { title: "Voorbereiding", body: "Ik controleer de locatie, de regels voor het luchtruim en de weersverwachting. Daarna bevestig ik datum en tijd per e-mail; pas dan is de afspraak definitief." },
+        { title: "Vliegen", body: "Tot 60 minuten op locatie voor de fotoreportage, tot 90 minuten als er ook een film bij zit. Je hoeft er niet bij te zijn. Ik richt op het pand en het perceel, niet op de tuinen en ramen van de buren." },
+        { title: "Opleveren", body: "Je krijgt de bewerkte beelden via een downloadlink, binnen vijf werkdagen." },
+      ],
+      deliveryTitle: "Oplevering en gebruik",
+      delivery: [
+        "Je ontvangt een link waarmee je de beelden downloadt. Heb je ze eerder nodig, bijvoorbeeld omdat een woning binnenkort op de markt komt, zeg het dan bij je aanvraag; vaak lukt het de volgende dag ook.",
+        "Gebruik op je eigen website en social media is inbegrepen, en bij vastgoed ook op Funda en in de verkoopbrochure. Het auteursrecht blijft bij mij. Wil je de beelden in advertenties, print of een grotere campagne gebruiken, dan spreken we dat vooraf apart af.",
+        "Via de downloadlink kun je een wijziging aanvragen. Bij het pakket met korte film is één correctieronde inbegrepen; extra correctierondes zijn een uitbreiding op aanvraag.",
+      ],
+      limitsTitle: "Waar ik kan vliegen",
+      limits: [
+        "Niet overal mag een drone vliegen. Rond Schiphol, boven Natura 2000-gebied en op sommige industrieterreinen mag het niet of alleen met toestemming. Ik zoek dat vooraf voor je uit en laat je weten of en hoe het kan. Ik vlieg tot 120 meter hoogte en altijd binnen zicht.",
+        "In een woonwijk of bij een pand tussen andere bebouwing blijf ik uit de buurt van tuinen en ramen van anderen. Bij een lage opname vlieg ik liever wat hoger dan dat iemand zich bekeken voelt.",
+      ],
+      workTitle: "Een voorbeeld uit mijn portfolio",
+      workIntro:
+        "Zo kijken mijn luchtbeelden van een woonomgeving eruit: een film en foto's van IJburg in Amsterdam.",
+      workNote:
+        "Dit is een vrije portfolio-opname van de wijk, geen opdracht van een verkoper of makelaar.",
+      termsTitle: "Tarieven en voorwaarden",
+      faqTitle: "Veelgestelde vragen over vastgoedfotografie",
+      faq: [
+        { question: "Hoeveel foto's krijg ik van een woning?", answer: "Bij de dronefotoreportage zijn dat 10 tot 15 bewerkte luchtfoto's van één object of terrein, met tot 60 minuten op locatie. Heb je meer nodig, bijvoorbeeld voor meerdere panden, dan bespreken we dat vooraf." },
+        { question: "Kan ik de foto's op Funda plaatsen?", answer: "Ja. Gebruik op Funda en in de verkoopbrochure zit bij vastgoed in de prijs, net als gebruik op je eigen website en social media. Het auteursrecht blijft bij mij. Voor advertenties, print of grotere campagnes maken we vooraf aparte afspraken." },
+        { question: "Moet ik erbij zijn tijdens de vlucht?", answer: "Nee. Het is wel prettig als de bewoner of verkoper weet dat ik kom, zodat niemand schrikt van een drone boven het huis. De toegang tot de locatie stemmen we vooraf af." },
+        { question: "Kan er ook gevlogen worden bij een woning vlak bij Schiphol of in een natuurgebied?", answer: "Dat hangt af van de precieze locatie. Rond Schiphol en boven Natura 2000-gebied mag het niet of alleen met toestemming. Ik controleer dat vooraf; kan het niet, dan hoor je dat voordat ik kom en bespreken we wat wel mogelijk is." },
+        { question: "Wat is het beste moment om te fotograferen?", answer: "Dat hangt van het object af. We kiezen samen een moment, en ik kijk de dagen ervoor naar het weer. Is het te winderig of te nat, dan boeken we zonder kosten om. Ik beslis dat uiterlijk de avond ervoor." },
+        { question: "Wat kost een fotoreportage?", answer: "De prijzen staan in het overzicht hierboven, met en zonder btw. De eerste 25 km enkele reis vanuit Zaandam zijn inbegrepen; extra kilometers reken ik door." },
+      ],
+      ctaTitle: "Een pand in beeld brengen?",
+      ctaBody: "Plan direct een moment, of stuur me eerst een bericht met wat je zoekt.",
+    },
+
+    bedrijven: {
+      metaTitle: "Dronevideo voor bedrijven en locaties",
+      metaDescription:
+        "Korte dronefilms van bedrijfsterreinen, jachthavens en andere locaties, voor je website, socials en presentaties. Zaandam en Noord-Holland.",
+      breadcrumb: "Dronevideo",
+      eyebrow: "Bedrijven en locaties",
+      h1: "Dronevideo voor bedrijven en locaties",
+      teaser: "Korte films van terreinen, jachthavens en andere locaties.",
+      lede: "Met een korte film vanuit de lucht laat je zien hoe een terrein, haven of bedrijfspand in elkaar zit en hoe het in zijn omgeving ligt.",
+      intro: [
+        "Ik ben Kai, zelfstandig dronepiloot in Zaandam. Ik film bedrijfsterreinen, recreatieterreinen, jachthavens en andere locaties en monteer er een korte film van die je op je website, socials en in presentaties kunt gebruiken.",
+        "Het gaat om één terrein, locatie of project per film. Zo blijft het verhaal helder: wat is dit voor plek, hoe groot is het en wat ligt er omheen.",
+      ],
+      audienceTitle: "Voor wie is dit?",
+      audience: [
+        {
+          title: "Bedrijven met een terrein",
+          body: "Opslag, logistiek of een bedrijfspand met veel buitenruimte: een overzicht dat op de grond niet te maken is.",
+        },
+        {
+          title: "Jachthavens en recreatieterreinen",
+          body: "Locaties waar ligging en omgeving het verhaal zijn, opgenomen op het juiste uur van de dag.",
+        },
+        {
+          title: "Organisaties en projecten",
+          body: "Een project of locatie die je wilt laten zien aan klanten, bewoners of relaties.",
+        },
+      ],
+      offerTitle: "Wat je krijgt",
+      offerIntro:
+        "Twee pakketten, afhankelijk van hoeveel film je nodig hebt. Gaat het om meerdere locaties of opnamedagen, dan is een project op maat beter; dat begint met een gratis kennismaking.",
+      processTitle: "Zo werkt het",
+      process: [
+        { title: "Kennismaken", body: "We bespreken de locatie, wat je wilt laten zien en waar de film voor dient. Dat kan in een gratis videogesprek van maximaal 20 minuten." },
+        { title: "Voorbereiding", body: "Ik controleer de locatie, de regels voor het luchtruim en de weersverwachting, en kies de route en het moment van de dag. Je krijgt een bevestiging per e-mail." },
+        { title: "Filmen", body: "Tot 90 minuten op locatie. Je hoeft er niet bij te zijn. Ik vlieg niet boven mensen, dus op een terrein waar gewerkt wordt, stemmen we het moment vooraf af." },
+        { title: "Monteren en opleveren", body: "Ik selecteer de beste fragmenten en monteer ze met passende muziek met gebruikslicentie. Je krijgt de film via een downloadlink, binnen vijf werkdagen." },
+      ],
+      deliveryTitle: "Oplevering en gebruik",
+      delivery: [
+        "De film duurt 30 tot 45 seconden bij het pakket foto en korte film, en 60 tot 90 seconden bij de drone-sfeerfilm. Je ontvangt hem met een downloadlink; heb je hem eerder nodig, zeg het dan bij je aanvraag.",
+        "Bij beide filmpakketten is één correctieronde inbegrepen. Extra montage, nog een correctieronde, een tweede videoformaat (bijvoorbeeld staand voor social media) of een voice-over zijn uitbreidingen die ik op aanvraag offreer.",
+        "Gebruik op je eigen website en social media is inbegrepen. Wil je de film in advertenties, print of een grotere campagne inzetten, laat het me dan vooraf weten; dan spreken we de voorwaarden apart af.",
+      ],
+      limitsTitle: "Wat wel en niet kan",
+      limits: [
+        "Ik vlieg in de open categorie met een drone van onder de 250 gram, tot 120 meter hoogte en altijd binnen zicht. Daarmee vlieg ik niet boven mensenmenigten. Een evenement, open dag of drukte op het terrein kan dus alleen als het gebied tijdens de opname leeg is. Vluchten die een vergunning voor de categorie 'specific' vereisen, bied ik op dit moment niet aan.",
+        "Rond Schiphol, boven Natura 2000-gebied en op sommige industrieterreinen mag het niet of alleen met toestemming. Ik zoek dat vooraf voor je uit en laat je weten wat wel kan.",
+      ],
+      workTitle: "Dronefilms uit mijn portfolio",
+      workIntro:
+        "Drie locatiefilms uit de Zaanstreek en Amsterdam. Zo kijk je mee met mijn camerawerk en montage.",
+      workNote:
+        "Dit zijn vrije portfolio-opnames van locaties, geen betaalde opdrachten van bedrijven.",
+      termsTitle: "Tarieven en voorwaarden",
+      faqTitle: "Veelgestelde vragen over dronevideo",
+      faq: [
+        { question: "Hoe lang duurt de film?", answer: "Bij foto en korte film krijg je een clip van 30 tot 45 seconden, bij de drone-sfeerfilm een film van 60 tot 90 seconden. Het gaat steeds om één terrein, locatie of project." },
+        { question: "Zit er muziek in de film?", answer: "Ja, passende muziek met gebruikslicentie. Wil je de film voor meer gebruiken dan je eigen website en social media, laat dat dan weten voordat je boekt." },
+        { question: "Kan ik een film van meerdere locaties laten maken?", answer: "Dat is een project op maat. Het begint met een gratis kennismaking waarin we de locaties, het aantal opnamedagen en de planning bespreken. Daarna krijg je een offerte." },
+        { question: "Kun je filmen terwijl er gewerkt wordt of een evenement is?", answer: "Niet boven publiek of drukte; daarvoor is mijn drone niet bedoeld. Voor beeld van het terrein zelf plannen we de vlucht liever op een moment dat het rustig is of het gebied vrij is." },
+        { question: "Kan ik ook alleen foto's laten maken?", answer: "Ja. Bij de dronefotoreportage krijg je 10 tot 15 bewerkte luchtfoto's van één object of terrein, zonder film." },
+        { question: "Wat kost een dronefilm?", answer: "De prijzen staan in het overzicht hierboven, met en zonder btw. De eerste 25 km enkele reis vanuit Zaandam zijn inbegrepen; extra kilometers reken ik door." },
+      ],
+      ctaTitle: "Een locatie in beweging brengen?",
+      ctaBody: "Plan een kennismaking van twintig minuten, gratis en vrijblijvend, of stuur me een bericht over je locatie.",
+    },
+
+    bouw: {
+      metaTitle: "Bouwvoortgang vastleggen met dronebeelden",
+      metaDescription:
+        "Dronebeelden van je bouwproject vanaf vaste standpunten, bezoek na bezoek vergelijkbaar. Voor aannemers, ontwikkelaars en opdrachtgevers in Noord-Holland.",
+      breadcrumb: "Bouwvoortgang",
+      eyebrow: "Bouwvoortgang",
+      h1: "Bouwvoortgang met dronebeelden",
+      teaser: "Dezelfde standpunten, bezoek na bezoek, voor een duidelijke reeks.",
+      lede: "Dezelfde standpunten, bezoek na bezoek. Zo zie je naast elkaar wat er sinds de vorige keer is gebouwd.",
+      intro: [
+        "Ik ben Kai, zelfstandig dronepiloot in Zaandam. Bij bouwvoortgang vlieg ik periodiek hetzelfde project en neem ik telkens op vanaf dezelfde standpunten en hoogtes. Zo krijg je een reeks beelden die je eenvoudig naast elkaar legt.",
+        "Het ritme bepaal je zelf, bijvoorbeeld elke maand of bij belangrijke bouwfasen. Het eerste bezoek bevat de eerste voorbereiding en het vastleggen van de standpunten; de vervolgbezoeken zijn daardoor voordeliger.",
+      ],
+      audienceTitle: "Voor wie is dit?",
+      audience: [
+        {
+          title: "Aannemers en uitvoerders",
+          body: "Een vast beeld van de voortgang voor je dossier, je rapportage of je eigen website.",
+        },
+        {
+          title: "Projectontwikkelaars en opdrachtgevers",
+          body: "Laat kopers, investeerders of bewoners zien hoe het project vordert.",
+        },
+        {
+          title: "Communicatie rond het project",
+          body: "Beelden voor nieuwsbrieven, socials of een projectpagina, zonder dat je zelf een drone hoeft te regelen.",
+        },
+      ],
+      offerTitle: "Wat je krijgt",
+      offerIntro:
+        "De dienst bestaat uit een eerste bezoek en vervolgbezoeken. Bij elk bezoek krijg je 5 tot 10 bewerkte beelden. Gaat het om meerdere bouwlocaties of een uitgebreider plan, dan is een project op maat beter.",
+      processTitle: "Zo werkt het",
+      process: [
+        { title: "Eerste bezoek", body: "We kiezen samen de standpunten en hoogtes, in overleg met wie op de bouwplaats de leiding heeft. De eerste voorbereiding zit in dit bezoek." },
+        { title: "Voorbereiding", body: "Voor elk bezoek controleer ik het luchtruim, de weersverwachting en wat er op de bouwplaats staat, zoals kranen en bouwverkeer. Je krijgt een bevestiging per e-mail." },
+        { title: "Vliegen", body: "Maximaal 45 minuten op locatie. Ik vlieg tot 120 meter, altijd binnen zicht en niet boven groepen mensen. Op een bouwplaats stemmen we het moment daarom af op het werk." },
+        { title: "Opleveren", body: "Je krijgt 5 tot 10 bewerkte beelden per bezoek, via een downloadlink, binnen vijf werkdagen." },
+      ],
+      deliveryTitle: "Oplevering en gebruik",
+      delivery: [
+        "Na elk bezoek ontvang je de bewerkte beelden via een downloadlink. Omdat de standpunten vastliggen, zijn de beelden van verschillende bezoeken zo goed mogelijk met elkaar te vergelijken.",
+        "Gebruik op je eigen website en social media is inbegrepen. Wil je de beelden in print, advertenties of een grotere campagne gebruiken, dan spreken we dat vooraf apart af.",
+      ],
+      limitsTitle: "Wat je moet weten over vliegen boven een bouwplaats",
+      limits: [
+        "Voor het opstijgen heb ik toestemming nodig van de opdrachtgever of de beheerder van het terrein. Kranen, hijswerk en bouwverkeer neem ik mee in de voorbereiding.",
+        "Rond Schiphol, boven Natura 2000-gebied en op sommige industrieterreinen mag het niet of alleen met toestemming. Ik zoek dat vooraf voor je uit. Ik vlieg in de open categorie met een drone van onder de 250 gram; daarmee vlieg ik niet boven mensenmenigten.",
+      ],
+      workTitle: "Zo zien mijn luchtbeelden eruit",
+      workIntro:
+        "Een bouwreeks staat nog niet in mijn portfolio. Wil je zien hoe ik een wijk vanuit de lucht vastleg, bekijk dan dit voorbeeld.",
+      workNote:
+        "Dit is een vrije portfolio-opname van IJburg in Amsterdam, geen opdracht en geen bouwvoortgangsreeks.",
+      termsTitle: "Tarieven en voorwaarden",
+      faqTitle: "Veelgestelde vragen over bouwvoortgang",
+      faq: [
+        { question: "Hoe vaak komt de drone langs?", answer: "Dat bepaal je zelf, bijvoorbeeld elke maand of bij belangrijke bouwfasen. We spreken het ritme af bij het eerste bezoek." },
+        { question: "Zijn de beelden van verschillende bezoeken echt te vergelijken?", answer: "We leggen de standpunten en hoogtes bij het eerste bezoek vast en ik vlieg ze daarna opnieuw. De hoeken komen zo dicht mogelijk bij elkaar. Op de centimeter exact hangt een drone nooit twee keer op dezelfde plek; voor het volgen van de voortgang is dat ook niet nodig." },
+        { question: "Wat kost een vervolgbezoek?", answer: "Het eerste bezoek en het vervolgbezoek hebben elk een eigen vanafprijs; je vindt ze in het overzicht hierboven, met en zonder btw. De eerste voorbereiding zit in het eerste bezoek, daarom zijn vervolgbezoeken voordeliger." },
+        { question: "Kan er gevlogen worden terwijl er gewerkt wordt?", answer: "Ja, maar niet boven groepen mensen. Ik stem het moment af met de uitvoerder, bijvoorbeeld tijdens de pauze of wanneer het gebied onder de drone vrij is." },
+        { question: "Heb ik toestemming nodig om op een bouwplaats te vliegen?", answer: "Voor het opstijgen heb ik toestemming nodig van de opdrachtgever of de beheerder van het terrein. Op sommige plekken mag het niet of alleen met toestemming van een autoriteit, zoals rond Schiphol; dat zoek ik vooraf uit." },
+        { question: "En als het weer tegenzit?", answer: "Dan verzetten we het bezoek zonder kosten. Ik beslis dat uiterlijk de avond ervoor." },
+      ],
+      ctaTitle: "Een bouwproject in beeld houden?",
+      ctaBody: "Plan een kennismaking van twintig minuten, gratis en vrijblijvend, of stuur me een bericht over je project.",
+    },
+  } satisfies Record<ServicePageKey, ServicePageCopy>,
+
   /* -- Portfolio ----------------------------------------------------------- */
   portfolio: {
-    metaTitle: "Portfolio",
+    metaTitle: "Portfolio dronefoto's en dronevideo's",
     metaDescription:
       `Werk van ${site.name}: dronefoto's en dronevideo's voor vastgoed, bedrijven, evenementen, natuur en locaties in Zaandam en Noord-Holland.`,
     eyebrow: "Portfolio",
     title: "Werk vanuit de lucht",
+    /** Alleen voor schermlezers en zoekmachines: de kop boven de projectkaarten. */
+    listTitle: "Alle projecten",
     intro: (regio: string) =>
       `Werk uit ${regio}. Filter op het soort opdracht.`,
     noticeBefore: "Een deel van het werk is ter illustratie.",
@@ -268,8 +539,8 @@ export const nl = {
 
   /* -- Contact ------------------------------------------------------------- */
   contact: {
-    metaTitle: "Contact",
-    metaDescription: `Neem contact op met ${site.name} voor dronefoto's en korte films in Zaandam en Noord-Holland.`,
+    metaTitle: "Contact met je dronepiloot in Zaandam",
+    metaDescription: `Neem contact op met ${site.name} voor dronefoto's en korte films in Zaandam en Noord-Holland. Stuur een bericht of plan een kennismaking.`,
     eyebrow: "Contact",
     title: "Even sparren?",
     intro:

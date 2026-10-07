@@ -4,6 +4,7 @@ import Link from "next/link";
 import { copy } from "@/content/copy";
 import { site } from "@/content/site";
 import { href, type Locale } from "@/lib/locale";
+import { SERVICE_PAGE_KEYS, servicePagePath } from "@/lib/service-pages";
 
 import { Arrow } from "@/components/arrow";
 
@@ -101,6 +102,30 @@ export async function SiteFooter({ locale }: { locale: Locale }) {
                 {t.nav.privacy}
               </Link>
             </li>
+          </ul>
+          <h2 className="mt-8 text-sm font-medium text-mist-100">
+            {t.nav.servicesHeading}
+          </h2>
+          <ul className="mt-3 space-y-2 text-sm">
+            {SERVICE_PAGE_KEYS.map((key) => {
+              const target = href(servicePagePath(key), locale);
+              const active = pathname === target;
+              return (
+                <li key={key}>
+                  <Link
+                    href={target}
+                    aria-current={active ? "page" : undefined}
+                    className={
+                      active
+                        ? "text-mist-100 underline decoration-2 underline-offset-4"
+                        : "text-mist-500 hover:text-mist-100"
+                    }
+                  >
+                    {t.servicePages[key].h1}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </nav>
 

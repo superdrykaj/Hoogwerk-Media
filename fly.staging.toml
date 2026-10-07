@@ -18,6 +18,10 @@ swap_size_mb = 512
   # scripts/onderhoud/tarieven-2026-10.cjs). Alleen op de testomgeving. Na de
   # eerste geslaagde run mag deze regel weg; hij is herhaalbaar maar overbodig.
   TARIFF_UPDATE = "2026-10"
+  # Eenmalige update van projectteksten en zoektitels (scripts/onderhoud/
+  # seo-projecten-2026-10.cjs, met back-up). Alleen op de testomgeving; na de
+  # eerste geslaagde run mag deze regel weg.
+  SEO_UPDATE = "2026-10"
 
 # Eigen, losse schijf voor de testomgeving — nooit dezelfde als productie,
 # anders overschrijven test en live elkaars data.

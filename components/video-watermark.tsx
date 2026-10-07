@@ -12,6 +12,8 @@ export function VideoWatermark() {
       aria-hidden="true"
       width={160}
       height={160}
+      loading="lazy"
+      decoding="async"
       className="pointer-events-none absolute right-3 top-3 h-9 w-9 opacity-60 drop-shadow-md sm:h-11 sm:w-11"
     />
   );

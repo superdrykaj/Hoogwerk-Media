@@ -36,4 +36,16 @@ if [ "${TARIFF_UPDATE:-}" = "2026-10" ]; then
     || echo "[hoogbeeld-media] Tarievenupdate mislukt; de server start toch."
 fi
 
+# Optioneel: eenmalig de zoektitels en projectteksten van oktober 2026
+# bijwerken (scripts/onderhoud/seo-projecten-2026-10.cjs). Net als hierboven:
+# alleen als SEO_UPDATE=2026-10 is gezet (nu alleen op de testomgeving), met
+# back-up, zonder zelf aangepaste teksten aan te raken, herhaalbaar, en de
+# server start ook als het mislukt.
+if [ "${SEO_UPDATE:-}" = "2026-10" ]; then
+  echo "[hoogbeeld-media] SEO-update 2026-10 uitvoeren."
+  setpriv --reuid="$APP_UID" --regid="$APP_GID" --init-groups \
+    node scripts/onderhoud/seo-projecten-2026-10.cjs \
+    || echo "[hoogbeeld-media] SEO-update mislukt; de server start toch."
+fi
+
 exec setpriv --reuid="$APP_UID" --regid="$APP_GID" --init-groups "$@"

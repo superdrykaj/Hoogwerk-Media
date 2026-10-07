@@ -79,6 +79,23 @@ export const site = {
     insurer: "" as string,
   },
 
+  /**
+   * Plaatsen en regio's waar ik werk, voor de gestructureerde gegevens (zie
+   * lib/json-ld.ts). Houd dit gelijk aan `region.detail` in de teksten; een
+   * test controleert dat elke naam daar ook in voorkomt.
+   */
+  workArea: [
+    { type: "City", name: "Zaandam" },
+    { type: "AdministrativeArea", name: "Zaanstreek" },
+    { type: "City", name: "Amsterdam" },
+    { type: "City", name: "Purmerend" },
+    { type: "City", name: "Haarlem" },
+    { type: "City", name: "Alkmaar" },
+    { type: "City", name: "Hoorn" },
+    { type: "City", name: "Beverwijk" },
+    { type: "AdministrativeArea", name: "Noord-Holland" },
+  ] as { type: "City" | "AdministrativeArea"; name: string }[],
+
   /** Instagram. Laat leeg om de link te verbergen. */
   instagram: "" as string,
 

@@ -252,6 +252,14 @@ export function migrate(db: Database.Database) {
   addColumn(db, "projects", "summary_en", "TEXT NOT NULL DEFAULT ''");
   addColumn(db, "projects", "body_en", "TEXT NOT NULL DEFAULT ''");
   addColumn(db, "projects", "cover_alt_en", "TEXT NOT NULL DEFAULT ''");
+  /**
+   * Eigen titel en omschrijving voor zoekmachines, per taal. Leeg betekent:
+   * gebruik de gewone titel en korte beschrijving van het project.
+   */
+  addColumn(db, "projects", "meta_title", "TEXT NOT NULL DEFAULT ''");
+  addColumn(db, "projects", "meta_title_en", "TEXT NOT NULL DEFAULT ''");
+  addColumn(db, "projects", "meta_description", "TEXT NOT NULL DEFAULT ''");
+  addColumn(db, "projects", "meta_description_en", "TEXT NOT NULL DEFAULT ''");
   addColumn(db, "project_images", "alt_en", "TEXT NOT NULL DEFAULT ''");
   /**
    * Is dit een verzonnen voorbeeldproject?

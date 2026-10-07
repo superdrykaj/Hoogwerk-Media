@@ -1,5 +1,48 @@
 # Wijzigingen
 
+## Oktober 2026 — SEO: dienstpagina's, structured data en snellere hero
+
+- **Drie dienstpagina's, in beide talen**: `/dronefotografie-vastgoed`,
+  `/dronevideo-bedrijven` en `/bouwvoortgang-drone`, met Engelse tegenhangers
+  op `/en/real-estate-drone-photography`, `/en/business-drone-video` en
+  `/en/construction-progress-drone`. Elke pagina heeft een eigen titel en
+  omschrijving, één H1, werkwijze, oplevering, de bestaande tarieven en
+  voorwaarden (uit dezelfde bron als de homepage), portfoliowerk, vragen en
+  een link naar boeken en contact. De taalknop en hreflang kennen de vertaalde
+  adressen (`lib/locale.ts`, `lib/service-pages.ts`).
+- **Homepage**: de H1 is nu "Dronefotografie en dronevideo in Zaandam en
+  Noord-Holland"; de slogan staat eronder. De vier dienstblokken linken naar de
+  dienstpagina's, en de footer heeft een lijst "Diensten". Titel en
+  omschrijving van de homepage zijn gelijk gebleven (Engelse omschrijving
+  ingekort tot 160 tekens).
+- **Gestructureerde gegevens**: Organization op de homepage (naam, website,
+  logo, e-mailadres, werkgebied; geen adres of telefoonnummer, want die zijn
+  er niet), Service en BreadcrumbList op de dienstpagina's, BreadcrumbList bij
+  projecten. De bestaande VideoObject blijft. Alle JSON-LD wordt nu veilig
+  geserialiseerd (`<` als `\u003c`).
+- **Projectmetadata**: nieuwe velden "Titel voor Google" en "Omschrijving voor
+  Google" (NL en EN) per project, met een eigen blok in het projectformulier.
+  De drie echte projecten krijgen er bijvoorbeeld "Dronevideo van de Zaan in
+  Wormerveer" mee, plus een alinea met aantoonbare feiten (filmlengte, aantal
+  foto's, vrije portfolio-opname). Bestaande databases:
+  `scripts/onderhoud/seo-projecten-2026-10.cjs`. Open Graph en Twitter-kaart
+  van projectpagina's behouden nu sitenaam, taal en type.
+- **Gerepareerd**: opslaan van een project in de beheeromgeving gaf de Engelse
+  velden niet door, waardoor de Engelse teksten bij elke wijziging werden
+  leeggemaakt.
+- **Portfolio en contact**: unieke titels per taal (waren in NL en EN gelijk),
+  een verborgen kop "Alle projecten" boven de kaarten (de koppen sprongen van
+  H1 naar H3), een iets rijkere contactomschrijving.
+- **Sitemap en robots**: de dienstpagina's staan in de sitemap, met `x-default`
+  in de taalverwijzingen. `robots.txt` laat `/api/uploads/` toe (de
+  projectbeelden uit de beheeromgeving) en blokkeert de rest van `/api`.
+- **Prestaties**: de hero-video had zijn posterbeeld alleen via JavaScript en
+  begon meteen te laden, waardoor de video het grootste element van de pagina
+  werd. Het posterbeeld komt nu alleen uit de `<img>` eronder, de video begint
+  pas na het load-event, de twee hero-posters zijn herencodeerd (156 → 85 kB en
+  189 → 101 kB, PSNR 35,5 dB), het showreel-poster laadt pas bij het naderen en
+  het watermerk laadt lui.
+
 ## Oktober 2026 — tarievensectie rustiger en pakketten aangescherpt
 
 - Tarievensectie: titel "Tarieven voor foto en video", de prijstoelichting

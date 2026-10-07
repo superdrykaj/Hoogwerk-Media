@@ -105,6 +105,16 @@ export type Project = {
   summaryEn: string;
   bodyEn: string;
   coverAltEn: string;
+  /**
+   * Eigen titel en omschrijving voor zoekmachines (<title> en meta
+   * description). Leeg = de gewone titel en korte beschrijving. Een lege
+   * Engelse waarde valt NIET terug op het Nederlands: een Nederlandse
+   * zoekresultaatregel boven een Engelse pagina is erger dan de gewone titel.
+   */
+  metaTitle: string;
+  metaTitleEn: string;
+  metaDescription: string;
+  metaDescriptionEn: string;
   videoUrl: string;
   published: boolean;
   featured: boolean;

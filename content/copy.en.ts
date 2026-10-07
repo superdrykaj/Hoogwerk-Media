@@ -26,8 +26,8 @@ export const en: Dictionary = {
     tagline: "Drone photography in Zaandam and North Holland",
     description:
       `${site.name} makes aerial photos and short films for real estate, ` +
-      `commercial sites and construction projects in Zaandam and North ` +
-      `Holland. Book a slot online.`,
+      `commercial sites and construction in Zaandam and North Holland. ` +
+      `Book a slot online.`,
     ogDescription:
       "Aerial photos and short films for real estate, commercial sites and " +
       "construction projects in Zaandam and North Holland.",
@@ -57,6 +57,7 @@ export const en: Dictionary = {
     skipToContent: "Skip to main content",
     homeAria: `${site.name} — back to the homepage`,
     menuHeading: "Menu",
+    servicesHeading: "Services",
     contactHeading: "Contact",
   },
 
@@ -79,9 +80,10 @@ export const en: Dictionary = {
 
   /* -- Home ---------------------------------------------------------------- */
   home: {
-    heroTitle: "Your location, professionally filmed from the air",
+    heroTitle: "Drone photography and video in Zaandam and North Holland",
+    /** The company slogan, as supporting text under the heading. */
     heroIntro:
-      "Aerial work for real estate, businesses and construction in Zaandam and North Holland.",
+      "Your location, professionally filmed from the air: aerial work for real estate, businesses and construction.",
     heroCta: "Discuss your project",
     heroWork: "See the work",
     heroPosterAlt:
@@ -91,10 +93,10 @@ export const en: Dictionary = {
     servicesEyebrow: "What I do",
     servicesTitle: "Images that won't fit from the ground",
     highlights: [
-      { title: "Property", body: "Homes and commercial buildings in their surroundings. For property listings, websites and sales brochures." },
-      { title: "Business sites", body: "An overview of the grounds, storage and logistics. Ready for your site, socials and presentations." },
-      { title: "Construction progress", body: "The same route, every month. Fixed angles that make the progress visible." },
-      { title: "Locations and nature", body: "Recreation areas, marinas and polders, shot at the right hour of the day." },
+      { title: "Property", body: "Homes and commercial buildings in their surroundings. For property listings, websites and sales brochures.", page: "vastgoed" },
+      { title: "Business sites", body: "An overview of the grounds, storage and logistics. Ready for your site, socials and presentations.", page: "bedrijven" },
+      { title: "Construction progress", body: "The same route, every month. Fixed angles that make the progress visible.", page: "bouw" },
+      { title: "Locations and nature", body: "Recreation areas, marinas and polders, shot at the right hour of the day.", page: "bedrijven" },
     ],
 
     pricesTitle: "Services and rates",
@@ -199,14 +201,248 @@ export const en: Dictionary = {
     ],
   },
 
+  /* -- Service pages ------------------------------------------------------- */
+  /**
+   * One block per service page (see lib/service-pages.ts for the addresses).
+   * Prices and terms are deliberately NOT here: they come from
+   * `home.packagePricing`, `home.included` and `home.excluded` and from the
+   * services in the admin area, so they stay identical on every page.
+   */
+  servicePageUi: {
+    startLabel: "Home",
+    breadcrumbLabel: "Breadcrumb",
+    offerEyebrow: "Services",
+    processEyebrow: "How it works",
+    deliveryEyebrow: "Delivery",
+    limitsEyebrow: "Flying",
+    workEyebrow: "Portfolio",
+    termsEyebrow: "Rates",
+    faqEyebrow: "Questions",
+    audienceEyebrow: "Who it is for",
+    relatedTitle: "Other services",
+    allRates: "All rates and terms",
+    workAll: "See the full portfolio",
+    asideTitle: "Book a flight",
+    asideBody:
+      "Pick a time in the calendar, or ask a question first. A twenty-minute intro call is free.",
+    asideAsk: "Ask a question first",
+    moreAbout: "Read more",
+  },
+  servicePages: {
+    vastgoed: {
+      metaTitle: "Real estate drone photography in Zaandam",
+      metaDescription:
+        "Aerial photos of homes and commercial buildings for property listings, your website and sales brochure. Drone pilot in Zaandam, working across North Holland.",
+      breadcrumb: "Real estate",
+      eyebrow: "Real estate",
+      h1: "Drone photography for real estate",
+      teaser: "Aerial photos of homes and commercial buildings in their surroundings.",
+      lede: "A home or commercial building can never be fully captured from the ground. From the air you see the location, the plot and the surroundings in a single image.",
+      intro: [
+        "I'm Kai, a freelance drone pilot in Zaandam. For real estate I take aerial photos of a single building or site: the property itself, but above all how it sits in its surroundings. That is often exactly what a viewer misses in an ordinary photo.",
+        "The images are meant for the property portal, your own website and the sales brochure. I choose the best angles and edit the photos, so you receive a selection rather than a pile of loose shots.",
+      ],
+      audienceTitle: "Who is this for?",
+      audience: [
+        {
+          title: "Estate agents and sellers",
+          body: "A home or building whose location is a selling point: on the water, with a deep garden or in a green setting.",
+        },
+        {
+          title: "Landlords and investors",
+          body: "Commercial buildings, offices and complexes where parking, accessibility and surroundings matter.",
+        },
+        {
+          title: "Owners and managers",
+          body: "An overview of your own building or site for your website, a brochure or a presentation.",
+        },
+      ],
+      offerTitle: "What you get",
+      offerIntro:
+        "Two packages suit real estate. Choose the photos alone, or add a short film for your website or social media. What each includes and what it costs is shown below.",
+      processTitle: "How it works",
+      process: [
+        { title: "Getting acquainted", body: "You tell me about the property and what the images are for. That can be a free video call of up to 20 minutes, or through the booking form." },
+        { title: "Preparation", body: "I check the location, the airspace rules and the weather forecast. Then I confirm the date and time by e-mail; only then is the appointment final." },
+        { title: "Flying", body: "Up to 60 minutes on location for the photo shoot, up to 90 minutes if a film is included. You don't need to be there. I aim at the building and the plot, not at the gardens and windows of the neighbours." },
+        { title: "Delivery", body: "You receive the edited images through a download link, within five working days." },
+      ],
+      deliveryTitle: "Delivery and use",
+      delivery: [
+        "You receive a link to download the images. Need them sooner, for instance because a home is about to go on the market? Say so with your request; next-day often works.",
+        "Use on your own website and social media is included, and for real estate also on the property portal and in the sales brochure. The copyright stays with me. If you want to use the images in adverts, print or a larger campaign, we agree separate terms beforehand.",
+        "You can request a change through the download link. With the photos-and-short-film package, one round of corrections is included; further rounds are an extension on request.",
+      ],
+      limitsTitle: "Where I can fly",
+      limits: [
+        "A drone may not fly everywhere. Around Schiphol, over Natura 2000 areas and on some industrial estates it is not allowed, or only with permission. I sort that out for you beforehand and tell you whether and how it can be done. I fly up to 120 metres and always within sight.",
+        "In a residential area, or at a building among other buildings, I keep away from other people's gardens and windows. For a low shot I would rather fly a little higher than have someone feel watched.",
+      ],
+      workTitle: "An example from my portfolio",
+      workIntro:
+        "This is what my aerial images of a residential area look like: a film and photos of IJburg in Amsterdam.",
+      workNote:
+        "This is a free portfolio recording of the district, not an assignment for a seller or estate agent.",
+      termsTitle: "Rates and terms",
+      faqTitle: "Frequently asked questions about real estate photography",
+      faq: [
+        { question: "How many photos do I get of a home?", answer: "With the drone photo shoot you get 10 to 15 edited aerial photos of a single building or site, with up to 60 minutes on location. Need more, for instance for several buildings? We discuss that beforehand." },
+        { question: "Can I put the photos on the property portal?", answer: "Yes. For real estate, use on the property portal and in the sales brochure is included in the price, as is use on your own website and social media. The copyright stays with me. For adverts, print or larger campaigns we agree separate terms beforehand." },
+        { question: "Do I need to be there during the flight?", answer: "No. It helps if the resident or seller knows I'm coming, so nobody is startled by a drone above the house. We agree access to the location beforehand." },
+        { question: "Can you fly at a home close to Schiphol or in a nature reserve?", answer: "That depends on the exact location. Around Schiphol and over Natura 2000 areas it is not allowed, or only with permission. I check that beforehand; if it can't be done, you hear before I come and we discuss what is possible." },
+        { question: "What is the best moment to take the photos?", answer: "That depends on the property. We choose a moment together, and I check the weather in the days before. If it is too windy or too wet, we rebook at no cost. I decide that the evening before at the latest." },
+        { question: "What does a photo shoot cost?", answer: "The prices are in the overview above, with and without VAT. The first 25 km one-way from Zaandam are included; I charge for extra kilometres." },
+      ],
+      ctaTitle: "Want to show a property from above?",
+      ctaBody: "Book a time straight away, or send me a message first with what you have in mind.",
+    },
+
+    bedrijven: {
+      metaTitle: "Drone video for businesses and locations",
+      metaDescription:
+        "Short drone films of business sites, marinas and other locations, for your website, socials and presentations. Zaandam and North Holland.",
+      breadcrumb: "Drone video",
+      eyebrow: "Businesses and locations",
+      h1: "Drone video for businesses and locations",
+      teaser: "Short films of sites, marinas and other locations.",
+      lede: "A short film from the air shows how a site, marina or commercial building fits together and how it sits in its surroundings.",
+      intro: [
+        "I'm Kai, a freelance drone pilot in Zaandam. I film business sites, recreation areas, marinas and other locations and edit them into a short film you can use on your website, socials and in presentations.",
+        "Each film is about one site, location or project. That keeps the story clear: what kind of place is this, how big is it and what is around it.",
+      ],
+      audienceTitle: "Who is this for?",
+      audience: [
+        {
+          title: "Businesses with a site",
+          body: "Storage, logistics or a commercial building with a lot of outdoor space: an overview you cannot make from the ground.",
+        },
+        {
+          title: "Marinas and recreation areas",
+          body: "Locations where position and surroundings are the story, filmed at the right hour of the day.",
+        },
+        {
+          title: "Organisations and projects",
+          body: "A project or location you want to show to customers, residents or relations.",
+        },
+      ],
+      offerTitle: "What you get",
+      offerIntro:
+        "Two packages, depending on how much film you need. If it involves several locations or shooting days, a custom project is a better fit; that starts with a free intro call.",
+      processTitle: "How it works",
+      process: [
+        { title: "Getting acquainted", body: "We discuss the location, what you want to show and what the film is for. That can be a free video call of up to 20 minutes." },
+        { title: "Preparation", body: "I check the location, the airspace rules and the weather forecast, and choose the route and the time of day. You receive a confirmation by e-mail." },
+        { title: "Filming", body: "Up to 90 minutes on location. You don't need to be there. I don't fly over people, so on a site where work is going on, we agree the moment beforehand." },
+        { title: "Editing and delivery", body: "I select the best clips and edit them with fitting licensed music. You receive the film through a download link, within five working days." },
+      ],
+      deliveryTitle: "Delivery and use",
+      delivery: [
+        "The film runs 30 to 45 seconds with the photos-and-short-film package, and 60 to 90 seconds with the drone atmosphere film. You receive it with a download link; need it sooner? Say so with your request.",
+        "Both film packages include one round of corrections. Extra editing, another round of corrections, a second video format (for example vertical for social media) or a voice-over are extensions I quote on request.",
+        "Use on your own website and social media is included. If you want to use the film in adverts, print or a larger campaign, let me know beforehand and we agree the terms separately.",
+      ],
+      limitsTitle: "What is and isn't possible",
+      limits: [
+        "I fly in the open category with a drone under 250 grams, up to 120 metres and always within sight. That means I do not fly over crowds. An event, open day or a busy site is therefore only possible if the area is empty during the shoot. Flights that require an operational authorisation for the ‘specific’ category are not offered at the moment.",
+        "Around Schiphol, over Natura 2000 areas and on some industrial estates it is not allowed, or only with permission. I sort that out for you beforehand and tell you what is possible.",
+      ],
+      workTitle: "Drone films from my portfolio",
+      workIntro:
+        "Three location films from the Zaan region and Amsterdam. A look at my camera work and editing.",
+      workNote:
+        "These are free portfolio recordings of locations, not paid assignments from businesses.",
+      termsTitle: "Rates and terms",
+      faqTitle: "Frequently asked questions about drone video",
+      faq: [
+        { question: "How long is the film?", answer: "With photos and short film you get a clip of 30 to 45 seconds; with the drone atmosphere film, a film of 60 to 90 seconds. Each film is about one site, location or project." },
+        { question: "Is there music in the film?", answer: "Yes, fitting music with a usage licence. If you want to use the film for more than your own website and social media, let me know before you book." },
+        { question: "Can I have a film made of several locations?", answer: "That is a custom project. It starts with a free intro call in which we discuss the locations, the number of shooting days and the planning. After that you receive a quote." },
+        { question: "Can you film while work is going on or during an event?", answer: "Not over crowds or busy areas; my drone is not meant for that. For footage of the site itself, I prefer to plan the flight at a quiet moment or when the area is clear." },
+        { question: "Can I have photos only?", answer: "Yes. With the drone photo shoot you get 10 to 15 edited aerial photos of a single building or site, without a film." },
+        { question: "What does a drone film cost?", answer: "The prices are in the overview above, with and without VAT. The first 25 km one-way from Zaandam are included; I charge for extra kilometres." },
+      ],
+      ctaTitle: "Want to bring a location to life?",
+      ctaBody: "Book a free, no-obligation intro call of twenty minutes, or send me a message about your location.",
+    },
+
+    bouw: {
+      metaTitle: "Construction progress with drone footage",
+      metaDescription:
+        "Drone images of your construction project from fixed viewpoints, comparable visit after visit. For contractors, developers and clients in North Holland.",
+      breadcrumb: "Construction progress",
+      eyebrow: "Construction progress",
+      h1: "Construction progress with drone footage",
+      teaser: "The same viewpoints, visit after visit, for a clear series.",
+      lede: "The same viewpoints, visit after visit. That way you can see side by side what has been built since the last time.",
+      intro: [
+        "I'm Kai, a freelance drone pilot in Zaandam. For construction progress I fly the same project periodically and record from the same viewpoints and heights every time. That gives you a series of images you can easily lay side by side.",
+        "You set the rhythm, for instance every month or at key construction phases. The first visit includes the initial preparation and fixing the viewpoints; follow-up visits are therefore cheaper.",
+      ],
+      audienceTitle: "Who is this for?",
+      audience: [
+        {
+          title: "Contractors and site managers",
+          body: "A consistent record of progress for your file, your reporting or your own website.",
+        },
+        {
+          title: "Developers and clients",
+          body: "Show buyers, investors or residents how the project is coming along.",
+        },
+        {
+          title: "Project communication",
+          body: "Images for newsletters, socials or a project page, without having to arrange a drone yourself.",
+        },
+      ],
+      offerTitle: "What you get",
+      offerIntro:
+        "The service consists of a first visit and follow-up visits. At each visit you receive 5 to 10 edited images. If it involves several construction sites or a more extensive plan, a custom project is a better fit.",
+      processTitle: "How it works",
+      process: [
+        { title: "First visit", body: "Together we choose the viewpoints and heights, in consultation with whoever is in charge on site. The initial preparation is part of this visit." },
+        { title: "Preparation", body: "Before every visit I check the airspace, the weather forecast and what is on the site, such as cranes and construction traffic. You receive a confirmation by e-mail." },
+        { title: "Flying", body: "Up to 45 minutes on location. I fly up to 120 metres, always within sight and not over groups of people. On a construction site we therefore agree the moment around the work." },
+        { title: "Delivery", body: "You receive 5 to 10 edited images per visit, through a download link, within five working days." },
+      ],
+      deliveryTitle: "Delivery and use",
+      delivery: [
+        "After every visit you receive the edited images through a download link. Because the viewpoints are fixed, the images from different visits can be compared as closely as possible.",
+        "Use on your own website and social media is included. If you want to use the images in print, adverts or a larger campaign, we agree separate terms beforehand.",
+      ],
+      limitsTitle: "What to know about flying over a construction site",
+      limits: [
+        "Before take-off I need permission from the client or the manager of the site. I include cranes, lifting operations and construction traffic in the preparation.",
+        "Around Schiphol, over Natura 2000 areas and on some industrial estates it is not allowed, or only with permission. I sort that out for you beforehand. I fly in the open category with a drone under 250 grams; that means I do not fly over crowds.",
+      ],
+      workTitle: "What my aerial images look like",
+      workIntro:
+        "A construction series is not in my portfolio yet. To see how I capture a district from the air, take a look at this example.",
+      workNote:
+        "This is a free portfolio recording of IJburg in Amsterdam, not an assignment and not a construction progress series.",
+      termsTitle: "Rates and terms",
+      faqTitle: "Frequently asked questions about construction progress",
+      faq: [
+        { question: "How often does the drone come by?", answer: "You decide, for instance every month or at key construction phases. We agree the rhythm at the first visit." },
+        { question: "Can images from different visits really be compared?", answer: "We fix the viewpoints and heights at the first visit and I fly them again afterwards. The angles end up as close as possible. A drone never hovers in exactly the same spot twice to the centimetre; for following progress, that isn't necessary." },
+        { question: "What does a follow-up visit cost?", answer: "The first visit and the follow-up visit each have their own from-price; you will find them in the overview above, with and without VAT. The initial preparation is part of the first visit, which is why follow-up visits are cheaper." },
+        { question: "Can you fly while work is going on?", answer: "Yes, but not over groups of people. I agree the moment with the site manager, for instance during a break or when the area below the drone is clear." },
+        { question: "Do I need permission to fly over a construction site?", answer: "Before take-off I need permission from the client or the manager of the site. In some places flying is not allowed, or only with permission from an authority, such as around Schiphol; I sort that out beforehand." },
+        { question: "And if the weather is bad?", answer: "Then we rebook the visit at no cost. I decide that the evening before at the latest." },
+      ],
+      ctaTitle: "Want to keep track of a construction project?",
+      ctaBody: "Book a free, no-obligation intro call of twenty minutes, or send me a message about your project.",
+    },
+  },
+
   /* -- Portfolio ----------------------------------------------------------- */
   portfolio: {
-    metaTitle: "Portfolio",
+    metaTitle: "Drone photo and video portfolio",
     metaDescription:
       `Work by ${site.name}: aerial photography and video for real estate, ` +
       "commercial sites, construction and locations in Zaandam and North Holland.",
     eyebrow: "Portfolio",
     title: "Work from the air",
+    /** For screen readers and search engines only: the heading above the project cards. */
+    listTitle: "All projects",
     intro: (region: string) => `Work from ${region}. Filter by type of work.`,
     noticeBefore: "Some of this work is shown as illustration.",
     noticeStrong: "",
@@ -265,8 +501,8 @@ export const en: Dictionary = {
 
   /* -- Contact ------------------------------------------------------------- */
   contact: {
-    metaTitle: "Contact",
-    metaDescription: `Get in touch with ${site.name} for aerial photos and short films in Zaandam and North Holland.`,
+    metaTitle: "Contact your drone pilot in Zaandam",
+    metaDescription: `Get in touch with ${site.name} for aerial photos and short films in Zaandam and North Holland. Send a message or book an intro call.`,
     eyebrow: "Contact",
     title: "Let's talk it through",
     intro:

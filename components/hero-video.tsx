@@ -15,15 +15,20 @@ import { useEffect, useRef } from "react";
  *  De <video> gaat dus zonder src de deur uit. Dat scheelt ook een
  *  hydratiefout: server en browser renderen precies hetzelfde.
  *
- *  Het posterbeeld staat er als gewone <img> onder. Blijft de video weg — geen
+ *  Het posterbeeld staat er als gewone <img> onder. De <video> krijgt zelf
+ *  geen poster-attribuut: dat tekent hetzelfde beeld nog eens, pas nadat de
+ *  scripts zijn gestart, en dan telt de browser dat late videobeeld als het
+ *  grootste element van de pagina. De bron wordt bovendien pas na het
+ *  load-event gezet, zodat de video niet met het posterbeeld, de scripts en
+ *  de lettertypen om de verbinding strijdt. Blijft de video weg — geen
  *  netwerk, autoplay geweigerd, een bestand dat niet laadt, of iemand die
  *  minder beweging heeft ingesteld — dan valt daar dus altijd nog een beeld te
  *  zien, en blijft de hoogte van de hero gelijk.
  * ============================================================================
  */
 
-const POSTER = "/media/hoogbeeldmedia-poster.webp?v=20261001";
-const POSTER_MOBIEL = "/media/hoogbeeldmedia-hero-mobile-poster.webp?v=20261001";
+const POSTER = "/media/hoogbeeldmedia-poster.webp?v=20261007";
+const POSTER_MOBIEL = "/media/hoogbeeldmedia-hero-mobile-poster.webp?v=20261007";
 
 /** Tot en met 767 px staand beeld, daarboven liggend. */
 const MOBIEL = "(max-width: 767px)";
@@ -95,24 +100,17 @@ export function HeroVideo({ alt }: { alt: string }) {
     if (!video) return;
 
     const breekpunt = window.matchMedia(MOBIEL);
-    const zetPoster = () => {
-      video.poster = breekpunt.matches ? POSTER_MOBIEL : POSTER;
-    };
-    zetPoster();
-    breekpunt.addEventListener("change", zetPoster);
 
     // Minder beweging gevraagd: niets ophalen, niets afspelen. Het posterbeeld
     // eronder is dan het hele verhaal.
     if (window.matchMedia(MINDER_BEWEGING).matches) {
-      return () => breekpunt.removeEventListener("change", zetPoster);
+      return;
     }
 
     // Hetzelfde bij databesparing of een 2G-verbinding. Bewust niet alleen op
     // een klein scherm: databesparing is iets wat de bezoeker zelf aanzet, en
     // dat geldt net zo goed achter een laptop op een gedeelde hotspot.
-    if (zuinigOfTraag()) {
-      return () => breekpunt.removeEventListener("change", zetPoster);
-    }
+    if (zuinigOfTraag()) return;
 
     const zetBron = () => {
       const bron = kiesBron(video, breekpunt.matches);
@@ -126,11 +124,30 @@ export function HeroVideo({ alt }: { alt: string }) {
       void video.play().catch(() => {});
     };
 
-    zetBron();
-    breekpunt.addEventListener("change", zetBron);
+    /**
+     * Pas beginnen met ophalen als de pagina zelf klaar is. Het posterbeeld
+     * is wat de bezoeker eerst ziet; de video van een paar megabyte hoeft niet
+     * met het posterbeeld, de scripts en de lettertypen om de verbinding te
+     * strijden. Het verschil is voor de bezoeker een fractie van een seconde
+     * later bewegend beeld, en een snellere eerste weergave.
+     */
+    let gestart = false;
+    const start = () => {
+      if (gestart) return;
+      gestart = true;
+      zetBron();
+      breekpunt.addEventListener("change", zetBron);
+    };
+
+    if (document.readyState === "complete") {
+      start();
+    } else {
+      window.addEventListener("load", start, { once: true });
+    }
+
     return () => {
+      window.removeEventListener("load", start);
       breekpunt.removeEventListener("change", zetBron);
-      breekpunt.removeEventListener("change", zetPoster);
     };
   }, []);
 

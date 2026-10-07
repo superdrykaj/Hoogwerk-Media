@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 
 import { href } from "@/lib/locale";
 import { listProjects } from "@/lib/projects";
+import { SERVICE_PAGE_KEYS, servicePagePath } from "@/lib/service-pages";
 import { siteStatus } from "@/lib/site-status";
 import { siteOrigin } from "@/lib/site-url";
 
@@ -21,7 +22,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: number,
     lastModified?: Date,
   ): MetadataRoute.Sitemap {
-    const languages = { nl: `${base}${path}`, en: `${base}${href(path, "en")}` };
+    const languages = {
+      nl: `${base}${path}`,
+      en: `${base}${href(path, "en")}`,
+      // Zonder taalvoorkeur komt de bezoeker op de Nederlandse versie uit.
+      "x-default": `${base}${path}`,
+    };
     return [
       {
         url: languages.nl,
@@ -42,6 +48,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     ...beideTalen("/", "weekly", 1),
+    ...SERVICE_PAGE_KEYS.flatMap((key) =>
+      beideTalen(servicePagePath(key), "monthly", 0.8),
+    ),
     ...beideTalen("/portfolio", "weekly", 0.8),
     ...beideTalen("/contact", "monthly", 0.6),
     ...projects.flatMap((project) =>
