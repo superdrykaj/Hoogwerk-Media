@@ -63,6 +63,16 @@ export const nl = {
     contactHeading: "Contact",
   },
 
+  /** Bedrijfsgegevens zoals ingeschreven bij de Kamer van Koophandel. */
+  company: {
+    tradeName: "Handelsnaam",
+    legalFormLabel: "Rechtsvorm",
+    /** De tekst bij `site.business.legalForm`. */
+    legalForm: "Eenmanszaak",
+    kvkLabel: "KvK-nummer",
+    cityLabel: "Vestigingsplaats",
+  },
+
   footer: {
     note:
       "Zelfstandig dronepiloot in Zaandam. Elke vlucht wordt vooraf getoetst en bevestigd.",
@@ -277,6 +287,7 @@ export const nl = {
     emailLabel: "E-mail",
     phoneLabel: "Telefoon",
     areaLabel: "Werkgebied",
+    companyLabel: "Bedrijfsgegevens",
     bookLabel: "Liever meteen een moment prikken?",
     whatsappLabel: "WhatsApp",
     whatsappLink: "Stuur een bericht",

@@ -63,12 +63,16 @@ function DutchBody() {
           <section>
             <h2 className="display-3 mb-3">Wie is verantwoordelijk?</h2>
             <p>
-              {site.name}, gevestigd in Zaandam, is verantwoordelijk voor de
-              verwerking van persoonsgegevens via deze website.
+              {site.name}, een eenmanszaak gevestigd in {site.business.city}
+              {site.business.kvk && <> (KvK-nummer {site.business.kvk})</>}, is
+              verantwoordelijk voor de verwerking van persoonsgegevens via deze
+              website.
             </p>
             <p>
-              KvK-nummer: <Fill locale="nl">KvK-nummer</Fill>. Btw-nummer:{" "}
-              <Fill locale="nl">btw-identificatienummer</Fill>. Contact:{" "}
+              {site.business.vat ? (
+                <>Btw-nummer: {site.business.vat}. </>
+              ) : null}
+              Contact:{" "}
               <a href={`mailto:${site.email}`} className="text-haze-300 hover:underline">
                 {site.email}
               </a>
@@ -181,12 +185,15 @@ function EnglishBody() {
       <section>
         <h2 className="display-3 mb-3">Who is responsible?</h2>
         <p>
-          {site.name}, established in Zaandam, is responsible for the
-          processing of personal data through this website.
+          {site.name}, a sole proprietorship (eenmanszaak) established in{" "}
+          {site.business.city}
+          {site.business.kvk && <> (Chamber of Commerce number {site.business.kvk})</>}
+          , is responsible for the processing of personal data through this
+          website.
         </p>
         <p>
-          Chamber of Commerce number: <Fill locale="en">KvK number</Fill>. VAT
-          number: <Fill locale="en">VAT identification number</Fill>. Contact:{" "}
+          {site.business.vat ? <>VAT number: {site.business.vat}. </> : null}
+          Contact:{" "}
           <a href={`mailto:${site.email}`} className="text-haze-300 hover:underline">
             {site.email}
           </a>

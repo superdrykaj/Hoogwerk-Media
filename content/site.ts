@@ -69,9 +69,20 @@ export const site = {
    *  KvK-nummer en verzekering kom je bij hen de poort niet door.
    */
   business: {
-    /** KvK-nummer van de eenmanszaak. Voorbeeld: "12345678". */
-    kvk: "" as string,
-    /** BTW-identificatienummer. Laat leeg als je de KOR gebruikt. */
+    /**
+     * KvK-nummer van de eenmanszaak (handelsregister). Staat in de footer, op
+     * de contactpagina, in de privacyverklaring, in de gestructureerde
+     * gegevens en als beginwaarde op facturen: wijzig het hier, dan volgt alles.
+     */
+    kvk: "42201319" as string,
+    /** Rechtsvorm; de tekst per taal staat in `company.legalForm` in de copy-bestanden. */
+    legalForm: "eenmanszaak" as string,
+    /** Vestigingsplaats, zoals ingeschreven bij de KvK. Geen straatadres. */
+    city: "Zaandam" as string,
+    /**
+     * BTW-identificatienummer (NL…B01). Nog niet ingevuld: verzin het nooit,
+     * en laat het leeg tot het er is. Zolang het leeg is, toont de site niets.
+     */
     vat: "" as string,
     /** Operatornummer van de RDW, begint met NLD. */
     droneOperator: "NLDeflfyqk6tk2y5" as string,
