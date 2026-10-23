@@ -67,10 +67,13 @@ onderstaande routes kunt publiceren.
 Je hebt een Fly.io-account nodig, inclusief betaalgegevens. Een enkele kleine
 machine met een schijf van 1 GB valt in de goedkoopste categorie.
 
-In `fly.toml` staat `min_machines_running = 0`: de machine gaat slapen als er
-niemand op de site is, en wordt door het eerste bezoek weer gewekt. Dat scheelt
-kosten, maar die ene bezoeker wacht een paar seconden langer. Wil je dat niet,
-zet hem dan op `1`; de machine draait dan altijd door.
+In `fly.toml` staat `min_machines_running = 1`: de machine draait altijd door,
+zodat elke bezoeker meteen een antwoord krijgt. Met `0` gaat de machine slapen
+als er even niemand op de site is en wordt hij door het eerste bezoek weer
+gewekt; die ene bezoeker wacht dan enkele seconden (op de testomgeving gemeten:
+5,4 seconden voor de eerste byte). Dat scheelt een paar dollar per maand, maar
+kost bezoekers die je net hebt aangetrokken. De testomgeving
+(`fly.staging.toml`) staat bewust nog op `0`.
 
 Op macOS en Linux:
 

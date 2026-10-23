@@ -1,5 +1,31 @@
 # Wijzigingen
 
+## Oktober 2026 — snellere eerste indruk: laadscherm en navigatiestreep
+
+- **Oorzaak van het trage laden gemeten.** Op de testomgeving kostte een
+  bezoek aan een gestopte machine 5,4 seconden tot de eerste byte (cold start,
+  `min_machines_running = 0`); een draaiende machine antwoordt in een halve
+  seconde (gemeten vanuit het buitenland, de server zelf rendert een pagina in
+  30–60 ms). Het ophalen van de pagina's, de scripts (ongeveer 220 kB
+  gecomprimeerd) en het hero-beeld (100 kB) is niet de bottleneck.
+- `fly.toml`: `min_machines_running = 1`. Productie draait nu altijd; dat kost
+  ongeveer 3 à 4 dollar per maand. De testomgeving blijft op 0.
+- **Laadscherm** (`components/page-loader.tsx`, `.hb-loader` in `globals.css`):
+  beeldmerk, woordmerk en een lijn die een dronevlucht boven de horizon volgt.
+  Alleen CSS en SVG, een script van ongeveer 1 kB, geen bibliotheek. Het scherm
+  verschijnt pas 300 ms na het laden en alleen als de pagina dan nog niet klaar
+  is (lettertypen en het belangrijkste beeld binnen); er is geen minimale
+  duur. Het vangt geen klikken op, staat voor schermlezers uit, valt bij
+  `prefers-reduced-motion` terug op een stilstaande lijn, verschijnt niet
+  zonder JavaScript en sluit zichzelf na 6 seconden als het laden vastloopt (de
+  CSS doet dat na 7 seconden als het script niet draait). Niet op `/admin` en
+  de opleverpagina's.
+- **Navigatiestreep** (`components/navigation-progress.tsx`): een vaste strook
+  van 2 px bovenaan die pas na 250 ms zichtbaar wordt als de volgende pagina
+  er nog niet is. Snelle navigatie toont niets, er verspringt niets.
+- Het logo en de voorbeeldbeelden in de wortel van `public/` krijgen een dag
+  cache in plaats van `max-age=0`.
+
 ## Oktober 2026 — officiële KvK-gegevens
 
 - KvK-nummer 42201319 (eenmanszaak, Zaandam) staat nu in `content/site.ts`

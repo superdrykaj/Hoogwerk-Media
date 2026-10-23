@@ -94,6 +94,29 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        // Het logo en de voorbeeldbeelden staan in de wortel van public/. Next
+        // stuurt daar standaard "max-age=0" bij, zodat de browser bij elke
+        // pagina opnieuw vraagt of het bestand nog klopt. Een dag vers, en een
+        // week lang mag een oude versie nog getoond worden terwijl de nieuwe
+        // op de achtergrond binnenkomt.
+        source: "/logo-mark.png",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
+      {
+        source: "/images/:bestand*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
+      {
         // De video's en het posterbeeld in public/media. Zonder deze regel
         // stuurt Next "max-age=0" mee en vraagt de browser bij elk bezoek
         // opnieuw of het bestand nog klopt. Dat kost per pagina een extra
