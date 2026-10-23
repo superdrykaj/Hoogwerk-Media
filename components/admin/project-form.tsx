@@ -172,6 +172,66 @@ export function ProjectForm({ project }: { project?: Project }) {
         </div>
       </fieldset>
 
+      {/* Zoekmachines ------------------------------------------------------ */}
+      <fieldset className="rounded-xl border border-ink-700 bg-ink-900/60 p-4 sm:p-5">
+        <legend className="px-2 text-sm font-semibold text-mist-100">
+          Zoekmachines (optioneel)
+        </legend>
+        <p className="field-hint mt-0">
+          De titel en omschrijving die Google kan tonen. Laat je ze leeg, dan
+          gebruikt de site de titel en de korte beschrijving van het project.
+          Houd de titel onder de 60 tekens (de naam van het bedrijf komt er
+          automatisch achter) en de omschrijving onder de 155. Schrijf alleen op
+          wat op de pagina te zien is.
+        </p>
+
+        <div className="mt-4 grid gap-5 sm:grid-cols-2">
+          <Text
+            id="metaTitle"
+            name="metaTitle"
+            label="Titel voor Google"
+            defaultValue={project?.metaTitle ?? ""}
+            hint="Bijvoorbeeld: Dronevideo van de Zaan in Wormerveer"
+          />
+          <Text
+            id="metaTitleEn"
+            name="metaTitleEn"
+            label="Titel voor Google (EN)"
+            defaultValue={project?.metaTitleEn ?? ""}
+            hint="Leeg = de Engelse titel van het project"
+          />
+        </div>
+
+        <div className="mt-5 grid gap-5 sm:grid-cols-2">
+          <div>
+            <label htmlFor="metaDescription" className="field-label">
+              Omschrijving voor Google
+            </label>
+            <textarea
+              id="metaDescription"
+              name="metaDescription"
+              rows={3}
+              maxLength={170}
+              defaultValue={project?.metaDescription ?? ""}
+              className="field-input"
+            />
+          </div>
+          <div>
+            <label htmlFor="metaDescriptionEn" className="field-label">
+              Omschrijving voor Google (EN)
+            </label>
+            <textarea
+              id="metaDescriptionEn"
+              name="metaDescriptionEn"
+              rows={3}
+              maxLength={170}
+              defaultValue={project?.metaDescriptionEn ?? ""}
+              className="field-input"
+            />
+          </div>
+        </div>
+      </fieldset>
+
       {/* Omslagbeeld ------------------------------------------------------- */}
       <fieldset className="rounded-xl border border-ink-700 p-5">
         <legend className="px-2 text-sm font-semibold">Hoofdafbeelding</legend>

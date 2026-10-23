@@ -21,6 +21,10 @@ type Row = {
   summary_en: string;
   body_en: string;
   cover_alt_en: string;
+  meta_title: string;
+  meta_title_en: string;
+  meta_description: string;
+  meta_description_en: string;
   video_url: string;
   published: number;
   featured: number;
@@ -45,6 +49,10 @@ function map(row: Row): Project {
     summaryEn: row.summary_en ?? "",
     bodyEn: row.body_en ?? "",
     coverAltEn: row.cover_alt_en ?? "",
+    metaTitle: row.meta_title ?? "",
+    metaTitleEn: row.meta_title_en ?? "",
+    metaDescription: row.meta_description ?? "",
+    metaDescriptionEn: row.meta_description_en ?? "",
     videoUrl: row.video_url,
     published: row.published === 1,
     featured: row.featured === 1,
@@ -105,8 +113,9 @@ export function createProject(values: ProjectInput): number {
       `INSERT INTO projects
         (slug, title, category, location, summary, body, cover_url, cover_alt,
          title_en, location_en, summary_en, body_en, cover_alt_en,
+         meta_title, meta_title_en, meta_description, meta_description_en,
          video_url, published, featured, sort_order, created_utc)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .run(
       values.slug,
@@ -122,6 +131,10 @@ export function createProject(values: ProjectInput): number {
       values.summaryEn,
       values.bodyEn,
       values.coverAltEn,
+      values.metaTitle,
+      values.metaTitleEn,
+      values.metaDescription,
+      values.metaDescriptionEn,
       values.videoUrl,
       values.published ? 1 : 0,
       values.featured ? 1 : 0,
@@ -137,7 +150,8 @@ export function updateProject(id: number, values: ProjectInput): void {
       `UPDATE projects SET slug = ?, title = ?, category = ?, location = ?,
         summary = ?, body = ?, cover_url = ?, cover_alt = ?,
         title_en = ?, location_en = ?, summary_en = ?, body_en = ?,
-        cover_alt_en = ?, video_url = ?,
+        cover_alt_en = ?, meta_title = ?, meta_title_en = ?,
+        meta_description = ?, meta_description_en = ?, video_url = ?,
         published = ?, featured = ?, sort_order = ? WHERE id = ?`,
     )
     .run(
@@ -154,6 +168,10 @@ export function updateProject(id: number, values: ProjectInput): void {
       values.summaryEn,
       values.bodyEn,
       values.coverAltEn,
+      values.metaTitle,
+      values.metaTitleEn,
+      values.metaDescription,
+      values.metaDescriptionEn,
       values.videoUrl,
       values.published ? 1 : 0,
       values.featured ? 1 : 0,

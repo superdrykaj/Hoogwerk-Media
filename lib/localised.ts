@@ -22,6 +22,25 @@ export function serviceText(
   };
 }
 
+/**
+ * Titel en omschrijving voor zoekmachines. Een eigen waarde uit de
+ * beheeromgeving gaat voor; anders de gewone titel en korte beschrijving.
+ * De Engelse variant valt bewust niet terug op de Nederlandse meta-tekst.
+ */
+export function projectMeta(
+  project: Project,
+  locale: Locale,
+): { title: string; description: string } {
+  const tekst = projectText(project, locale);
+  const eigenTitel = locale === "nl" ? project.metaTitle : project.metaTitleEn;
+  const eigenOmschrijving =
+    locale === "nl" ? project.metaDescription : project.metaDescriptionEn;
+  return {
+    title: eigenTitel.trim() || tekst.title,
+    description: eigenOmschrijving.trim() || tekst.summary,
+  };
+}
+
 export function projectText(
   project: Project,
   locale: Locale,

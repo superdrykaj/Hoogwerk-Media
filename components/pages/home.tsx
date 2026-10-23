@@ -3,18 +3,24 @@ import Link from "next/link";
 
 import { Arrow } from "@/components/arrow";
 import { BookingWidget } from "@/components/booking/booking-widget";
+import { FaqList } from "@/components/faq-list";
 import { HeroVideo } from "@/components/hero-video";
+import { PriceTiers, PricingTerms } from "@/components/pricing-parts";
 import { ProjectCard } from "@/components/project-card";
+import { JsonLd } from "@/components/json-ld";
 import { Reveal } from "@/components/reveal";
 import { Showreel } from "@/components/showreel";
 import { UnderConstruction } from "@/components/under-construction";
 import { copy, type Dictionary } from "@/content/copy";
 import { site } from "@/content/site";
+import { organizationJsonLd } from "@/lib/json-ld";
 import { href, type Locale } from "@/lib/locale";
+import { servicePagePath } from "@/lib/service-pages";
 import { serviceText } from "@/lib/localised";
 import { listProjects } from "@/lib/projects";
 import { listServices } from "@/lib/services";
 import { siteIsOpen } from "@/lib/site-status";
+import { siteOrigin } from "@/lib/site-url";
 
 export async function HomePage({ locale }: { locale: Locale }) {
   const t = copy(locale);
@@ -32,10 +38,19 @@ export async function HomePage({ locale }: { locale: Locale }) {
     limit: 3,
   });
 
+  const origin = await siteOrigin();
+
   return (
     <>
+      <JsonLd
+        data={organizationJsonLd({
+          origin,
+          description: t.meta.description,
+          locale,
+        })}
+      />
       <Hero t={t} locale={locale} />
-      <Services t={t} />
+      <Services t={t} locale={locale} />
       <Work t={t} locale={locale} projects={projects} />
       <Process t={t} />
       <Pricing t={t} locale={locale} services={services} />
@@ -57,7 +72,11 @@ function Hero({ t, locale }: { t: Dictionary; locale: Locale }) {
       <div aria-hidden="true" className="hero-scrim absolute inset-0 -z-10" />
 
       <div className="container-page pb-16 pt-24 sm:pb-24">
-        <h1 className="display-1 rise max-w-4xl">{t.home.heroTitle}</h1>
+        {/* Langer dan de oude kop: iets kleiner, zodat "Dronefotografie" ook op
+            een smalle telefoon op één regel past. */}
+        <h1 className="display-1 rise max-w-4xl text-[clamp(2.4rem,7vw,5rem)]">
+          {t.home.heroTitle}
+        </h1>
         <p className="lede rise mt-6" style={{ animationDelay: "120ms" }}>
           {t.home.heroIntro}
         </p>
@@ -95,7 +114,7 @@ function Hero({ t, locale }: { t: Dictionary; locale: Locale }) {
  * Diensten als lijst, niet als vier gelijke kaartjes: zonder beeld per dienst
  * zijn kaarten lege dozen. Kop links, lijst rechts.
  */
-function Services({ t }: { t: Dictionary }) {
+function Services({ t, locale }: { t: Dictionary; locale: Locale }) {
   return (
     <section className="container-page section" aria-labelledby="diensten-titel">
       <div className="grid gap-12 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:gap-20">
@@ -123,6 +142,15 @@ function Services({ t }: { t: Dictionary }) {
                   <p className="mt-2 max-w-prose text-sm leading-relaxed text-mist-500">
                     {item.body}
                   </p>
+                  {item.page && (
+                    <Link
+                      href={href(servicePagePath(item.page), locale)}
+                      className="link-quiet mt-3 inline-block text-sm"
+                    >
+                      {t.servicePages[item.page].h1}
+                      <span aria-hidden="true"> →</span>
+                    </Link>
+                  )}
                 </div>
               </article>
             </Reveal>
@@ -280,23 +308,7 @@ function Pricing({
                     </div>
                     <div className="sm:text-right">
                       {pricing ? (
-                        <div className="space-y-3">
-                          {pricing.map((tier) => (
-                            <div key={tier.prefix}>
-                              <p className="numeric text-xl font-semibold leading-tight text-mist-100">
-                                <span className="mr-1.5 text-sm font-normal text-mist-500">
-                                  {tier.prefix}
-                                </span>
-                                {tier.amount}
-                                <span className="ml-1.5 text-sm font-normal text-mist-300">
-                                  {t.home.priceInclVat}
-                                  {tier.unit && ` ${tier.unit}`}
-                                </span>
-                              </p>
-                              <p className="mt-1 text-sm text-mist-300">{tier.excl}</p>
-                            </div>
-                          ))}
-                        </div>
+                        <PriceTiers tiers={pricing} inclVat={t.home.priceInclVat} />
                       ) : (
                         <p className="numeric text-xl font-semibold leading-tight text-mist-100">
                           {tekst.priceLabel || t.home.priceOnRequest}
@@ -310,75 +322,7 @@ function Pricing({
           </Reveal>
 
           <Reveal delay={100}>
-            <div className="card p-6 sm:p-7">
-              <h3 className="display-3">{t.home.includedTitle}</h3>
-              <ul className="mt-4 space-y-2.5 text-sm leading-relaxed text-mist-300">
-                {t.home.included.map((item) => (
-                  <li key={item} className="grid grid-cols-[1rem_minmax(0,1fr)] gap-x-2">
-                    <span aria-hidden="true" className="pt-2 text-haze-400">
-                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                        <path
-                          d="M1 5.2 3.6 8 9 1.8"
-                          stroke="currentColor"
-                          strokeWidth="1.6"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <h3 className="display-3 mt-8">{t.home.excludedTitle}</h3>
-              <ul className="mt-4 space-y-2.5 text-sm leading-relaxed text-mist-500">
-                {t.home.excluded.map((item) => (
-                  <li key={item.text} className="grid grid-cols-[1rem_minmax(0,1fr)] gap-x-2">
-                    <span aria-hidden="true" className="pt-2.5 text-mist-600">
-                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                        <path
-                          d="M1.5 5h7"
-                          stroke="currentColor"
-                          strokeWidth="1.6"
-                          strokeLinecap="round"
-                        />
-                      </svg>
-                    </span>
-                    <span>
-                      {item.text}
-                      {item.sub && (
-                        <span className="mt-0.5 block text-xs text-mist-500">{item.sub}</span>
-                      )}
-                      {item.details && (
-                        <details className="group mt-1.5 text-xs">
-                          <summary className="inline-flex w-fit cursor-pointer list-none items-center gap-1 text-haze-300 underline decoration-haze-300/40 underline-offset-4 hover:decoration-haze-300 [&::-webkit-details-marker]:hidden">
-                            {item.detailsLabel}
-                            <svg
-                              aria-hidden="true"
-                              width="8"
-                              height="8"
-                              viewBox="0 0 10 10"
-                              fill="none"
-                              className="transition-transform group-open:rotate-180"
-                            >
-                              <path
-                                d="m1.5 3.5 3.5 3.5 3.5-3.5"
-                                stroke="currentColor"
-                                strokeWidth="1.6"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </summary>
-                          <p className="mt-1.5 leading-relaxed text-mist-300">{item.details}</p>
-                        </details>
-                      )}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <PricingTerms t={t} />
           </Reveal>
         </div>
       </div>
@@ -402,23 +346,7 @@ function Faq({ t }: { t: Dictionary }) {
         </h2>
       </Reveal>
 
-      <dl className="mt-14 grid gap-x-16 gap-y-10 md:grid-cols-2">
-        {/* Eén <div> per vraag-en-antwoord, en niet dieper: een <dl> mag een
-            <div> om elke groep hebben, maar geen <div> in een <div>. Reveal is
-            die ene laag, dus de opmaak gaat mee in zijn className. */}
-        {t.home.faq.map((item, index) => (
-          <Reveal
-            key={item.question}
-            delay={(index % 2) * 70}
-            className="border-t border-ink-700 pt-5"
-          >
-            <dt className="display-3">{item.question}</dt>
-            <dd className="mt-2.5 max-w-prose text-sm leading-relaxed text-mist-500">
-              {item.answer}
-            </dd>
-          </Reveal>
-        ))}
-      </dl>
+      <FaqList items={t.home.faq} />
     </section>
   );
 }

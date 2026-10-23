@@ -17,6 +17,12 @@
  * ============================================================================
  */
 
+import {
+  SERVICE_PAGES,
+  servicePageKeyForEnglishPath,
+  servicePageKeyForPath,
+} from "./service-pages";
+
 export const LOCALES = ["nl", "en"] as const;
 export type Locale = (typeof LOCALES)[number];
 
@@ -55,17 +61,26 @@ export function localeFromPath(pathname: string): Locale {
  * Maakt van een Nederlands pad het pad in de gevraagde taal.
  * href("/portfolio", "en") → "/en/portfolio"
  * href("/portfolio", "nl") → "/portfolio"
+ *
+ * De dienstpagina's hebben een eigen Engelse naam (lib/service-pages.ts):
+ * href("/dronevideo-bedrijven", "en") → "/en/business-drone-video"
  */
 export function href(path: string, locale: Locale): string {
   if (locale === "nl") return path;
   if (path === "/") return "/en";
+  const dienst = servicePageKeyForPath(path);
+  if (dienst) return `/en${SERVICE_PAGES[dienst].en}`;
   return `/en${path}`;
 }
 
 /** Het deel van het pad zonder taalvoorvoegsel, dus altijd de NL-variant. */
 export function stripLocale(pathname: string): string {
   if (pathname === "/en") return "/";
-  if (pathname.startsWith("/en/")) return pathname.slice(3);
+  if (pathname.startsWith("/en/")) {
+    const rest = pathname.slice(3);
+    const dienst = servicePageKeyForEnglishPath(rest);
+    return dienst ? SERVICE_PAGES[dienst].nl : rest;
+  }
   return pathname;
 }
 

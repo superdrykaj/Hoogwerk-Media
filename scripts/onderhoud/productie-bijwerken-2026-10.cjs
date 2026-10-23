@@ -18,6 +18,7 @@
  *    6. ijburg-portfolio-2026   IJburg uitgelicht, Knooppunt Zaandam uit
  *    7. zaanse-schans-2026      De Zaanse Schans erbij
  *    8. tarieven-2026-10        diensten, prijzen, omschrijvingen, duur
+ *    9. seo-projecten-2026-10   zoektitels en projectteksten (na stap 3-7)
  *
  *  Het oudere tarieven-2026 draait hier bewust NIET: tarieven-2026-10 doet
  *  alles wat dat script voor de diensten deed, en het oude script zet een
@@ -36,7 +37,8 @@
  *      node scripts/onderhoud/productie-bijwerken-2026-10.cjs
  *
  *  Met --dry-run wordt alleen het dienstenscript droog uitgevoerd (alleen dat
- *  script kent een dry-run); de rest staat als lijst. Er wordt niets geschreven.
+ *  script kent een dry-run; seo-projecten-2026-10 kun je ook los met --dry-run
+ *  bekijken, nadat de projecten er zijn); de rest staat als lijst. Er wordt niets geschreven.
  *
  *  Op productie:
  *      fly ssh console --app hoogbeeld-media -C "node scripts/onderhoud/productie-bijwerken-2026-10.cjs"
@@ -58,6 +60,9 @@ const STAPPEN = [
   ["zaanse-schans-2026.cjs", "De Zaanse Schans erbij"],
   // Als laatste: bepaalt de definitieve stand van de diensten.
   ["tarieven-2026-10.cjs", "diensten, prijzen, omschrijvingen en duur"],
+  // Na de projectscripts: die zetten de projectteksten terug naar de oude
+  // stand, dit script voegt daar de nieuwe zoektitels en alinea aan toe.
+  ["seo-projecten-2026-10.cjs", "zoektitels en projectteksten"],
 ];
 const DIENSTEN = "tarieven-2026-10.cjs";
 
@@ -86,7 +91,7 @@ if (dryRun) {
   STAPPEN.forEach(([bestand, wat], i) =>
     console.log(`  ${i + 2}. ${bestand.replace(".cjs", "")}: ${wat}`),
   );
-  kop(`${STAPPEN.length + 1}. ${DIENSTEN.replace(".cjs", "")} (dry-run)`);
+  kop(`${STAPPEN.findIndex(([bestand]) => bestand === DIENSTEN) + 2}. ${DIENSTEN.replace(".cjs", "")} (dry-run)`);
   console.log("Let op: dit toont wat dit script zelf zou doen op de huidige database.");
   console.log("Na de oudere stappen kunnen de diensten er al deels anders uitzien.\n");
   execFileSync(process.execPath, [path.join(map, DIENSTEN), "--dry-run"], {

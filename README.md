@@ -645,6 +645,8 @@ De site staat in twee talen online:
 | --- | --- |
 | Nederlands | `/`, `/portfolio`, `/contact`, `/privacy` |
 | Engels | `/en`, `/en/portfolio`, `/en/contact`, `/en/privacy` |
+| Dienstpagina's (NL) | `/dronefotografie-vastgoed`, `/dronevideo-bedrijven`, `/bouwvoortgang-drone` |
+| Dienstpagina's (EN) | `/en/real-estate-drone-photography`, `/en/business-drone-video`, `/en/construction-progress-drone` |
 
 Nederlands staat bewust zonder voorvoegsel, zodat bestaande links en
 zoekresultaten blijven werken. Er wordt **niet** automatisch omgeleid op de taal
@@ -657,6 +659,45 @@ bij elkaar horen. Dat staat in de `<head>` van elke pagina én in de sitemap.
 Staat de site nog dicht (`SITE_STATUS` niet op `"live"`), dan geldt dat voor
 beide talen: `/` en `/en` tonen allebei de pagina "binnenkort online", in de
 eigen taal, en `/en/…` stuurt terug naar `/en`.
+
+### Dienstpagina's en zoekmachines
+
+Naast de homepage zijn er drie inhoudelijke dienstpagina's: dronefotografie voor
+vastgoed, dronevideo voor bedrijven en locaties, en bouwvoortgang. Ze staan in
+beide talen online, op een eigen (vertaald) adres.
+
+- **Adressen, diensten en portfoliowerk** staan in `lib/service-pages.ts`: welke
+  diensten uit **Beheer → Diensten** erbij horen, welk project het kopbeeld
+  levert en welke projecten als voorbeeld worden getoond. Een project dat is
+  ingetrokken of ontbreekt, wordt overgeslagen. Hernoem je een project in de
+  beheeromgeving, dan verandert zijn adres; pas het hier dan ook aan.
+- **De teksten** staan in `content/copy.nl.ts` en `content/copy.en.ts` onder
+  `servicePages`. De prijzen, wat er inbegrepen is en de extra kosten staan er
+  bewust niet: die komen uit dezelfde bron als op de homepage
+  (`home.packagePricing`, `home.included`, `home.excluded` en de diensten in de
+  beheeromgeving), zodat ze overal gelijk blijven.
+- **Een tarief of voorwaarde wijzigen** doe je dus op één plek; de pagina's
+  volgen. Controleer wel de lopende tekst van de pagina's zelf als een
+  voorwaarde inhoudelijk verandert (bijvoorbeeld de 25 kilometer reiskosten).
+- **Een nieuwe dienstpagina** toevoegen: een sleutel in `lib/service-pages.ts`,
+  een blok in beide copy-bestanden (TypeScript meldt wat ontbreekt), twee
+  routebestanden naar het voorbeeld van de bestaande, en een verwijzing vanaf de
+  homepage (`home.highlights`). De sitemap en de footer pikken het vanzelf op.
+- **Titel en omschrijving voor Google** van een project vul je in bij **Beheer →
+  Projecten → Zoekmachines**. Leeg laten betekent: de gewone titel en korte
+  beschrijving. De Engelse velden vallen niet terug op het Nederlands.
+- **Gestructureerde gegevens** (`lib/json-ld.ts`): een Organization op de
+  homepage, Service en BreadcrumbList op de dienstpagina's, VideoObject en
+  BreadcrumbList op projectpagina's. Er staat alleen in wat al in
+  `content/site.ts` is vastgelegd. Zodra je daar `phone` of `instagram` invult,
+  komen die er vanzelf bij. Voor een LocalBusiness is een publiek adres nodig;
+  dat is er niet, dus het blijft een Organization met het werkgebied.
+- **Bestaande database**: de zoektitels en de uitgebreide projectteksten van de
+  drie echte projecten zet je met
+  `node scripts/onderhoud/seo-projecten-2026-10.cjs` (ook met `--dry-run`).
+  Op de testomgeving draait dat bij het opstarten mee (`SEO_UPDATE` in
+  `fly.staging.toml`); op productie zit het in
+  `productie-bijwerken-2026-10.cjs`.
 
 ### Wat er meevertaald is
 
@@ -945,6 +986,8 @@ content/
   copy.en.ts       ← alle Engelse tekst
 lib/               database, beschikbaarheid, boekingen, tijdzone, validatie
   locale.ts        de twee talen en de paden erbij
+  service-pages.ts de dienstpagina's: adressen, diensten, portfoliowerk
+  json-ld.ts       gestructureerde gegevens (Organization, Service, …)
 scripts/           seed, wachtwoord-hash, voorbeeldafbeeldingen
   onderhoud/       eenmalige scripts voor een bestaande database
 public/images/     tijdelijke voorbeeldafbeeldingen

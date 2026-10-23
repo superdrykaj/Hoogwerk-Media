@@ -159,7 +159,7 @@ export const EXAMPLE_PROJECTS = [
     summary:
       "Een rustige drone-impressie van de Zaan, de karakteristieke bebouwing en het waterfront van Wormerveer.",
     body:
-      "Voor deze locatie-impressie heb ik de Zaan en het waterfront van Wormerveer vanuit meerdere hoogtes en richtingen vastgelegd.\n\nDe rustige camerabewegingen laten het water, de bebouwing en de kade in samenhang zien. Vijf zorgvuldig gekozen dronepassages zijn samengebracht tot een compacte, filmische webvideo.",
+      "Voor deze locatie-impressie heb ik de Zaan en het waterfront van Wormerveer vanuit meerdere hoogtes en richtingen vastgelegd.\n\nDe rustige camerabewegingen laten het water, de bebouwing en de kade in samenhang zien. Vijf zorgvuldig gekozen dronepassages zijn samengebracht tot een compacte, filmische webvideo.\n\nDe film duurt 28 seconden in full HD (1920×1080); de fotogalerij bestaat uit vier beelden. Dit is een vrije portfolio-opname en geen opdracht van een klant.",
     cover_url: "/media/wormerveer-de-zaan-poster.webp",
     cover_alt:
       "Dronebeeld van de Zaan en de bebouwing aan het waterfront in Wormerveer",
@@ -168,9 +168,17 @@ export const EXAMPLE_PROJECTS = [
     summary_en:
       "A calm aerial impression of the River Zaan, its distinctive waterfront buildings and the Wormerveer shoreline.",
     body_en:
-      "For this location film, I captured the River Zaan and the Wormerveer waterfront from several heights and directions.\n\nThe calm camera movements show the relationship between the water, the buildings and the quay. Five carefully selected drone passes were combined into a concise, cinematic web video.",
+      "For this location film, I captured the River Zaan and the Wormerveer waterfront from several heights and directions.\n\nThe calm camera movements show the relationship between the water, the buildings and the quay. Five carefully selected drone passes were combined into a concise, cinematic web video.\n\nThe film runs 28 seconds in full HD (1920×1080); the photo gallery consists of four images. This is a free portfolio recording, not an assignment for a client.",
     cover_alt_en:
       "Aerial view of the River Zaan and the waterfront buildings in Wormerveer",
+    meta_title:
+      "Dronevideo van de Zaan in Wormerveer",
+    meta_title_en:
+      "Drone video of the River Zaan in Wormerveer",
+    meta_description:
+      "Dronevideo van de Zaan en het waterfront van Wormerveer: vijf dronepassages gemonteerd tot een film van 28 seconden, met fotogalerij.",
+    meta_description_en:
+      "Drone video of the River Zaan and the Wormerveer waterfront: five drone passes edited into a 28-second film, with photo gallery.",
     video_url: "/media/wormerveer-de-zaan-dronevideo.mp4",
     published: 1,
     featured: 1,
@@ -207,7 +215,7 @@ export const EXAMPLE_PROJECTS = [
     summary:
       "Een drone-impressie van IJburg, met moderne waterfrontarchitectuur, waterwoningen en de jachthaven.",
     body:
-      "Vanuit de lucht komen de moderne woonblokken, waterwoningen en de jachthaven van IJburg samen in één overzicht van het stadsdeel. De rustige camerabewegingen laten zien hoe de architectuur en het water het karakter van deze Amsterdamse wijk bepalen.",
+      "Vanuit de lucht komen de moderne woonblokken, waterwoningen en de jachthaven van IJburg samen in één overzicht van het stadsdeel. De rustige camerabewegingen laten zien hoe de architectuur en het water het karakter van deze Amsterdamse wijk bepalen.\n\nDe film duurt 33 seconden in full HD (1920×1080); de fotogalerij bestaat uit vier beelden. Dit is een vrije portfolio-opname en geen opdracht van een klant of makelaar.",
     cover_url: "/media/ijburg-poster.webp",
     cover_alt: "Luchtbeeld van de waterwoningen en jachthaven in IJburg.",
     title_en: "IJburg from the air",
@@ -215,8 +223,16 @@ export const EXAMPLE_PROJECTS = [
     summary_en:
       "An aerial impression of IJburg, featuring modern waterfront architecture, waterside homes and the marina.",
     body_en:
-      "From above, IJburg's modern apartment blocks, waterside homes and marina come together in a single overview of the district. The calm camera movements show how architecture and water shape the character of this Amsterdam neighbourhood.",
+      "From above, IJburg's modern apartment blocks, waterside homes and marina come together in a single overview of the district. The calm camera movements show how architecture and water shape the character of this Amsterdam neighbourhood.\n\nThe film runs 33 seconds in full HD (1920×1080); the photo gallery consists of four images. This is a free portfolio recording, not an assignment for a client or estate agent.",
     cover_alt_en: "Aerial view of IJburg's waterside homes and marina.",
+    meta_title:
+      "Dronevideo van IJburg in Amsterdam",
+    meta_title_en:
+      "Drone video of IJburg in Amsterdam",
+    meta_description:
+      "Dronevideo van IJburg in Amsterdam: waterwoningen, moderne woonblokken en de jachthaven in een film van 33 seconden, met fotogalerij.",
+    meta_description_en:
+      "Drone video of IJburg in Amsterdam: waterside homes, modern apartment blocks and the marina in a 33-second film, with photo gallery.",
     video_url: "/media/ijburg-dronevideo.mp4",
     published: 1,
     featured: 1,
@@ -253,7 +269,7 @@ export const EXAMPLE_PROJECTS = [
     summary:
       "Een weids dronebeeld van de molens, waterwegen en het dorp op de Zaanse Schans.",
     body:
-      "Voor deze locatie-impressie legde ik de molens, waterwegen en karakteristieke houten huizen van de Zaanse Schans vast.\n\nDe montage beweegt van dichtbij langs de molens naar een breder overzicht van het dorp en het omliggende landschap.",
+      "Voor deze locatie-impressie legde ik de molens, waterwegen en karakteristieke houten huizen van de Zaanse Schans vast.\n\nDe montage beweegt van dichtbij langs de molens naar een breder overzicht van het dorp en het omliggende landschap.\n\nDe film duurt ruim 20 seconden in full HD (1920×1080); de fotogalerij bestaat uit drie beelden. Dit is een vrije portfolio-opname en geen opdracht van een klant.",
     cover_url: "/media/zaanse-schans-poster.webp",
     cover_alt:
       "Dronebeeld van een groene molen, water en houten huizen op de Zaanse Schans",
@@ -262,9 +278,17 @@ export const EXAMPLE_PROJECTS = [
     summary_en:
       "A sweeping aerial view of the windmills, waterways and village at Zaanse Schans.",
     body_en:
-      "This location film captures the windmills, waterways and distinctive wooden houses of Zaanse Schans.\n\nThe edit moves from closer views of the mills to a wider view of the village and surrounding landscape.",
+      "This location film captures the windmills, waterways and distinctive wooden houses of Zaanse Schans.\n\nThe edit moves from closer views of the mills to a wider view of the village and surrounding landscape.\n\nThe film runs just over 20 seconds in full HD (1920×1080); the photo gallery consists of three images. This is a free portfolio recording, not an assignment for a client.",
     cover_alt_en:
       "Aerial view of a green windmill, water and wooden houses at Zaanse Schans",
+    meta_title:
+      "Dronevideo van de Zaanse Schans",
+    meta_title_en:
+      "Drone video of Zaanse Schans",
+    meta_description:
+      "Dronevideo van de molens, waterwegen en houten huizen van de Zaanse Schans in Zaanstad: een film van ruim 20 seconden met fotogalerij.",
+    meta_description_en:
+      "Drone video of the windmills, waterways and wooden houses of Zaanse Schans in Zaanstad: a film of just over 20 seconds, with photo gallery.",
     video_url: "/media/zaanse-schans-dronevideo-v3.mp4",
     published: 1,
     featured: 1,
@@ -451,11 +475,13 @@ export function installExampleData(db: Database): {
     `INSERT INTO projects
       (slug, title, category, location, summary, body, cover_url, cover_alt,
        title_en, location_en, summary_en, body_en, cover_alt_en, is_example,
+       meta_title, meta_title_en, meta_description, meta_description_en,
        video_url, published, featured, sort_order, created_utc)
      VALUES (@slug, @title, @category, @location, @summary, @body, @cover_url,
              @cover_alt, @title_en, @location_en, @summary_en, @body_en,
-             @cover_alt_en, @is_example, @video_url, @published, @featured,
-             @sort_order, @created_utc)
+             @cover_alt_en, @is_example, @meta_title, @meta_title_en,
+             @meta_description, @meta_description_en, @video_url, @published,
+             @featured, @sort_order, @created_utc)
      ON CONFLICT(slug) DO NOTHING`,
   );
   const insertImage = db.prepare(
@@ -484,7 +510,15 @@ export function installExampleData(db: Database): {
 
     for (const project of EXAMPLE_PROJECTS) {
       const { images, ...row } = project;
-      const result = insertProject.run({ ...row, created_utc: Date.now() });
+      // Alleen de echte projecten hebben een eigen zoektitel; de rest blijft leeg.
+      const result = insertProject.run({
+        meta_title: "",
+        meta_title_en: "",
+        meta_description: "",
+        meta_description_en: "",
+        ...row,
+        created_utc: Date.now(),
+      });
       if (result.changes === 0) continue; // bestond al
       counts.projects += 1;
       const id = Number(result.lastInsertRowid);

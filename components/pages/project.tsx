@@ -3,10 +3,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Arrow } from "@/components/arrow";
+import { JsonLd } from "@/components/json-ld";
 import { ProjectGallery } from "@/components/project-gallery";
 import { ProjectVideo } from "@/components/project-video";
 import { copy } from "@/content/copy";
 import { isSignedIn } from "@/lib/auth";
+import { breadcrumbJsonLd } from "@/lib/json-ld";
 import { href, type Locale } from "@/lib/locale";
 import { projectText } from "@/lib/localised";
 import { getProjectBySlug, listProjectImages, listProjects, onlyExistingImages } from "@/lib/projects";
@@ -68,12 +70,14 @@ export async function ProjectPage({
           voor jou als beheerder zichtbaar.
         </p>
       )}
-      {jsonLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      )}
+      <JsonLd data={jsonLd} />
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: t.servicePageUi.startLabel, url: `${origin}${href("/", locale)}` },
+          { name: t.nav.portfolio, url: `${origin}${href("/portfolio", locale)}` },
+          { name: tekst.title, url: `${origin}${href(`/portfolio/${project.slug}`, locale)}` },
+        ])}
+      />
       <div className="relative isolate -mt-[4.5rem] flex min-h-[62svh] items-end overflow-hidden pt-[4.5rem]">
         {project.coverUrl && (
           <Image

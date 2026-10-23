@@ -18,7 +18,17 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
   }
 
   return {
-    rules: [{ userAgent: "*", allow: "/", disallow: ["/admin", "/api"] }],
+    rules: [
+      {
+        userAgent: "*",
+        // De geüploade projectbeelden worden via /api/uploads/ geserveerd. Die
+        // moeten wel gelezen kunnen worden, anders mist Google de foto's en
+        // video-thumbnails van projecten die in de beheeromgeving zijn
+        // aangemaakt. De langste, meest specifieke regel wint.
+        allow: ["/", "/api/uploads/"],
+        disallow: ["/admin", "/api"],
+      },
+    ],
     sitemap: `${base}/sitemap.xml`,
   };
 }
