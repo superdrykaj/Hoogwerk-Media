@@ -61,6 +61,15 @@ export const en: Dictionary = {
     contactHeading: "Contact",
   },
 
+  /** Company details as registered with the Dutch Chamber of Commerce (KvK). */
+  company: {
+    tradeName: "Trade name",
+    legalFormLabel: "Legal form",
+    legalForm: "Sole proprietorship (eenmanszaak)",
+    kvkLabel: "Chamber of Commerce (KvK) number",
+    cityLabel: "Registered in",
+  },
+
   footer: {
     note:
       "Freelance drone pilot in Zaandam. Every flight is checked and confirmed " +
@@ -510,6 +519,7 @@ export const en: Dictionary = {
     emailLabel: "E-mail",
     phoneLabel: "Phone",
     areaLabel: "Working area",
+    companyLabel: "Company details",
     bookLabel: "Rather pick a time straight away?",
     whatsappLabel: "WhatsApp",
     whatsappLink: "Send a message",

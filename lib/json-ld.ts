@@ -3,14 +3,15 @@
  *  GESTRUCTUREERDE GEGEVENS (schema.org, JSON-LD)
  * ============================================================================
  *  Alleen gegevens die al op de site staan of in content/site.ts zijn
- *  vastgelegd: bedrijfsnaam, adres van de website, logo, e-mailadres en
- *  werkgebied. Er is bewust geen straatadres, telefoonnummer, KvK-nummer of
- *  socialemediaprofiel opgenomen: die zijn nog niet ingevuld, en wat er niet
- *  is verzinnen we niet. Zodra `site.phone` of `site.instagram` zijn gevuld,
- *  komen ze hier vanzelf bij.
+ *  vastgelegd: bedrijfsnaam, adres van de website, logo, e-mailadres,
+ *  werkgebied, KvK-nummer en vestigingsplaats. Er is bewust geen
+ *  straatadres, telefoonnummer, btw-nummer of socialemediaprofiel
+ *  opgenomen: die zijn nog niet ingevuld, en wat er niet is verzinnen we niet.
+ *  Zodra `site.phone` of `site.instagram` zijn gevuld, komen ze hier vanzelf
+ *  bij; een btw-nummer voegen we dan bewust handmatig toe.
  *
- *  Het is een Organization en geen LocalBusiness: zonder publiek adres past
- *  LocalBusiness niet, want Google verlangt daarbij een adres. Het
+ *  Het is een Organization en geen LocalBusiness: zonder publiek straatadres
+ *  past LocalBusiness niet, want Google verlangt daarbij een volledig adres. Het
  *  werkgebied staat in `areaServed`.
  *
  *  Pure functies zonder database, zodat een test ze kan controleren.
@@ -58,6 +59,26 @@ export function organizationJsonLd(input: {
     },
     email: site.email,
     ...(site.phone ? { telephone: site.phone } : {}),
+    // Alleen de vestigingsplaats, zoals ingeschreven bij de KvK: geen straat of
+    // postcode. Een volledig adres hoort hier pas als er een publiek adres is.
+    ...(site.business.city
+      ? {
+          address: {
+            "@type": "PostalAddress",
+            addressLocality: site.business.city,
+            addressCountry: "NL",
+          },
+        }
+      : {}),
+    ...(site.business.kvk
+      ? {
+          identifier: {
+            "@type": "PropertyValue",
+            propertyID: "KvK",
+            value: site.business.kvk,
+          },
+        }
+      : {}),
     areaServed: areaServed(),
     founder: { "@type": "Person", name: "Kai Koster" },
     contactPoint: {

@@ -1,3 +1,5 @@
+import { site } from "@/content/site";
+
 import type { BookingSettings, InvoiceSettings } from "./types";
 
 /**
@@ -28,7 +30,9 @@ export const DEFAULT_INVOICE_SETTINGS: InvoiceSettings = {
   companyAddress: "Nog invullen",
   companyPostcode: "0000 AA",
   companyCity: "Nog invullen",
-  companyKvk: "Nog niet ingevuld",
+  // Uit content/site.ts, zodat het nummer maar op één plek staat. Een waarde die
+  // je in Beheer → Instellingen hebt opgeslagen, gaat hier altijd boven.
+  companyKvk: site.business.kvk || "Nog niet ingevuld",
   companyVatNumber: "Nog niet ingevuld",
   companyIban: "Nog niet ingevuld",
   // Het standaard BTW-tarief in Nederland; van toepassing op foto- en

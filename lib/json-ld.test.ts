@@ -25,10 +25,23 @@ describe("organizationJsonLd", () => {
     expect((org.logo as { url: string }).url).toBe(`${ORIGIN}/icon.png`);
   });
 
-  it("verzint geen adres, telefoonnummer, kvk of profielen", () => {
+  it("noemt het KvK-nummer en alleen de vestigingsplaats als adres", () => {
+    expect(org.identifier).toEqual({
+      "@type": "PropertyValue",
+      propertyID: "KvK",
+      value: site.business.kvk,
+    });
+    expect(org.address).toEqual({
+      "@type": "PostalAddress",
+      addressLocality: site.business.city,
+      addressCountry: "NL",
+    });
+  });
+
+  it("verzint geen straatadres, telefoonnummer, btw-nummer of profielen", () => {
     const json = JSON.stringify(org);
-    expect(json).not.toContain("address");
     expect(json).not.toContain("streetAddress");
+    expect(json).not.toContain("postalCode");
     expect(json).not.toContain("vatID");
     expect(json).not.toContain("taxID");
     if (!site.phone) expect(json).not.toContain("telephone");

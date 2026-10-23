@@ -1,5 +1,19 @@
 # Wijzigingen
 
+## Oktober 2026 — officiële KvK-gegevens
+
+- KvK-nummer 42201319 (eenmanszaak, Zaandam) staat nu in `content/site.ts`
+  (`business.kvk`, `legalForm`, `city`) en volgt vandaar overal: de footer
+  (de bestaande regel met bedrijfsgegevens), een nieuw blok "Bedrijfsgegevens"
+  op de contactpagina (handelsnaam, rechtsvorm, KvK-nummer, vestigingsplaats),
+  de privacyverklaring (NL en EN, de invulplekken voor KvK zijn vervallen) en
+  als beginwaarde van het KvK-veld op facturen.
+- Een btw-nummer staat er bewust niet: er is er nog geen vastgelegd. Zodra
+  `business.vat` is ingevuld, verschijnt het vanzelf op de contactpagina en in
+  de privacyverklaring; de footer toonde het al.
+- Er is geen adres toegevoegd. Voor de wettelijke informatieplicht ontbreekt
+  nog een vestigingsadres en, bij btw-plicht, het btw-identificatienummer.
+
 ## Oktober 2026 — SEO: dienstpagina's, structured data en snellere hero
 
 - **Drie dienstpagina's, in beide talen**: `/dronefotografie-vastgoed`,
@@ -42,6 +56,7 @@
   pas na het load-event, de twee hero-posters zijn herencodeerd (156 → 85 kB en
   189 → 101 kB, PSNR 35,5 dB), het showreel-poster laadt pas bij het naderen en
   het watermerk laadt lui.
+
 
 ## Oktober 2026 — tarievensectie rustiger en pakketten aangescherpt
 

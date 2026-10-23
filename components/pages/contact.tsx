@@ -67,6 +67,33 @@ export async function ContactPage({ locale }: { locale: Locale }) {
                 {t.region.detail}
               </dd>
             </div>
+            {site.business.kvk && (
+              <div>
+                <dt className="text-sm text-mist-500">{t.contact.companyLabel}</dt>
+                <dd className="mt-2">
+                  <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-5 gap-y-1.5 text-sm">
+                    <dt className="text-mist-500">{t.company.tradeName}</dt>
+                    <dd className="text-mist-300">{site.name}</dd>
+                    <dt className="text-mist-500">{t.company.legalFormLabel}</dt>
+                    <dd className="text-mist-300">{t.company.legalForm}</dd>
+                    <dt className="text-mist-500">{t.company.kvkLabel}</dt>
+                    <dd className="numeric text-mist-300">{site.business.kvk}</dd>
+                    {site.business.city && (
+                      <>
+                        <dt className="text-mist-500">{t.company.cityLabel}</dt>
+                        <dd className="text-mist-300">{site.business.city}</dd>
+                      </>
+                    )}
+                    {site.business.vat && (
+                      <>
+                        <dt className="text-mist-500">{t.footer.vat}</dt>
+                        <dd className="numeric text-mist-300">{site.business.vat}</dd>
+                      </>
+                    )}
+                  </dl>
+                </dd>
+              </div>
+            )}
             <div>
               <dt className="text-sm text-mist-500">{t.contact.bookLabel}</dt>
               <dd className="mt-3">
