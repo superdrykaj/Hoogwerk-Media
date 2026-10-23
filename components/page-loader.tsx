@@ -25,6 +25,8 @@ import { site } from "@/content/site";
  *    staan.
  *  - Het scherm vangt geen klikken op (pointer-events: none) en staat voor
  *    schermlezers uit (aria-hidden). De pagina eronder is gewoon bruikbaar.
+ *  - Is de stylesheet door een netwerkprobleem niet binnengekomen, dan is het
+ *    element geen vast scherm maar gewone inhoud; het script verbergt het dan.
  *  - Vastgelopen? Na 6 seconden sluit het script het scherm. Draait het
  *    script helemaal niet, dan doet de CSS dat na 7 seconden. Zonder
  *    JavaScript verschijnt het scherm niet (@media (scripting: none)).
@@ -53,6 +55,7 @@ var klaar=false;
 function sluit(){
 if(klaar)return;
 klaar=true;
+if(getComputedStyle(el).position!=="fixed"){el.style.display="none";return}
 var o=parseFloat(getComputedStyle(el).opacity)||0;
 if(o<0.02){el.setAttribute("data-state","skip");return}
 el.style.setProperty("--hb-o",String(o));
