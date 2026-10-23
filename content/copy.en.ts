@@ -809,6 +809,9 @@ export const en: Dictionary = {
     payTitle: "Payment required",
     payIntro: (amount: string) =>
       `An invoice of ${amount} is open for this project. Once it's paid, the files below will automatically become available.`,
+    payTitleOpen: "Invoice outstanding",
+    payIntroOpen: (amount: string) =>
+      `An invoice of ${amount} is outstanding. You can pay online right away.`,
     payButton: "Pay now",
     payError: "Payment didn't go through just now. Please try again or get in touch.",
     paidNotice: (when: string) => `Paid on ${when}.`,

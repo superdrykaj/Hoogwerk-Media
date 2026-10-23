@@ -46,13 +46,11 @@ import {
   getInvoiceByBookingId,
   listInvoiceFiles,
   markDeliverySent,
-  markPaid,
   markPaymentSent,
   parseAmountInput,
   saveInvoiceDraft,
-  setMolliePaymentId,
 } from "@/lib/invoices";
-import { createMolliePayment, fetchMolliePaymentStatus } from "@/lib/mollie";
+import { getOrCreateCheckout, syncInvoicePayment } from "@/lib/payments";
 import { setRevisionRequestStatus } from "@/lib/revisions";
 import { siteOrigin } from "@/lib/site-url";
 import {
@@ -282,25 +280,29 @@ export async function sendPaymentRequestAction(
   }
 
   const origin = await siteOrigin();
-  const payment = await createMolliePayment({
-    invoiceId: invoice.id,
-    amountCents: invoice.amountCents,
+  const checkout = await getOrCreateCheckout({
+    invoice,
     description: invoice.description || `${booking.serviceName} — ${booking.reference}`,
     redirectUrl: `${origin}/oplevering/${invoice.token}`,
     webhookUrl: `${origin}/api/mollie/webhook`,
   });
-  if (!payment.ok) {
-    return { status: "error", message: `Mollie weigerde de betaling aan te maken: ${payment.error}` };
+  if (!checkout.ok) {
+    revalidatePath("/admin/boekingen");
+    return {
+      status: "error",
+      message: checkout.alreadyPaid
+        ? "Deze factuur is al betaald; er is niets verstuurd."
+        : `Mollie weigerde de betaling aan te maken: ${checkout.error}`,
+    };
   }
 
-  setMolliePaymentId(invoice.id, payment.paymentId);
   markPaymentSent(invoice.id);
   ensureInvoiceNumber(invoice.id);
   const genummerd = getInvoice(invoice.id)!;
   const mailStatus = await sendPaymentRequestMail(
     booking,
     genummerd,
-    payment.checkoutUrl,
+    checkout.checkoutUrl,
     `${origin}/api/oplevering/${invoice.token}/factuur`,
   );
 
@@ -366,10 +368,7 @@ export async function refreshInvoicePaymentStatusAction(
 ): Promise<void> {
   await requireAdmin();
   const invoice = getInvoice(Number(formData.get("invoiceId")));
-  if (invoice?.molliePaymentId) {
-    const status = await fetchMolliePaymentStatus(invoice.molliePaymentId);
-    if (status === "paid") markPaid(invoice.id);
-  }
+  if (invoice) await syncInvoicePayment(invoice);
   revalidatePath("/admin/boekingen");
 }
 

@@ -1,5 +1,29 @@
 # Wijzigingen
 
+## Oktober 2026 — Mollie-betalingen betrouwbaarder
+
+De Mollie-koppeling bestond al (betaling aanmaken, doorsturen naar Mollie,
+webhook, "Status verversen"). Dit herstelt vier gaten in de afhandeling; er is
+niets herbouwd.
+
+- **Eén afboeklogica** (`lib/payments.ts`, regels in `lib/payment-rules.ts`):
+  webhook, "Status verversen" en de opleveringspagina gebruiken dezelfde code.
+  Een factuur gaat alleen op betaald als Mollie zelf `paid` meldt én bedrag en
+  valuta kloppen met de factuur. Wijkt het bedrag af, dan wordt er niet
+  afgeboekt en staat er een melding in het serverlog.
+- **Geen dubbele betalingen meer**: een tweede klik op "Nu betalen" of
+  "Betaalverzoek versturen" hergebruikt een nog open betaling met hetzelfde
+  bedrag. Is er al betaald, dan komt er geen nieuwe. Is Mollie niet bereikbaar,
+  dan wordt er ook geen nieuwe aangemaakt.
+- **Opleveringspagina vraagt de status zelf op** als er een betaling openstaat,
+  zodat een klant na het betalen direct zijn bestanden ziet, ook als de webhook
+  nog onderweg is (de code-opmerking beloofde dit al).
+- **Webhook geeft 503** als Mollie niet bereikbaar is, zodat Mollie het zelf
+  opnieuw probeert in plaats van de betaling te laten liggen.
+- **Betaalknop ook zonder betaalmuur**: staat de muur uit en is er nog niet
+  betaald, dan kan de klant op de opleveringspagina alsnog online betalen.
+- Tests: `lib/payment-rules.test.ts` (13 tests).
+
 ## Oktober 2026 — snellere eerste indruk: laadscherm en navigatiestreep
 
 - **Oorzaak van het trage laden gemeten.** Op de testomgeving kostte een

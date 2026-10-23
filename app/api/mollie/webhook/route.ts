@@ -1,5 +1,5 @@
-import { getInvoiceByMolliePaymentId, markPaid } from "@/lib/invoices";
-import { fetchMolliePaymentStatus } from "@/lib/mollie";
+import { getInvoiceByMolliePaymentId } from "@/lib/invoices";
+import { syncInvoicePayment } from "@/lib/payments";
 
 /**
  * Mollie stuurt hier alleen een betalings-id naartoe, zonder verdere details.
@@ -22,9 +22,11 @@ export async function POST(request: Request) {
     return new Response("OK", { status: 200 });
   }
 
-  const status = await fetchMolliePaymentStatus(paymentId);
-  if (status === "paid") {
-    markPaid(invoice.id);
+  // Kon Mollie niet worden bereikt, dan een foutcode: Mollie probeert de
+  // webhook dan zelf opnieuw. Met een 200 zou een betaling blijven liggen.
+  const { reachable } = await syncInvoicePayment(invoice);
+  if (!reachable) {
+    return new Response("Mollie niet bereikbaar", { status: 503 });
   }
 
   return new Response("OK", { status: 200 });

@@ -5,6 +5,7 @@ import { getBooking } from "@/lib/bookings";
 import { copy } from "@/content/copy";
 import { formatAmountCents } from "@/lib/currency";
 import { getInvoiceByToken, listInvoiceFiles } from "@/lib/invoices";
+import { syncInvoicePayment } from "@/lib/payments";
 import { formatTimestamp } from "@/lib/time";
 
 /**
@@ -31,8 +32,13 @@ export default async function DeliveryPage({
   const { token } = await params;
   const { fout, verzonden } = await searchParams;
 
-  const invoice = getInvoiceByToken(token);
-  const booking = invoice ? getBooking(invoice.bookingId) : null;
+  const found = getInvoiceByToken(token);
+  const booking = found ? getBooking(found.bookingId) : null;
+
+  // Terug van Mollie: vraag de status zelf op in plaats van op de webhook te
+  // wachten, zodat de klant meteen zijn bestanden ziet. Mollie wordt alleen
+  // gevraagd als er een betaling openstaat.
+  const invoice = found ? (await syncInvoicePayment(found)).invoice : null;
 
   if (!invoice || !booking) {
     const t = copy("nl").delivery;
@@ -49,6 +55,8 @@ export default async function DeliveryPage({
   const locale = booking.locale;
   const t = copy(locale).delivery;
   const locked = invoice.payBeforeDownload && invoice.status !== "paid";
+  // Ook zonder betaalmuur moet de klant kunnen betalen zolang er iets openstaat.
+  const unpaid = invoice.status !== "paid" && invoice.amountCents > 0;
   const files = locked ? [] : listInvoiceFiles(invoice.id);
 
   return (
@@ -71,11 +79,15 @@ export default async function DeliveryPage({
           </p>
         )}
 
-        {locked ? (
+        {unpaid && (
           <div className="mt-6">
-            <h2 className="text-sm font-semibold text-mist-100">{t.payTitle}</h2>
+            <h2 className="text-sm font-semibold text-mist-100">
+              {locked ? t.payTitle : t.payTitleOpen}
+            </h2>
             <p className="mt-2 text-sm text-mist-300">
-              {t.payIntro(formatAmountCents(invoice.amountCents, locale))}
+              {(locked ? t.payIntro : t.payIntroOpen)(
+                formatAmountCents(invoice.amountCents, locale),
+              )}
             </p>
             {invoice.description && (
               <p className="mt-2 text-sm text-mist-500">{invoice.description}</p>
@@ -88,7 +100,9 @@ export default async function DeliveryPage({
               </button>
             </form>
           </div>
-        ) : (
+        )}
+
+        {!locked && (
           <div className="mt-6">
             <h2 className="text-sm font-semibold text-mist-100">{t.filesTitle}</h2>
             {invoice.status === "paid" && invoice.paidUtc && (

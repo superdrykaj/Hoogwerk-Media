@@ -8,10 +8,9 @@ import {
   ensureInvoiceNumber,
   getInvoiceByToken,
   markPaymentSent,
-  setMolliePaymentId,
 } from "@/lib/invoices";
 import { sendRevisionRequestedMail } from "@/lib/mail";
-import { createMolliePayment } from "@/lib/mollie";
+import { getOrCreateCheckout } from "@/lib/payments";
 import { rateLimit } from "@/lib/rate-limit";
 import { createRevisionRequest } from "@/lib/revisions";
 import { siteOrigin } from "@/lib/site-url";
@@ -38,24 +37,22 @@ export async function startInvoicePaymentAction(formData: FormData): Promise<voi
   if (!limit.allowed) redirect(`/oplevering/${token}?fout=1`);
 
   const origin = await siteOrigin();
-  const payment = await createMolliePayment({
-    invoiceId: invoice.id,
-    amountCents: invoice.amountCents,
+  const checkout = await getOrCreateCheckout({
+    invoice,
     description: invoice.description || `${booking.serviceName} — ${booking.reference}`,
     redirectUrl: `${origin}/oplevering/${token}`,
     webhookUrl: `${origin}/api/mollie/webhook`,
   });
 
-  if (!payment.ok) {
-    redirect(`/oplevering/${token}?fout=1`);
-  }
+  // Al betaald: gewoon terug naar de pagina, die toont dan de bestanden.
+  if (!checkout.ok && checkout.alreadyPaid) redirect(`/oplevering/${token}`);
+  if (!checkout.ok) redirect(`/oplevering/${token}?fout=1`);
 
-  setMolliePaymentId(invoice.id, payment.paymentId);
   markPaymentSent(invoice.id);
   // Normaliter al gezet doordat de opleveringslink pas gemaild wordt na het
   // versturen van een betaalverzoek of oplevering; hier ter zekerheid.
   ensureInvoiceNumber(invoice.id);
-  redirect(payment.checkoutUrl);
+  redirect(checkout.checkoutUrl);
 }
 
 /**

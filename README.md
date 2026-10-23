@@ -849,6 +849,13 @@ een testsleutel gebruikt:
 MOLLIE_API_KEY="test_..."
 ```
 
+Zet de sleutel als geheim op Fly (`fly secrets set MOLLIE_API_KEY=...`), nooit in
+de code of in een bestand dat je commit. Een sleutel die met `test_` begint
+gebruikt Mollies testomgeving; pas met een `live_`-sleutel gaat er echt geld om.
+Mollie belt na een betaling `https://<je-domein>/api/mollie/webhook`; dat
+adres moet dus openbaar bereikbaar zijn (lokaal werkt het niet, daar vraagt de
+opleveringspagina de status zelf op).
+
 Voor een Mollie-account heb je een **KvK-nummer** nodig. Heb je dat nog niet,
 dan werkt de rest van de oplevering gewoon: zet de paywall-toggle per factuur
 uit, dan zijn de bestanden direct te downloaden zonder dat er een betaling aan

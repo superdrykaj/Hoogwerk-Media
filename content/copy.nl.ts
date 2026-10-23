@@ -844,6 +844,9 @@ export const nl = {
     payTitle: "Betaling vereist",
     payIntro: (bedrag: string) =>
       `Voor dit project staat een factuur van ${bedrag} open. Zodra deze betaald is, komen de bestanden hieronder automatisch vrij.`,
+    payTitleOpen: "Factuur openstaand",
+    payIntroOpen: (bedrag: string) =>
+      `Er staat een factuur van ${bedrag} open. Je kunt direct online betalen.`,
     payButton: "Nu betalen",
     payError: "Betalen lukte net niet. Probeer het nog eens of neem contact op.",
     paidNotice: (wanneer: string) => `Betaald op ${wanneer}.`,
