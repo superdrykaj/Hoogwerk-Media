@@ -43,14 +43,17 @@ import {
   deleteInvoiceFile,
   getInvoice,
   getInvoiceByBookingId,
+  rotateInvoiceToken,
   listInvoiceFiles,
   markDeliverySent,
+  markPaidManually,
   markPaymentSent,
   parseAmountInput,
   saveInvoiceDraft,
 } from "@/lib/invoices";
 import { DEFAULT_PAYMENT_TERM_DAYS, isDateKey, normalizeVatId } from "@/lib/invoice-rules";
 import { getInvoicePdf, issueInvoice, problemsMessage } from "@/lib/invoice-issue";
+import { createImagePreview, deletePreviewFromDisk } from "@/lib/previews";
 import { getOrCreateCheckout, syncInvoicePayment } from "@/lib/payments";
 import { setRevisionRequestStatus } from "@/lib/revisions";
 import { siteOrigin } from "@/lib/site-url";
@@ -361,7 +364,10 @@ export async function sendPaymentRequestAction(
 export async function deleteDeliveryFileAction(formData: FormData): Promise<void> {
   await requireAdmin();
   const file = deleteInvoiceFile(Number(formData.get("id")));
-  if (file) await deleteDeliveryFileFromDisk(file.filename);
+  if (file) {
+    await deleteDeliveryFileFromDisk(file.filename);
+    await deletePreviewFromDisk(file.previewFilename);
+  }
   revalidatePath("/admin/boekingen");
 }
 
@@ -407,6 +413,44 @@ export async function sendDeliveryAction(
   };
 }
 
+export async function regeneratePreviewAction(formData: FormData): Promise<void> {
+  await requireAdmin();
+  await createImagePreview(Number(formData.get("fileId")));
+  revalidatePath("/admin/boekingen");
+}
+
+/**
+ * Een betaling die buiten Mollie om binnenkwam (bankoverschrijving, contant).
+ * Geeft de bestanden vrij op dezelfde manier als een Mollie-betaling; de
+ * toelichting blijft bij de factuur bewaard.
+ */
+export async function markInvoicePaidManuallyAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  await requireAdmin();
+  const result = markPaidManually(
+    Number(formData.get("invoiceId")),
+    String(formData.get("note") ?? ""),
+  );
+  revalidatePath("/admin/boekingen");
+  return result.ok
+    ? { status: "success", message: "De factuur staat op betaald; de bestanden zijn vrijgegeven." }
+    : { status: "error", message: result.error };
+}
+
+/**
+ * Geeft de factuur een nieuw token: de oude persoonlijke link en alle
+ * downloadlinks werken meteen niet meer. De nieuwe link staat daarna in het
+ * paneel; stuur de oplevering opnieuw als de klant hem per mail moet krijgen.
+ */
+export async function rotateInvoiceTokenAction(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const invoiceId = Number(formData.get("invoiceId"));
+  if (getInvoice(invoiceId)) rotateInvoiceToken(invoiceId);
+  revalidatePath("/admin/boekingen");
+}
+
 /**
  * Vraagt de actuele status bij Mollie zelf op — nooit de webhook vertrouwen.
  * Vooral bedoeld als vangnet lokaal of als de webhook nog niet is aangekomen.
@@ -416,7 +460,7 @@ export async function refreshInvoicePaymentStatusAction(
 ): Promise<void> {
   await requireAdmin();
   const invoice = getInvoice(Number(formData.get("invoiceId")));
-  if (invoice) await syncInvoicePayment(invoice);
+  if (invoice) await syncInvoicePayment(invoice, { recheckPaid: true });
   revalidatePath("/admin/boekingen");
 }
 

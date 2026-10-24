@@ -836,11 +836,17 @@ te uploaden en die naar de klant te versturen. Twee momenten om te betalen:
 - **Betaalverzoek versturen** — kan meteen na het bevestigen van de boeking,
   los van de oplevering. Handig als je (een deel van) het bedrag vooraf wilt
   ontvangen.
-- **Project afronden & opleveren** — verstuurt de eindproducten via een
-  beveiligde link. Staat de paywall aan (standaard) en is er nog niet betaald,
-  dan ziet de klant eerst een betaalscherm; de bestanden komen vrij zodra de
-  betaling binnen is. Vanaf dezelfde link kan de klant ook een wijziging
-  aanvragen als de eerste editing niet bevalt.
+- **Project afronden & opleveren** — verstuurt de persoonlijke klantlink. Op die
+  pagina ziet de klant eerst **voorbeelden met watermerk** (foto's krijgen die
+  automatisch; voor video's maak je met `scripts/maak-voorbeeld.sh` zelf een
+  verkleind voorbeeld en upload je dat bij het bestand). Staat de paywall aan
+  (standaard), dan komen de originelen pas vrij zodra Mollie de betaling heeft
+  bevestigd; daarna downloadt de klant ze los of als ZIP, zo vaak als nodig, via
+  korte (30 minuten) ondertekende links. Betaalde de klant per bank? Gebruik
+  "Markeer als betaald" in Beheer. Bij een terugbetaling via Mollie vervalt de
+  toegang automatisch. Vanaf dezelfde pagina kan de klant ook een wijziging
+  aanvragen. Is een link in verkeerde handen gekomen, gebruik dan "Nieuwe link
+  maken". Een bestand zonder voorbeeld is voor de klant onzichtbaar tot er een is.
 
 Betalen loopt via [Mollie](https://www.mollie.com/), in testmodus zolang je
 een testsleutel gebruikt:

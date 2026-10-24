@@ -56,6 +56,27 @@ Aanvullende gevallen: **Canceled** en **Expired** kiezen (factuur blijft open,
 nieuwe betaling mogelijk); op **Status verversen** klikken terwijl al is betaald
 (verandert niets).
 
+## 3b. De klantworkflow (voorbeelden, betalen, downloaden)
+
+Doe dit met fictieve bestanden (een paar eigen testfoto's en een korte clip).
+
+1. Upload bij de boeking twee foto's en een video. Verwacht: bij de foto's
+   "Voorbeeld ✓", bij de video "Geen voorbeeld". Maak voor de video een voorbeeld
+   met `scripts/maak-voorbeeld.sh film.mp4` en upload dat via "Voorbeeld uploaden".
+2. **Project afronden & opleveren**. Open de klantlink in een privévenster.
+   Verwacht: voorbeelden met watermerk (foto's verkleind, video speelt), geen
+   downloadknop, wel "Nu betalen".
+3. Kijk in de browser-ontwikkelaarstools (Netwerk) mee: er mag alleen
+   `/voorbeeld/…` voorbijkomen, geen originele bestanden of bestandsnamen.
+4. Betaal in de Mollie-testmodus met **Paid**. Verwacht: terug op de pagina,
+   direct downloadknoppen en een ZIP-knop; de originelen zijn identiek aan wat je
+   uploadde.
+5. Herlaad de pagina later: de downloadlinks zijn vernieuwd, je betaalt niet opnieuw.
+6. Plak een gekopieerde downloadlink na meer dan 30 minuten in een nieuw venster:
+   je komt op de pagina met de melding dat de link verlopen was.
+7. Terugbetalen in het Mollie-dashboard (testmodus): binnen enkele seconden
+   staat de factuur op "Terugbetaald" en geven de links geen bestanden meer.
+
 ## 4. Opruimen
 
 Niets verplicht. Wil je de testsleutel weghalen: `fly secrets unset MOLLIE_API_KEY -a hoogbeeld-media-test`.

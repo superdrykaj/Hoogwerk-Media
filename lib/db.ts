@@ -308,6 +308,16 @@ export function migrate(db: Database.Database) {
   addColumn(db, "invoices", "pdf_filename", "TEXT NOT NULL DEFAULT ''");
   addColumn(db, "invoices", "pdf_sha256", "TEXT NOT NULL DEFAULT ''");
 
+  // Voorbeelden met watermerk bij opleverbestanden, betaalwijze en terugbetaling.
+  addColumn(db, "invoice_files", "preview_filename", "TEXT NOT NULL DEFAULT ''");
+  addColumn(db, "invoice_files", "preview_type", "TEXT NOT NULL DEFAULT ''");
+  addColumn(db, "invoices", "payment_method", "TEXT NOT NULL DEFAULT ''");
+  addColumn(db, "invoices", "payment_note", "TEXT NOT NULL DEFAULT ''");
+  addColumn(db, "invoices", "refunded_utc", "INTEGER");
+  // Facturen die vóór deze kolom al als betaald stonden, zijn via Mollie betaald:
+  // een andere weg bestond niet.
+  db.exec("UPDATE invoices SET payment_method = 'mollie' WHERE status = 'paid' AND payment_method = ''");
+
   freezeLegacyInvoices(db);
 
   // Een uitgegeven factuur is een fiscaal document (bewaarplicht zeven jaar).

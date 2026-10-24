@@ -32,6 +32,9 @@ type Row = {
   payment_term_days: number;
   issued_utc: number | null;
   invoice_date: string | null;
+  payment_method: string;
+  payment_note: string;
+  refunded_utc: number | null;
   pdf_filename: string;
   pdf_sha256: string;
   created_utc: number;
@@ -62,6 +65,9 @@ function map(row: Row): Invoice {
     paymentTermDays: row.payment_term_days,
     issuedUtc: row.issued_utc,
     invoiceDate: row.invoice_date,
+    paymentMethod: (row.payment_method || "") as Invoice["paymentMethod"],
+    paymentNote: row.payment_note,
+    refundedUtc: row.refunded_utc,
     pdfFilename: row.pdf_filename,
     pdfSha256: row.pdf_sha256,
     createdUtc: row.created_utc,
@@ -226,60 +232,105 @@ export function markDeliverySent(invoiceId: number): void {
     .run(now, now, invoiceId);
 }
 
-export function markPaid(invoiceId: number): void {
+/**
+ * Zet de factuur op betaald. Alleen aanroepen na verificatie bij Mollie
+ * (lib/payments.ts) of via de beheerder (markPaidManually). Vanuit "betaald"
+ * verandert er niets; vanuit "terugbetaald" gaat een nieuwe geslaagde
+ * betaling wel weer op betaald.
+ */
+export function markPaid(invoiceId: number, method: "mollie" | "manual" = "mollie"): void {
   const now = Date.now();
   getDb()
     .prepare(
       `UPDATE invoices
-       SET status = 'paid', paid_utc = ?, updated_utc = ?
+       SET status = 'paid', paid_utc = ?, payment_method = ?, refunded_utc = NULL, updated_utc = ?
        WHERE id = ? AND status != 'paid'`,
+    )
+    .run(now, method, now, invoiceId);
+}
+
+/**
+ * De beheerder boekt een betaling die buiten Mollie om is binnengekomen
+ * (bankoverschrijving, contant). Alleen voor een uitgegeven factuur die nog
+ * niet betaald is; de toelichting blijft bij de factuur bewaard.
+ */
+export function markPaidManually(
+  invoiceId: number,
+  note: string,
+): { ok: true } | { ok: false; error: string } {
+  const invoice = getInvoice(invoiceId);
+  if (!invoice) return { ok: false, error: "Factuur niet gevonden." };
+  if (!invoice.issuedUtc) {
+    return { ok: false, error: "Deze factuur is nog niet uitgegeven; er is nog niets te betalen." };
+  }
+  if (invoice.status === "paid") return { ok: false, error: "Deze factuur staat al op betaald." };
+  if (!note.trim()) {
+    return { ok: false, error: "Vul in hoe en wanneer er is betaald, bijvoorbeeld \"overgemaakt op 12-11\"." };
+  }
+  markPaid(invoiceId, "manual");
+  getDb()
+    .prepare("UPDATE invoices SET payment_note = ? WHERE id = ?")
+    .run(note.trim().slice(0, 500), invoiceId);
+  return { ok: true };
+}
+
+/**
+ * Mollie meldt een volledige terugbetaling of een chargeback: de bestanden
+ * worden niet langer geleverd. Alleen een via Mollie betaalde factuur gaat
+ * hierop; een handmatig geboekte betaling raakt dit niet.
+ */
+export function markRefunded(invoiceId: number): void {
+  const now = Date.now();
+  getDb()
+    .prepare(
+      `UPDATE invoices SET status = 'refunded', refunded_utc = ?, updated_utc = ?
+       WHERE id = ? AND status = 'paid' AND payment_method = 'mollie'`,
     )
     .run(now, now, invoiceId);
 }
 
-export function listInvoiceFiles(invoiceId: number): InvoiceFile[] {
-  const rows = getDb()
-    .prepare(
-      "SELECT * FROM invoice_files WHERE invoice_id = ? ORDER BY sort_order, id",
-    )
-    .all(invoiceId) as {
-    id: number;
-    invoice_id: number;
-    filename: string;
-    original_name: string;
-    content_type: string;
-    size_bytes: number;
-    sort_order: number;
-    created_utc: number;
-  }[];
-  return rows.map((row) => ({
-    id: row.id,
-    invoiceId: row.invoice_id,
-    filename: row.filename,
-    originalName: row.original_name,
-    contentType: row.content_type,
-    sizeBytes: row.size_bytes,
-    sortOrder: row.sort_order,
-    createdUtc: row.created_utc,
-  }));
+/**
+ * Geeft de factuur een nieuw token: de oude persoonlijke link en alle
+ * bijbehorende downloadlinks werken meteen niet meer. Voor als een link in
+ * verkeerde handen is gekomen. Het token hoort niet bij het fiscale document
+ * en blijft daarom ook bij een uitgegeven factuur wijzigbaar.
+ */
+export function rotateInvoiceToken(invoiceId: number): string {
+  const token = makeToken();
+  getDb()
+    .prepare("UPDATE invoices SET token = ?, updated_utc = ? WHERE id = ?")
+    .run(token, Date.now(), invoiceId);
+  return token;
 }
 
-export function getInvoiceFile(id: number): InvoiceFile | null {
-  const row = getDb()
-    .prepare("SELECT * FROM invoice_files WHERE id = ?")
-    .get(id) as
-    | {
-        id: number;
-        invoice_id: number;
-        filename: string;
-        original_name: string;
-        content_type: string;
-        size_bytes: number;
-        sort_order: number;
-        created_utc: number;
-      }
-    | undefined;
-  if (!row) return null;
+/**
+ * Mag de klant de originele bestanden downloaden? Eén plek voor die vraag:
+ * de downloadroute, de ZIP en de klantpagina gebruiken allemaal dit.
+ *
+ *  - betaald (via Mollie bevestigd of door de beheerder geboekt): ja;
+ *  - terugbetaald of geannuleerd: nee, ook als er geen betaalmuur staat;
+ *  - betaalmuur uit en niets van dat alles: ja (de beheerder koos dat bewust).
+ */
+export function canDownloadOriginals(invoice: Pick<Invoice, "status" | "payBeforeDownload">): boolean {
+  if (invoice.status === "refunded" || invoice.status === "cancelled") return false;
+  if (invoice.status === "paid") return true;
+  return !invoice.payBeforeDownload;
+}
+
+type FileRow = {
+  id: number;
+  invoice_id: number;
+  filename: string;
+  original_name: string;
+  content_type: string;
+  size_bytes: number;
+  sort_order: number;
+  preview_filename: string;
+  preview_type: string;
+  created_utc: number;
+};
+
+function mapFile(row: FileRow): InvoiceFile {
   return {
     id: row.id,
     invoiceId: row.invoice_id,
@@ -288,14 +339,37 @@ export function getInvoiceFile(id: number): InvoiceFile | null {
     contentType: row.content_type,
     sizeBytes: row.size_bytes,
     sortOrder: row.sort_order,
+    previewFilename: row.preview_filename,
+    previewType: row.preview_type,
     createdUtc: row.created_utc,
   };
+}
+
+export function listInvoiceFiles(invoiceId: number): InvoiceFile[] {
+  const rows = getDb()
+    .prepare("SELECT * FROM invoice_files WHERE invoice_id = ? ORDER BY sort_order, id")
+    .all(invoiceId) as FileRow[];
+  return rows.map(mapFile);
+}
+
+export function getInvoiceFile(id: number): InvoiceFile | null {
+  const row = getDb().prepare("SELECT * FROM invoice_files WHERE id = ?").get(id) as
+    | FileRow
+    | undefined;
+  return row ? mapFile(row) : null;
+}
+
+/** Legt het voorbeeld van een bestand vast; een lege naam haalt het voorbeeld weg. */
+export function setFilePreview(fileId: number, previewFilename: string, previewType: string): void {
+  getDb()
+    .prepare("UPDATE invoice_files SET preview_filename = ?, preview_type = ? WHERE id = ?")
+    .run(previewFilename, previewType, fileId);
 }
 
 export function addInvoiceFile(
   invoiceId: number,
   file: { filename: string; originalName: string; contentType: string; sizeBytes: number },
-): void {
+): number {
   const db = getDb();
   const sortOrder = (db
     .prepare("SELECT COALESCE(MAX(sort_order), -1) AS n FROM invoice_files WHERE invoice_id = ?")
@@ -305,6 +379,7 @@ export function addInvoiceFile(
       (invoice_id, filename, original_name, content_type, size_bytes, sort_order, created_utc)
      VALUES (?, ?, ?, ?, ?, ?, ?)`,
   ).run(invoiceId, file.filename, file.originalName, file.contentType, file.sizeBytes, sortOrder, Date.now());
+  return Number((db.prepare("SELECT last_insert_rowid() AS id").get() as { id: number }).id);
 }
 
 export function deleteInvoiceFile(id: number): InvoiceFile | null {

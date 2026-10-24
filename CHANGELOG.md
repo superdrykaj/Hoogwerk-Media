@@ -1,5 +1,54 @@
 # Wijzigingen
 
+## Oktober 2026 — klantpagina: voorbeelden met watermerk, betalen, beveiligd downloaden
+
+Wat er al was (privé-opslag, streaming-upload tot 4 GB, betaalmuur, Mollie,
+opleveringspagina, wijzigingsverzoeken) is niet herbouwd; dit vult de
+workflow aan: afronden → uploaden → klantlink → voorbeelden → betalen →
+originelen.
+
+- **Voorbeelden met watermerk vóór betaling.** Foto's krijgen bij het uploaden
+  automatisch een verkleind voorbeeld (max. 1280 px, JPEG) met het logo
+  schuin en herhaald over het hele beeld, zonder EXIF/GPS. Het staat als apart
+  bestand in `deliveries/previews/` en wordt via een eigen route geserveerd die
+  alleen dat bestand kent; er is geen pad van het voorbeeld naar het origineel.
+  Mislukt het maken, dan ziet de klant niets van dat bestand (nooit het
+  origineel, nooit een voorbeeld zonder watermerk). Voor video's maak je zelf een
+  kort voorbeeld met `scripts/maak-voorbeeld.sh` (ffmpeg, 720p, logo 3×) en
+  upload je dat bij het bestand; een voorbeeld dat het origineel zelf is of
+  geen MP4 is, wordt geweigerd. De server maakt bewust geen videovoorbeelden:
+  dat is te zwaar voor de kleine machine.
+- **Originelen alleen na bevestigde betaling.** Downloads vragen een
+  ondertekende link (HMAC op `AUTH_SECRET`) die per bezoek van de klantpagina
+  wordt gemaakt en 30 minuten geldt (`DOWNLOAD_LINK_MINUTES`). Zonder of met een
+  geknoeide, verlopen of verkeerde handtekening: 403 of een doorverwijzing naar
+  de pagina; met geldige link maar zonder betaling: 402; na terugbetaling: 410.
+  De betaalstatus wordt bij elk verzoek opnieuw gecontroleerd.
+- **Betaling geverifieerd bij Mollie, aan de juiste factuur.** Een factuur gaat
+  alleen op betaald als Mollie zelf `paid` meldt, bedrag en valuta kloppen én het
+  factuur-ID in de metadata van de betaling bij déze factuur hoort. Terugkeren
+  naar de site geeft geen toegang.
+- **ZIP met alle originelen** (`/api/oplevering/<token>/alles`): gestreamd, zonder
+  compressie, ZIP64 boven 4 GB; getest met 4,9 GB bij ~300 MB geheugengebruik.
+  Losse bestanden hebben Range-ondersteuning (hervatten, ook suffix-bereiken).
+- **Opnieuw downloaden zonder opnieuw betalen**: de persoonlijke link blijft
+  gelden; elke keer dat de pagina opent staan er nieuwe downloadlinks.
+- **Terugbetaling / chargeback**: bij een volledige terugbetaling meldt Mollie dat
+  aan de webhook; de factuur gaat op "terugbetaald" en de toegang vervalt direct.
+  Een gedeeltelijke terugbetaling laat de factuur betaald. Na een terugbetaling
+  staat er geen betaalknop meer; de beheerder kan de factuur zelf weer als
+  betaald boeken.
+- **Handmatig betaald** (bankoverschrijving, contant): in Beheer "Markeer als
+  betaald" met verplichte toelichting; geeft de bestanden direct vrij. Betaalt
+  de klant daarna toch nog via Mollie, dan blijft de status staan en komt er een
+  melding in het serverlog.
+- **Nieuwe persoonlijke link** in Beheer: het oude token en alle downloadlinks
+  werken meteen niet meer (voor als een link in verkeerde handen is gekomen).
+- Tests: `delivery-links`, `delivery-access`, `previews`, uitgebreide
+  `payment-rules`. Handmatig doorlopen (66 controles, nagebootste Mollie): upload,
+  voorbeelden, alle toegangspogingen, betaling, downloads, ZIP, verlopen link,
+  nieuwe link, terugbetaling en handmatig betaald.
+
 ## Oktober 2026 — facturen compleet, vastgelegd en bewaard
 
 De bestaande facturatie (bedragen, nummering, Mollie, oplevering) is niet

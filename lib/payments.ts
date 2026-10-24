@@ -1,6 +1,6 @@
 import "server-only";
 
-import { getInvoice, markPaid, setMolliePaymentId } from "./invoices";
+import { getInvoice, markPaid, markRefunded, setMolliePaymentId } from "./invoices";
 import { createMolliePayment, fetchMolliePayment } from "./mollie";
 import { decidePayment } from "./payment-rules";
 import type { Invoice } from "./types";
@@ -17,19 +17,52 @@ import type { Invoice } from "./types";
  */
 export async function syncInvoicePayment(
   invoice: Invoice,
+  options: { recheckPaid?: boolean } = {},
 ): Promise<{ invoice: Invoice; reachable: boolean }> {
-  if (invoice.status === "paid" || !invoice.molliePaymentId) {
-    return { invoice, reachable: true };
-  }
+  if (!invoice.molliePaymentId) return { invoice, reachable: true };
+  // Een betaalde factuur vraagt alleen om een nieuwe controle als daar reden
+  // voor is (de webhook van Mollie, de knop in Beheer): dan kan het een
+  // terugbetaling zijn. Een gewoon paginabezoek belt Mollie niet.
+  if (invoice.status === "paid" && !options.recheckPaid) return { invoice, reachable: true };
 
   const remote = await fetchMolliePayment(invoice.molliePaymentId);
   if (remote === "unreachable") return { invoice, reachable: false };
   if (remote === null) return { invoice, reachable: true };
 
-  const decision = decidePayment(remote, invoice.amountCents);
+  const decision = decidePayment(remote, invoice.amountCents, invoice.id);
+
+  if (invoice.status === "paid") {
+    if (invoice.paymentMethod === "manual") {
+      // Door de beheerder als betaald geboekt, en nu betaalt de klant óók via
+      // Mollie: dubbel betaald. Niet automatisch terugbetalen, wel melden.
+      if (decision.kind === "mark-paid") {
+        console.error(
+          `[mollie] Factuur ${invoice.invoiceNumber ?? invoice.id} is handmatig als betaald geboekt, ` +
+            `maar Mollie-betaling ${invoice.molliePaymentId} is ook betaald. Betaal één van de twee terug.`,
+        );
+      }
+      return { invoice, reachable: true };
+    }
+    if (decision.kind === "refunded") {
+      markRefunded(invoice.id);
+      console.error(
+        `[mollie] Betaling ${invoice.molliePaymentId} van factuur ${invoice.invoiceNumber ?? invoice.id} ` +
+          "is volledig terugbetaald of teruggeboekt; de bestanden zijn niet meer beschikbaar.",
+      );
+      return { invoice: getInvoice(invoice.id) ?? invoice, reachable: true };
+    }
+    return { invoice, reachable: true };
+  }
+
   if (decision.kind === "mark-paid") {
-    markPaid(invoice.id);
+    markPaid(invoice.id, "mollie");
     return { invoice: getInvoice(invoice.id) ?? invoice, reachable: true };
+  }
+  if (decision.kind === "wrong-invoice") {
+    console.error(
+      `[mollie] Betaling ${invoice.molliePaymentId} hoort volgens Mollie bij factuur-ID ${decision.found}, ` +
+        `niet bij ${invoice.id}. Niet afgeboekt.`,
+    );
   }
   if (decision.kind === "mismatch") {
     console.error(
@@ -64,6 +97,12 @@ export async function getOrCreateCheckout(params: {
   if (invoice.status === "paid") {
     return { ok: false, alreadyPaid: true, error: "Deze factuur is al betaald." };
   }
+  if (invoice.status === "cancelled") {
+    return { ok: false, alreadyPaid: false, error: "Deze factuur is geannuleerd." };
+  }
+  if (invoice.status === "refunded") {
+    return { ok: false, alreadyPaid: false, error: "Deze factuur is terugbetaald." };
+  }
 
   if (invoice.molliePaymentId) {
     const remote = await fetchMolliePayment(invoice.molliePaymentId);
@@ -75,10 +114,17 @@ export async function getOrCreateCheckout(params: {
         error: "Mollie is nu niet bereikbaar. Probeer het zo opnieuw.",
       };
     }
-    const decision = decidePayment(remote, invoice.amountCents);
+    const decision = decidePayment(remote, invoice.amountCents, invoice.id);
     if (decision.kind === "mark-paid") {
-      markPaid(invoice.id);
+      markPaid(invoice.id, "mollie");
       return { ok: false, alreadyPaid: true, error: "Deze factuur is al betaald." };
+    }
+    if (decision.kind === "refunded" || decision.kind === "wrong-invoice") {
+      return {
+        ok: false,
+        alreadyPaid: false,
+        error: "Deze betaling kan niet worden hergebruikt. Neem contact op met Hoogbeeld Media.",
+      };
     }
     if (decision.kind === "mismatch") {
       return {

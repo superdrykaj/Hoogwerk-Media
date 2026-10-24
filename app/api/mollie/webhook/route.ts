@@ -24,7 +24,7 @@ export async function POST(request: Request) {
 
   // Kon Mollie niet worden bereikt, dan een foutcode: Mollie probeert de
   // webhook dan zelf opnieuw. Met een 200 zou een betaling blijven liggen.
-  const { reachable } = await syncInvoicePayment(invoice);
+  const { reachable } = await syncInvoicePayment(invoice, { recheckPaid: true });
   if (!reachable) {
     return new Response("Mollie niet bereikbaar", { status: 503 });
   }

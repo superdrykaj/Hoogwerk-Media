@@ -12,6 +12,9 @@ const open: RemotePayment = {
   checkoutUrl: "https://www.mollie.com/checkout/select-method/abc",
   amountCents: 25000,
   currency: "EUR",
+  refundedCents: 0,
+  chargedBackCents: 0,
+  metadataInvoiceId: "7",
 };
 
 describe("amountValueToCents", () => {
@@ -40,7 +43,21 @@ describe("parseRemotePayment", () => {
       checkoutUrl: "https://www.mollie.com/checkout/x",
       amountCents: 25000,
       currency: "EUR",
+      refundedCents: 0,
+      chargedBackCents: 0,
+      metadataInvoiceId: null,
     });
+  });
+  it("leest terugbetaling, chargeback en het factuur-ID uit de metadata", () => {
+    const payment = parseRemotePayment({
+      status: "paid",
+      amount: { value: "250.00", currency: "EUR" },
+      amountRefunded: { value: "100.00", currency: "EUR" },
+      amountChargedBack: { value: "25.50", currency: "EUR" },
+      metadata: { invoiceId: "7" },
+      _links: {},
+    });
+    expect(payment).toMatchObject({ refundedCents: 10000, chargedBackCents: 2550, metadataInvoiceId: "7" });
   });
   it("heeft geen betaallink meer als de betaling is afgerond", () => {
     const payment = parseRemotePayment({
@@ -106,5 +123,42 @@ describe("decidePayment", () => {
 
   it("maakt een nieuwe betaling als er nog geen betaling is", () => {
     expect(decidePayment(null, 25000)).toEqual({ kind: "create-new" });
+  });
+});
+
+describe("decidePayment: koppeling aan de juiste factuur", () => {
+  const betaald: RemotePayment = { ...open, status: "paid", checkoutUrl: null };
+
+  it("boekt af als het factuur-ID klopt", () => {
+    expect(decidePayment(betaald, 25000, 7)).toEqual({ kind: "mark-paid" });
+  });
+  it("boekt NIET af bij een betaling van een andere factuur", () => {
+    expect(decidePayment({ ...betaald, metadataInvoiceId: "8" }, 25000, 7)).toEqual({
+      kind: "wrong-invoice",
+      found: "8",
+    });
+  });
+  it("hergebruikt een open betaling van een andere factuur ook niet", () => {
+    expect(decidePayment({ ...open, metadataInvoiceId: "8" }, 25000, 7).kind).toBe("wrong-invoice");
+  });
+  it("laat een oudere betaling zonder metadata door (van vóór deze controle)", () => {
+    expect(decidePayment({ ...betaald, metadataInvoiceId: null }, 25000, 7)).toEqual({ kind: "mark-paid" });
+  });
+});
+
+describe("decidePayment: terugbetalingen", () => {
+  const betaald: RemotePayment = { ...open, status: "paid", checkoutUrl: null };
+
+  it("herkent een volledige terugbetaling", () => {
+    expect(decidePayment({ ...betaald, refundedCents: 25000 }, 25000, 7)).toEqual({ kind: "refunded" });
+  });
+  it("herkent een chargeback", () => {
+    expect(decidePayment({ ...betaald, chargedBackCents: 25000 }, 25000, 7)).toEqual({ kind: "refunded" });
+  });
+  it("herkent een terugbetaling die uit twee delen bestaat", () => {
+    expect(decidePayment({ ...betaald, refundedCents: 15000, chargedBackCents: 10000 }, 25000, 7).kind).toBe("refunded");
+  });
+  it("laat een gedeeltelijke terugbetaling op betaald staan", () => {
+    expect(decidePayment({ ...betaald, refundedCents: 5000 }, 25000, 7)).toEqual({ kind: "mark-paid" });
   });
 });
