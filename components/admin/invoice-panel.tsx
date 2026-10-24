@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 
 import {
   deleteDeliveryFileAction,
+  markInvoicePaidManuallyAction,
+  regeneratePreviewAction,
+  rotateInvoiceTokenAction,
   refreshInvoicePaymentStatusAction,
   saveInvoiceDraftAction,
   sendDeliveryAction,
@@ -79,12 +82,15 @@ export type DeliveryInfo = {
   invoice: Invoice | null;
   files: InvoiceFile[];
   revisions: RevisionRequest[];
+  /** Wat er in de eigen bedrijfsgegevens nog ontbreekt voordat een factuur kan worden uitgegeven. */
+  supplierIssues: string[];
 };
 
 const INVOICE_STATUS_LABELS: Record<InvoiceStatus, string> = {
   draft: "Concept",
   sent: "Verstuurd",
   paid: "Betaald",
+  refunded: "Terugbetaald",
   cancelled: "Geannuleerd",
 };
 
@@ -116,10 +122,13 @@ export function InvoicePanel({
   bookingId,
   info,
   mollieReady,
+  defaults,
 }: {
   bookingId: number;
   info: DeliveryInfo;
   mollieReady: boolean;
+  /** Voorinvulling uit de boeking: naam van de klant en datum van de opdracht. */
+  defaults: { name: string; deliveryDate: string };
 }) {
   const { invoice, files, revisions } = info;
   const router = useRouter();
@@ -136,6 +145,32 @@ export function InvoicePanel({
     sendDeliveryAction,
     emptyActionState,
   );
+  const [manualState, manualAction, manualPending] = useActionState<ActionState, FormData>(
+    markInvoicePaidManuallyAction,
+    emptyActionState,
+  );
+  const [previewBusy, setPreviewBusy] = useState<number | null>(null);
+  const [previewError, setPreviewError] = useState<string>("");
+
+  /** Een eigen voorbeeld (watermerkvideo) bij een bestand uploaden. */
+  async function uploadPreview(fileId: number, file: File) {
+    if (!invoice) return;
+    setPreviewBusy(fileId);
+    setPreviewError("");
+    try {
+      const response = await fetch(
+        `/api/admin/opleverbestand?invoiceId=${invoice.id}&previewFor=${fileId}`,
+        { method: "POST", headers: { "Content-Type": file.type || "application/octet-stream" }, body: file },
+      );
+      const result = (await response.json().catch(() => null)) as { ok?: boolean; error?: string } | null;
+      if (!result?.ok) setPreviewError(result?.error ?? "Uploaden van het voorbeeld is mislukt.");
+      else router.refresh();
+    } catch {
+      setPreviewError("Uploaden van het voorbeeld is mislukt door een netwerkfout.");
+    } finally {
+      setPreviewBusy(null);
+    }
+  }
 
   // Wachtrij van uploads: meerdere bestanden tegelijk kiezen mag, maar ze
   // gaan één voor één omhoog — bij een trage verbinding maakt gelijktijdig
@@ -244,6 +279,8 @@ export function InvoicePanel({
     void processQueue(invoice.id);
   }
 
+  const issued = Boolean(invoice?.issuedUtc);
+  const lock = issued ? { readOnly: true, "aria-readonly": true } : {};
   const amountDefault = invoice ? (invoice.amountCents / 100).toFixed(2).replace(".", ",") : "";
 
   return (
@@ -268,10 +305,24 @@ export function InvoicePanel({
             {draftState.message}
           </p>
         )}
+        {info.supplierIssues.length > 0 && !issued && (
+          <p className="notice notice-error" role="status">
+            Je eigen bedrijfsgegevens zijn nog niet compleet: {info.supplierIssues.join(", ")}.
+            Vul ze in bij Instellingen → Bedrijfsgegevens voor facturen; zonder die gegevens
+            kan er geen factuur worden uitgegeven.
+          </p>
+        )}
+        {issued && (
+          <p className="notice notice-success" role="status">
+            Uitgegeven als factuur {invoice?.invoiceNumber} op{" "}
+            {invoice?.invoiceDate}. Een uitgegeven factuur is vastgelegd en kan niet meer
+            worden gewijzigd; voor een correctie is een creditnota nodig.
+          </p>
+        )}
         <div className="flex flex-wrap gap-3">
           <div>
             <label htmlFor={`amount-${bookingId}`} className="field-label">
-              Bedrag (€)
+              Bedrag incl. btw (€)
             </label>
             <input
               id={`amount-${bookingId}`}
@@ -280,11 +331,12 @@ export function InvoicePanel({
               placeholder="250,00"
               inputMode="decimal"
               className="field-input w-32"
+              {...lock}
             />
           </div>
           <div className="min-w-[16rem] flex-1">
             <label htmlFor={`desc-${bookingId}`} className="field-label">
-              Omschrijving
+              Omschrijving van de dienst
             </label>
             <input
               id={`desc-${bookingId}`}
@@ -292,9 +344,26 @@ export function InvoicePanel({
               defaultValue={invoice?.description ?? ""}
               placeholder="Bijv. Dronefotografie — pakket compleet"
               className="field-input"
+              {...lock}
             />
           </div>
         </div>
+
+        <fieldset className="space-y-3 rounded-xl border border-ink-700 p-4">
+          <legend className="px-1 text-xs font-semibold uppercase tracking-wide text-mist-500">
+            Factuur aan
+          </legend>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Field id={`cname-${bookingId}`} name="customerName" label="Naam of bedrijf" defaultValue={invoice?.customerName || defaults.name} lock={lock} />
+            <Field id={`caddr-${bookingId}`} name="customerAddress" label="Straat en huisnummer" defaultValue={invoice?.customerAddress ?? ""} lock={lock} />
+            <Field id={`cpost-${bookingId}`} name="customerPostcode" label="Postcode" defaultValue={invoice?.customerPostcode ?? ""} lock={lock} />
+            <Field id={`ccity-${bookingId}`} name="customerCity" label="Plaats" defaultValue={invoice?.customerCity ?? ""} lock={lock} />
+            <Field id={`ccountry-${bookingId}`} name="customerCountry" label="Land" defaultValue={invoice?.customerCountry || "Nederland"} lock={lock} />
+            <Field id={`cvat-${bookingId}`} name="customerVatId" label="Btw-nummer klant (alleen zakelijk, optioneel)" defaultValue={invoice?.customerVatId ?? ""} lock={lock} />
+            <Field id={`ddate-${bookingId}`} name="deliveryDate" label="Datum levering of uitvoering" type="date" defaultValue={invoice?.deliveryDate || defaults.deliveryDate} lock={lock} />
+            <Field id={`term-${bookingId}`} name="paymentTermDays" label="Betaaltermijn (dagen)" type="number" defaultValue={String(invoice?.paymentTermDays ?? 14)} lock={lock} />
+          </div>
+        </fieldset>
         <label className="flex items-center gap-2 text-sm text-mist-300">
           <input
             type="checkbox"
@@ -306,12 +375,10 @@ export function InvoicePanel({
         <button type="submit" className="btn btn-quiet" disabled={draftPending}>
           {draftPending ? "Bezig…" : "Opslaan"}
         </button>
-        {invoice?.invoiceNumber && (
+        {!issued && (
           <p className="field-hint">
-            Deze factuur is al verstuurd onder nummer {invoice.invoiceNumber}. Wijzig je het
-            bedrag naar aanleiding van een gesprek met de klant, verstuur dan hieronder opnieuw
-            een betaalverzoek of oplevering — anders klopt wat je eerder stuurde niet meer met
-            het nieuwe bedrag.
+            Het factuurnummer en de factuurdatum komen er pas bij het versturen van het
+            betaalverzoek of de oplevering; daarna ligt de factuur vast.
           </p>
         )}
       </form>
@@ -345,7 +412,7 @@ export function InvoicePanel({
             {invoice.paidUtc && (
               <span className="text-mist-500">Betaald op {formatTimestamp(invoice.paidUtc)}</span>
             )}
-            {invoice.molliePaymentId && invoice.status !== "paid" && (
+            {invoice.molliePaymentId && invoice.status !== "refunded" && (
               <form action={refreshInvoicePaymentStatusAction}>
                 <input type="hidden" name="invoiceId" value={invoice.id} />
                 <button type="submit" className="btn btn-quiet text-xs">
@@ -353,7 +420,70 @@ export function InvoicePanel({
                 </button>
               </form>
             )}
+            {invoice.status === "paid" && invoice.paymentMethod === "manual" && (
+              <span className="text-mist-500">Handmatig geboekt: {invoice.paymentNote}</span>
+            )}
+            {invoice.status === "refunded" && invoice.refundedUtc && (
+              <span className="text-rose-300">
+                Terugbetaald op {formatTimestamp(invoice.refundedUtc)}: de klant heeft geen toegang meer tot de bestanden.
+              </span>
+            )}
           </div>
+
+          {/* Klantlink ------------------------------------------------------ */}
+          <div className="mt-4 rounded-xl border border-ink-700 p-4 text-sm">
+            <p className="field-label">Persoonlijke klantlink</p>
+            <p className="mt-1 break-all text-mist-300" suppressHydrationWarning>
+              {typeof window === "undefined" ? "" : window.location.origin}/oplevering/{invoice.token}
+            </p>
+            <p className="field-hint">
+              De klant ziet hier voorbeelden met watermerk; de originelen komen vrij na een bevestigde betaling.
+            </p>
+            <form
+              action={rotateInvoiceTokenAction}
+              className="mt-2"
+              onSubmit={(event) => {
+                if (!window.confirm("De oude link werkt daarna niet meer. Doorgaan?")) event.preventDefault();
+              }}
+            >
+              <input type="hidden" name="invoiceId" value={invoice.id} />
+              <button type="submit" className="btn btn-quiet text-xs">
+                Nieuwe link maken
+              </button>
+            </form>
+          </div>
+
+          {/* Handmatig betaald ---------------------------------------------- */}
+          {invoice.issuedUtc && invoice.status !== "paid" && (
+            <form action={manualAction} className="mt-4 rounded-xl border border-ink-700 p-4">
+              <input type="hidden" name="invoiceId" value={invoice.id} />
+              <label htmlFor={`manual-${invoice.id}`} className="field-label">
+                Betaald buiten Mollie om (bankoverschrijving, contant)
+              </label>
+              {manualState.status !== "idle" && (
+                <p
+                  className={`notice mt-2 ${manualState.status === "error" ? "notice-error" : "notice-success"}`}
+                  role="status"
+                >
+                  {manualState.message}
+                </p>
+              )}
+              <div className="mt-2 flex flex-wrap gap-2">
+                <input
+                  id={`manual-${invoice.id}`}
+                  name="note"
+                  placeholder="Bijv. overgemaakt op 12-11, bankafschrift 45"
+                  className="field-input min-w-[16rem] flex-1"
+                />
+                <button type="submit" className="btn btn-quiet" disabled={manualPending}>
+                  {manualPending ? "Bezig…" : "Markeer als betaald"}
+                </button>
+              </div>
+              <p className="field-hint">
+                Geeft de bestanden direct vrij. Controleer eerst dat het bedrag echt binnen is.
+              </p>
+            </form>
+          )}
 
           {/* Betaalverzoek -------------------------------------------------- */}
           <form action={paymentAction} className="mt-4">
@@ -393,17 +523,53 @@ export function InvoicePanel({
                       {file.originalName}{" "}
                       <span className="text-mist-600">({formatSize(file.sizeBytes)})</span>
                     </span>
-                    <form action={deleteDeliveryFileAction}>
-                      <input type="hidden" name="id" value={file.id} />
-                      <button type="submit" className="shrink-0 text-xs text-rose-300 hover:underline">
-                        Verwijderen
-                      </button>
-                    </form>
+                    <div className="flex shrink-0 items-center gap-3 text-xs">
+                      <span className={file.previewFilename ? "text-emerald-300" : "text-amber-300"}>
+                        {file.previewFilename ? "Voorbeeld ✓" : "Geen voorbeeld"}
+                      </span>
+                      {file.contentType.startsWith("image/") ? (
+                        <form action={regeneratePreviewAction}>
+                          <input type="hidden" name="fileId" value={file.id} />
+                          <button type="submit" className="text-haze-300 hover:underline">
+                            {file.previewFilename ? "Opnieuw maken" : "Voorbeeld maken"}
+                          </button>
+                        </form>
+                      ) : (
+                        <label className="cursor-pointer text-haze-300 hover:underline">
+                          {previewBusy === file.id ? "Bezig…" : "Voorbeeld uploaden"}
+                          <input
+                            type="file"
+                            accept="video/mp4,image/jpeg,image/png,image/webp"
+                            className="sr-only"
+                            disabled={previewBusy !== null}
+                            onChange={(event) => {
+                              const chosen = event.target.files?.[0];
+                              event.target.value = "";
+                              if (chosen) void uploadPreview(file.id, chosen);
+                            }}
+                          />
+                        </label>
+                      )}
+                      <form action={deleteDeliveryFileAction}>
+                        <input type="hidden" name="id" value={file.id} />
+                        <button type="submit" className="text-rose-300 hover:underline">
+                          Verwijderen
+                        </button>
+                      </form>
+                    </div>
                   </li>
                 ))}
               </ul>
             ) : (
               <p className="mt-2 text-sm text-mist-500">Nog geen bestanden toegevoegd.</p>
+            )}
+            {previewError && <p className="notice notice-error mt-2" role="status">{previewError}</p>}
+            {files.some((f) => !f.previewFilename) && (
+              <p className="field-hint">
+                Foto&apos;s krijgen automatisch een voorbeeld met watermerk. Voor video&apos;s maak je zelf een
+                kort, verkleind voorbeeld met watermerk (zie scripts/maak-voorbeeld.sh) en upload je dat hier.
+                Zolang er geen voorbeeld is, ziet de klant niets van dat bestand.
+              </p>
             )}
 
             {/* Wachtrij: bestanden die net gekozen zijn, bezig zijn of zijn
@@ -588,6 +754,31 @@ export function InvoicePanel({
           )}
         </>
       )}
+    </div>
+  );
+}
+
+function Field({
+  id,
+  name,
+  label,
+  defaultValue,
+  type = "text",
+  lock,
+}: {
+  id: string;
+  name: string;
+  label: string;
+  defaultValue: string;
+  type?: string;
+  lock: Record<string, unknown>;
+}) {
+  return (
+    <div>
+      <label htmlFor={id} className="field-label">
+        {label}
+      </label>
+      <input id={id} name={name} type={type} defaultValue={defaultValue} className="field-input" {...lock} />
     </div>
   );
 }

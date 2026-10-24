@@ -67,10 +67,13 @@ onderstaande routes kunt publiceren.
 Je hebt een Fly.io-account nodig, inclusief betaalgegevens. Een enkele kleine
 machine met een schijf van 1 GB valt in de goedkoopste categorie.
 
-In `fly.toml` staat `min_machines_running = 0`: de machine gaat slapen als er
-niemand op de site is, en wordt door het eerste bezoek weer gewekt. Dat scheelt
-kosten, maar die ene bezoeker wacht een paar seconden langer. Wil je dat niet,
-zet hem dan op `1`; de machine draait dan altijd door.
+In `fly.toml` staat `min_machines_running = 1`: de machine draait altijd door,
+zodat elke bezoeker meteen een antwoord krijgt. Met `0` gaat de machine slapen
+als er even niemand op de site is en wordt hij door het eerste bezoek weer
+gewekt; die ene bezoeker wacht dan enkele seconden (op de testomgeving gemeten:
+5,4 seconden voor de eerste byte). Dat scheelt een paar dollar per maand, maar
+kost bezoekers die je net hebt aangetrokken. De testomgeving
+(`fly.staging.toml`) staat bewust nog op `0`.
 
 Op macOS en Linux:
 
@@ -833,11 +836,17 @@ te uploaden en die naar de klant te versturen. Twee momenten om te betalen:
 - **Betaalverzoek versturen** — kan meteen na het bevestigen van de boeking,
   los van de oplevering. Handig als je (een deel van) het bedrag vooraf wilt
   ontvangen.
-- **Project afronden & opleveren** — verstuurt de eindproducten via een
-  beveiligde link. Staat de paywall aan (standaard) en is er nog niet betaald,
-  dan ziet de klant eerst een betaalscherm; de bestanden komen vrij zodra de
-  betaling binnen is. Vanaf dezelfde link kan de klant ook een wijziging
-  aanvragen als de eerste editing niet bevalt.
+- **Project afronden & opleveren** — verstuurt de persoonlijke klantlink. Op die
+  pagina ziet de klant eerst **voorbeelden met watermerk** (foto's krijgen die
+  automatisch; voor video's maak je met `scripts/maak-voorbeeld.sh` zelf een
+  verkleind voorbeeld en upload je dat bij het bestand). Staat de paywall aan
+  (standaard), dan komen de originelen pas vrij zodra Mollie de betaling heeft
+  bevestigd; daarna downloadt de klant ze los of als ZIP, zo vaak als nodig, via
+  korte (30 minuten) ondertekende links. Betaalde de klant per bank? Gebruik
+  "Markeer als betaald" in Beheer. Bij een terugbetaling via Mollie vervalt de
+  toegang automatisch. Vanaf dezelfde pagina kan de klant ook een wijziging
+  aanvragen. Is een link in verkeerde handen gekomen, gebruik dan "Nieuwe link
+  maken". Een bestand zonder voorbeeld is voor de klant onzichtbaar tot er een is.
 
 Betalen loopt via [Mollie](https://www.mollie.com/), in testmodus zolang je
 een testsleutel gebruikt:
@@ -845,6 +854,23 @@ een testsleutel gebruikt:
 ```
 MOLLIE_API_KEY="test_..."
 ```
+
+Zet de sleutel als geheim op Fly (`fly secrets set MOLLIE_API_KEY=...`), nooit in
+de code of in een bestand dat je commit. Een sleutel die met `test_` begint
+gebruikt Mollies testomgeving; pas met een `live_`-sleutel gaat er echt geld om.
+Mollie belt na een betaling `https://<je-domein>/api/mollie/webhook`; dat
+adres moet dus openbaar bereikbaar zijn (lokaal werkt het niet, daar vraagt de
+opleveringspagina de status zelf op).
+
+**Een factuur uitgeven** (bij "Betaalverzoek versturen" of "Project afronden &
+opleveren") kan alleen met echte, geldige bedrijfsgegevens in Beheer →
+Instellingen (adres, postcode, plaats, KvK van 8 cijfers, geldig IBAN en btw-
+identificatienummer; bij 0% btw de kleineondernemersregeling) en met de
+klantgegevens en leverdatum bij de boeking. Bij uitgifte krijgt de factuur zijn
+nummer en wordt alles vastgelegd; daarna is hij onveranderbaar en wordt het PDF
+bewaard in `DATA_DIR/invoices/` (neem die map mee in je back-ups: de
+bewaarplicht voor facturen is zeven jaar). De testhandleiding voor Mollie staat
+in `docs/MOLLIE-TEST.md`.
 
 Voor een Mollie-account heb je een **KvK-nummer** nodig. Heb je dat nog niet,
 dan werkt de rest van de oplevering gewoon: zet de paywall-toggle per factuur

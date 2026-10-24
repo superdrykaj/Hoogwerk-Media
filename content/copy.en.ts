@@ -809,11 +809,32 @@ export const en: Dictionary = {
     payTitle: "Payment required",
     payIntro: (amount: string) =>
       `An invoice of ${amount} is open for this project. Once it's paid, the files below will automatically become available.`,
+    payTitleOpen: "Invoice outstanding",
+    payIntroOpen: (amount: string) =>
+      `An invoice of ${amount} is outstanding. You can pay online right away.`,
     payButton: "Pay now",
     payError: "Payment didn't go through just now. Please try again or get in touch.",
     paidNotice: (when: string) => `Paid on ${when}.`,
     filesTitle: "Your files",
     filesIntro: "Click a file to download it.",
+    previewTitle: "Previews",
+    previewIntroLocked:
+      "These are reduced-size previews with a watermark. The original files without watermark become available as soon as the invoice is paid.",
+    previewIntroPaid: "Previews of your files. The originals are below.",
+    previewMissing: "There is no preview for this file yet. The original becomes available after payment.",
+    previewPending: "The preview is being prepared.",
+    zipButton: (count: number) => `Download everything (ZIP, ${count} files)`,
+    zipHint: "For a large delivery it is better to download the files one by one: an interrupted ZIP starts over.",
+    linkExpiredNotice:
+      "The download link had expired. New links are below; click the file again.",
+    linkValidNote: (minutes: number) =>
+      `Download links are valid for ${minutes} minutes. Reload this page for new links; you never pay again.`,
+    refundedTitle: "Payment refunded",
+    refundedBody:
+      "This invoice was refunded, so the files are no longer available. Get in touch if you think this is wrong.",
+    cancelledBody: "This invoice was cancelled; no files are available.",
+    downloadsUnavailable:
+      "Downloading is temporarily unavailable. Please contact Hoogbeeld Media.",
     downloadLabel: "Download",
     revisionTitle: "Not fully happy?",
     revisionIntro: "Let me know what you'd like changed; I'll go through it with you.",

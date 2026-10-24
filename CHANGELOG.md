@@ -1,5 +1,138 @@
 # Wijzigingen
 
+## Oktober 2026 — klantpagina: voorbeelden met watermerk, betalen, beveiligd downloaden
+
+Wat er al was (privé-opslag, streaming-upload tot 4 GB, betaalmuur, Mollie,
+opleveringspagina, wijzigingsverzoeken) is niet herbouwd; dit vult de
+workflow aan: afronden → uploaden → klantlink → voorbeelden → betalen →
+originelen.
+
+- **Voorbeelden met watermerk vóór betaling.** Foto's krijgen bij het uploaden
+  automatisch een verkleind voorbeeld (max. 1280 px, JPEG) met het logo
+  schuin en herhaald over het hele beeld, zonder EXIF/GPS. Het staat als apart
+  bestand in `deliveries/previews/` en wordt via een eigen route geserveerd die
+  alleen dat bestand kent; er is geen pad van het voorbeeld naar het origineel.
+  Mislukt het maken, dan ziet de klant niets van dat bestand (nooit het
+  origineel, nooit een voorbeeld zonder watermerk). Voor video's maak je zelf een
+  kort voorbeeld met `scripts/maak-voorbeeld.sh` (ffmpeg, 720p, logo 3×) en
+  upload je dat bij het bestand; een voorbeeld dat het origineel zelf is of
+  geen MP4 is, wordt geweigerd. De server maakt bewust geen videovoorbeelden:
+  dat is te zwaar voor de kleine machine.
+- **Originelen alleen na bevestigde betaling.** Downloads vragen een
+  ondertekende link (HMAC op `AUTH_SECRET`) die per bezoek van de klantpagina
+  wordt gemaakt en 30 minuten geldt (`DOWNLOAD_LINK_MINUTES`). Zonder of met een
+  geknoeide, verlopen of verkeerde handtekening: 403 of een doorverwijzing naar
+  de pagina; met geldige link maar zonder betaling: 402; na terugbetaling: 410.
+  De betaalstatus wordt bij elk verzoek opnieuw gecontroleerd.
+- **Betaling geverifieerd bij Mollie, aan de juiste factuur.** Een factuur gaat
+  alleen op betaald als Mollie zelf `paid` meldt, bedrag en valuta kloppen én het
+  factuur-ID in de metadata van de betaling bij déze factuur hoort. Terugkeren
+  naar de site geeft geen toegang.
+- **ZIP met alle originelen** (`/api/oplevering/<token>/alles`): gestreamd, zonder
+  compressie, ZIP64 boven 4 GB; getest met 4,9 GB bij ~300 MB geheugengebruik.
+  Losse bestanden hebben Range-ondersteuning (hervatten, ook suffix-bereiken).
+- **Opnieuw downloaden zonder opnieuw betalen**: de persoonlijke link blijft
+  gelden; elke keer dat de pagina opent staan er nieuwe downloadlinks.
+- **Terugbetaling / chargeback**: bij een volledige terugbetaling meldt Mollie dat
+  aan de webhook; de factuur gaat op "terugbetaald" en de toegang vervalt direct.
+  Een gedeeltelijke terugbetaling laat de factuur betaald. Na een terugbetaling
+  staat er geen betaalknop meer; de beheerder kan de factuur zelf weer als
+  betaald boeken.
+- **Handmatig betaald** (bankoverschrijving, contant): in Beheer "Markeer als
+  betaald" met verplichte toelichting; geeft de bestanden direct vrij. Betaalt
+  de klant daarna toch nog via Mollie, dan blijft de status staan en komt er een
+  melding in het serverlog.
+- **Nieuwe persoonlijke link** in Beheer: het oude token en alle downloadlinks
+  werken meteen niet meer (voor als een link in verkeerde handen is gekomen).
+- Tests: `delivery-links`, `delivery-access`, `previews`, uitgebreide
+  `payment-rules`. Handmatig doorlopen (66 controles, nagebootste Mollie): upload,
+  voorbeelden, alle toegangspogingen, betaling, downloads, ZIP, verlopen link,
+  nieuwe link, terugbetaling en handmatig betaald.
+
+## Oktober 2026 — facturen compleet, vastgelegd en bewaard
+
+De bestaande facturatie (bedragen, nummering, Mollie, oplevering) is niet
+herbouwd; dit vult aan wat voor een correcte factuur ontbrak.
+
+- **Wettelijke gegevens op de factuur** (art. 35a Wet OB): factuurdatum en
+  doorlopend nummer, naam en adres van leverancier én afnemer, btw-
+  identificatienummer van de leverancier, KvK, IBAN, omschrijving, datum van
+  levering of uitvoering, bedrag excl. btw, tarief en btw-bedrag, betaaltermijn
+  en uiterste betaaldatum. Bij 0% btw (kleineondernemersregeling) staat de KOR-
+  vermelding erop en is geen btw-id nodig.
+- **Klantgegevens en leverdatum** worden per factuur ingevuld in Beheer →
+  Boekingen → Oplevering & factuur (voorgevuld met naam en opdrachtdatum).
+- **Geen fictieve gegevens**: een factuur kan pas worden uitgegeven (bij
+  "Betaalverzoek versturen" of "Project afronden & opleveren") als de eigen
+  bedrijfsgegevens echt en geldig zijn: adres, postcode, plaats, KvK van 8
+  cijfers, IBAN met geldige controle en, bij btw, een btw-id (NL…B01). De
+  instellingenpagina weigert invulplekken als "Nog invullen" en bewaart wat je
+  had ingevuld bij een foutmelding.
+- **Vastgelegd en onveranderbaar**: bij uitgifte komen nummer, datum en alle
+  gegevens in `invoices.snapshot_json`, en het PDF op de schijf (`invoices/`)
+  met een controlesom. De database weigert daarna elke wijziging van de
+  vastgelegde velden en het verwijderen van de factuur (ook via de boeking);
+  betaalstatus en betaalmuur blijven wijzigbaar. Ontbreekt of wijkt het bestand
+  af, dan wordt het PDF uit de vastlegging opnieuw opgebouwd. Het PDF toont
+  bewust geen betaalstatus.
+- **PDF als bijlage** bij het betaalverzoek en de opleveringsmail (naast de link).
+- **Bestaande facturen**: genummerde facturen van vóór deze wijziging behouden
+  hun nummer, bedrag en token en worden bij de eerstvolgende start vastgelegd
+  (gemarkeerd als `legacy`; hun klantadres is nooit bewaard). Concepten blijven
+  concepten. Getest op een database in het oude schema.
+- Tests: `invoice-rules`, `invoice-issue` (incl. overgang, triggers, PDF-herstel),
+  `invoice-pdf` en `invoice-settings-validation`.
+
+## Oktober 2026 — Mollie-betalingen betrouwbaarder
+
+De Mollie-koppeling bestond al (betaling aanmaken, doorsturen naar Mollie,
+webhook, "Status verversen"). Dit herstelt vier gaten in de afhandeling; er is
+niets herbouwd.
+
+- **Eén afboeklogica** (`lib/payments.ts`, regels in `lib/payment-rules.ts`):
+  webhook, "Status verversen" en de opleveringspagina gebruiken dezelfde code.
+  Een factuur gaat alleen op betaald als Mollie zelf `paid` meldt én bedrag en
+  valuta kloppen met de factuur. Wijkt het bedrag af, dan wordt er niet
+  afgeboekt en staat er een melding in het serverlog.
+- **Geen dubbele betalingen meer**: een tweede klik op "Nu betalen" of
+  "Betaalverzoek versturen" hergebruikt een nog open betaling met hetzelfde
+  bedrag. Is er al betaald, dan komt er geen nieuwe. Is Mollie niet bereikbaar,
+  dan wordt er ook geen nieuwe aangemaakt.
+- **Opleveringspagina vraagt de status zelf op** als er een betaling openstaat,
+  zodat een klant na het betalen direct zijn bestanden ziet, ook als de webhook
+  nog onderweg is (de code-opmerking beloofde dit al).
+- **Webhook geeft 503** als Mollie niet bereikbaar is, zodat Mollie het zelf
+  opnieuw probeert in plaats van de betaling te laten liggen.
+- **Betaalknop ook zonder betaalmuur**: staat de muur uit en is er nog niet
+  betaald, dan kan de klant op de opleveringspagina alsnog online betalen.
+- Tests: `lib/payment-rules.test.ts` (13 tests).
+
+## Oktober 2026 — snellere eerste indruk: laadscherm en navigatiestreep
+
+- **Oorzaak van het trage laden gemeten.** Op de testomgeving kostte een
+  bezoek aan een gestopte machine 5,4 seconden tot de eerste byte (cold start,
+  `min_machines_running = 0`); een draaiende machine antwoordt in een halve
+  seconde (gemeten vanuit het buitenland, de server zelf rendert een pagina in
+  30–60 ms). Het ophalen van de pagina's, de scripts (ongeveer 220 kB
+  gecomprimeerd) en het hero-beeld (100 kB) is niet de bottleneck.
+- `fly.toml`: `min_machines_running = 1`. Productie draait nu altijd; dat kost
+  ongeveer 3 à 4 dollar per maand. De testomgeving blijft op 0.
+- **Laadscherm** (`components/page-loader.tsx`, `.hb-loader` in `globals.css`):
+  beeldmerk, woordmerk en een lijn die een dronevlucht boven de horizon volgt.
+  Alleen CSS en SVG, een script van ongeveer 1 kB, geen bibliotheek. Het scherm
+  verschijnt pas 300 ms na het laden en alleen als de pagina dan nog niet klaar
+  is (lettertypen en het belangrijkste beeld binnen); er is geen minimale
+  duur. Het vangt geen klikken op, staat voor schermlezers uit, valt bij
+  `prefers-reduced-motion` terug op een stilstaande lijn, verschijnt niet
+  zonder JavaScript en sluit zichzelf na 6 seconden als het laden vastloopt (de
+  CSS doet dat na 7 seconden als het script niet draait). Niet op `/admin` en
+  de opleverpagina's.
+- **Navigatiestreep** (`components/navigation-progress.tsx`): een vaste strook
+  van 2 px bovenaan die pas na 250 ms zichtbaar wordt als de volgende pagina
+  er nog niet is. Snelle navigatie toont niets, er verspringt niets.
+- Het logo en de voorbeeldbeelden in de wortel van `public/` krijgen een dag
+  cache in plaats van `max-age=0`.
+
 ## Oktober 2026 — officiële KvK-gegevens
 
 - KvK-nummer 42201319 (eenmanszaak, Zaandam) staat nu in `content/site.ts`
