@@ -856,6 +856,16 @@ Mollie belt na een betaling `https://<je-domein>/api/mollie/webhook`; dat
 adres moet dus openbaar bereikbaar zijn (lokaal werkt het niet, daar vraagt de
 opleveringspagina de status zelf op).
 
+**Een factuur uitgeven** (bij "Betaalverzoek versturen" of "Project afronden &
+opleveren") kan alleen met echte, geldige bedrijfsgegevens in Beheer →
+Instellingen (adres, postcode, plaats, KvK van 8 cijfers, geldig IBAN en btw-
+identificatienummer; bij 0% btw de kleineondernemersregeling) en met de
+klantgegevens en leverdatum bij de boeking. Bij uitgifte krijgt de factuur zijn
+nummer en wordt alles vastgelegd; daarna is hij onveranderbaar en wordt het PDF
+bewaard in `DATA_DIR/invoices/` (neem die map mee in je back-ups: de
+bewaarplicht voor facturen is zeven jaar). De testhandleiding voor Mollie staat
+in `docs/MOLLIE-TEST.md`.
+
 Voor een Mollie-account heb je een **KvK-nummer** nodig. Heb je dat nog niet,
 dan werkt de rest van de oplevering gewoon: zet de paywall-toggle per factuur
 uit, dan zijn de bestanden direct te downloaden zonder dat er een betaling aan
