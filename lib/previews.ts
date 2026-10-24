@@ -27,6 +27,12 @@ import { getInvoiceFile, setFilePreview } from "./invoices";
  */
 export const PREVIEW_DIR = path.join(DELIVERY_DIR, "previews");
 
+// De server heeft één kleine processor en 512 MB geheugen. Eén beeld tegelijk
+// en geen cache voor tussenresultaten: iets trager, maar een grote foto kan de
+// machine niet laten vollopen.
+sharp.concurrency(1);
+sharp.cache(false);
+
 /** Langste zijde van een voorbeeld: genoeg om te beoordelen, te klein om te gebruiken. */
 export const PREVIEW_MAX_SIDE = 1280;
 const PREVIEW_QUALITY = 70;
