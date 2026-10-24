@@ -41,7 +41,6 @@ import { deleteMessage, setMessageHandled } from "@/lib/messages";
 import { deleteDeliveryFileFromDisk } from "@/lib/deliveries";
 import {
   deleteInvoiceFile,
-  ensureInvoiceNumber,
   getInvoice,
   getInvoiceByBookingId,
   listInvoiceFiles,
@@ -50,6 +49,8 @@ import {
   parseAmountInput,
   saveInvoiceDraft,
 } from "@/lib/invoices";
+import { DEFAULT_PAYMENT_TERM_DAYS, isDateKey, normalizeVatId } from "@/lib/invoice-rules";
+import { getInvoicePdf, issueInvoice, problemsMessage } from "@/lib/invoice-issue";
 import { getOrCreateCheckout, syncInvoicePayment } from "@/lib/payments";
 import { setRevisionRequestStatus } from "@/lib/revisions";
 import { siteOrigin } from "@/lib/site-url";
@@ -237,7 +238,10 @@ export async function saveBookingNoteAction(
 
 export async function deleteBookingAction(formData: FormData): Promise<void> {
   await requireAdmin();
-  deleteBooking(Number(formData.get("id")));
+  const id = Number(formData.get("id"));
+  // Een uitgegeven factuur moet bewaard blijven (bewaarplicht), en dus ook de
+  // boeking waar hij aan hangt. De database weigert dit ook zelf.
+  if (!getInvoiceByBookingId(id)?.issuedUtc) deleteBooking(id);
   revalidatePath("/admin/boekingen");
   revalidatePath("/");
 }
@@ -256,12 +260,44 @@ export async function saveInvoiceDraftAction(
   if (amountCents === null) {
     return { status: "error", message: "Vul een geldig bedrag in, bijvoorbeeld 250,00." };
   }
-  const description = String(formData.get("description") ?? "").slice(0, 1000);
-  const payBeforeDownload = formData.get("payBeforeDownload") === "on";
+  const text = (key: string, max: number) =>
+    String(formData.get(key) ?? "").trim().slice(0, max);
+  const deliveryDate = text("deliveryDate", 10);
+  if (deliveryDate !== "" && !isDateKey(deliveryDate)) {
+    return { status: "error", message: "Vul een geldige datum van levering of uitvoering in." };
+  }
+  const term = Number(formData.get("paymentTermDays") ?? DEFAULT_PAYMENT_TERM_DAYS);
+  if (!Number.isInteger(term) || term < 0 || term > 90) {
+    return { status: "error", message: "De betaaltermijn is een aantal dagen tussen 0 en 90." };
+  }
+  const vatId = text("customerVatId", 30);
+  if (vatId !== "" && !/^[A-Za-z]{2}[A-Za-z0-9]{2,12}$/.test(normalizeVatId(vatId))) {
+    return { status: "error", message: "Het btw-nummer van de klant lijkt niet te kloppen." };
+  }
 
-  saveInvoiceDraft(bookingId, { amountCents, description, payBeforeDownload });
+  const { locked } = saveInvoiceDraft(bookingId, {
+    amountCents,
+    description: text("description", 1000),
+    payBeforeDownload: formData.get("payBeforeDownload") === "on",
+    customer: {
+      name: text("customerName", 150),
+      address: text("customerAddress", 200),
+      postcode: text("customerPostcode", 20),
+      city: text("customerCity", 100),
+      country: text("customerCountry", 80) || "Nederland",
+      vatId,
+    },
+    deliveryDate,
+    paymentTermDays: term,
+  });
   revalidatePath("/admin/boekingen");
-  return { status: "success", message: "De factuurgegevens zijn opgeslagen." };
+  return locked
+    ? {
+        status: "success",
+        message:
+          "Deze factuur is al uitgegeven en kan niet meer worden gewijzigd. Alleen de betaalmuur is bijgewerkt.",
+      }
+    : { status: "success", message: "De factuurgegevens zijn opgeslagen." };
 }
 
 export async function sendPaymentRequestAction(
@@ -271,18 +307,24 @@ export async function sendPaymentRequestAction(
   await requireAdmin();
   const bookingId = Number(formData.get("bookingId"));
   const booking = getBooking(bookingId);
-  const invoice = getInvoiceByBookingId(bookingId);
-  if (!booking || !invoice) {
+  const draft = getInvoiceByBookingId(bookingId);
+  if (!booking || !draft) {
     return { status: "error", message: "Sla eerst een bedrag op voordat je een betaalverzoek verstuurt." };
   }
-  if (invoice.amountCents <= 0) {
-    return { status: "error", message: "Vul eerst een bedrag groter dan € 0,00 in." };
+
+  // Eerst de factuur uitgeven (nummer, vastleggen), dan pas een betaling
+  // aanmaken: er hoort geen betaallink te bestaan bij een factuur die niet
+  // kan worden uitgegeven.
+  const issued = await issueInvoice(draft.id);
+  if (!issued.ok) {
+    return { status: "error", message: problemsMessage(issued.problems) };
   }
+  const invoice = issued.invoice;
 
   const origin = await siteOrigin();
   const checkout = await getOrCreateCheckout({
     invoice,
-    description: invoice.description || `${booking.serviceName} — ${booking.reference}`,
+    description: invoice.description,
     redirectUrl: `${origin}/oplevering/${invoice.token}`,
     webhookUrl: `${origin}/api/mollie/webhook`,
   });
@@ -297,13 +339,13 @@ export async function sendPaymentRequestAction(
   }
 
   markPaymentSent(invoice.id);
-  ensureInvoiceNumber(invoice.id);
-  const genummerd = getInvoice(invoice.id)!;
+  const { pdf, filename } = await getInvoicePdf(invoice, booking);
   const mailStatus = await sendPaymentRequestMail(
     booking,
-    genummerd,
+    invoice,
     checkout.checkoutUrl,
     `${origin}/api/oplevering/${invoice.token}/factuur`,
+    { filename, content: pdf, contentType: "application/pdf" },
   );
 
   revalidatePath("/admin/boekingen");
@@ -330,23 +372,29 @@ export async function sendDeliveryAction(
   await requireAdmin();
   const bookingId = Number(formData.get("bookingId"));
   const booking = getBooking(bookingId);
-  const invoice = getInvoiceByBookingId(bookingId);
-  if (!booking || !invoice) {
+  const draft = getInvoiceByBookingId(bookingId);
+  if (!booking || !draft) {
     return { status: "error", message: "Sla eerst het bedrag op." };
   }
-  if (listInvoiceFiles(invoice.id).length === 0) {
+  if (listInvoiceFiles(draft.id).length === 0) {
     return { status: "error", message: "Voeg eerst minstens één bestand toe." };
   }
 
+  const issued = await issueInvoice(draft.id);
+  if (!issued.ok) {
+    return { status: "error", message: problemsMessage(issued.problems) };
+  }
+  const invoice = issued.invoice;
+
   const origin = await siteOrigin();
   markDeliverySent(invoice.id);
-  ensureInvoiceNumber(invoice.id);
-  const genummerd = getInvoice(invoice.id)!;
+  const { pdf, filename } = await getInvoicePdf(invoice, booking);
   const mailStatus = await sendDeliveryMail(
     booking,
-    genummerd,
+    getInvoice(invoice.id)!,
     `${origin}/oplevering/${invoice.token}`,
     `${origin}/api/oplevering/${invoice.token}/factuur`,
+    { filename, content: pdf, contentType: "application/pdf" },
   );
 
   revalidatePath("/admin/boekingen");
@@ -593,10 +641,26 @@ export async function saveInvoiceSettingsAction(
   });
 
   if (!parsed.success) {
+    // Wat er was ingevuld gaat mee terug: React maakt het formulier leeg na het
+    // versturen, en met de strengere controle zou je anders alles opnieuw typen.
+    const values: Record<string, string> = {};
+    for (const key of [
+      "companyName",
+      "companyAddress",
+      "companyPostcode",
+      "companyCity",
+      "companyKvk",
+      "companyVatNumber",
+      "companyIban",
+      "vatRatePercent",
+    ]) {
+      values[key] = String(formData.get(key) ?? "");
+    }
     return {
       status: "error",
       message: "Controleer de gemarkeerde velden.",
       errors: fieldErrors(parsed.error),
+      values,
     };
   }
 

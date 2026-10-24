@@ -3,8 +3,13 @@ import Database from "better-sqlite3";
 import fs from "node:fs";
 import path from "node:path";
 
-import { DEFAULT_SETTINGS } from "./defaults";
+import { site } from "@/content/site";
+
+import { DEFAULT_INVOICE_SETTINGS, DEFAULT_SETTINGS } from "./defaults";
 import { installExampleData } from "./example-data";
+import { DEFAULT_PAYMENT_TERM_DAYS, buildSnapshot } from "./invoice-rules";
+import { dateKeyOf } from "./time";
+import type { InvoiceSettings } from "./types";
 
 /**
  * SQLite-database. Het bestand heet `kai-aerials.db`: die naam stamt uit de
@@ -284,6 +289,146 @@ export function migrate(db: Database.Database) {
   db.exec(
     "CREATE UNIQUE INDEX IF NOT EXISTS idx_invoices_number ON invoices(invoice_number) WHERE invoice_number IS NOT NULL",
   );
+
+  // Klantgegevens, leverdatum en vastlegging van een uitgegeven factuur. Zie
+  // lib/invoice-issue.ts. Alleen kolommen erbij: bestaande facturen en hun
+  // nummers blijven zoals ze zijn.
+  addColumn(db, "invoices", "customer_name", "TEXT NOT NULL DEFAULT ''");
+  addColumn(db, "invoices", "customer_address", "TEXT NOT NULL DEFAULT ''");
+  addColumn(db, "invoices", "customer_postcode", "TEXT NOT NULL DEFAULT ''");
+  addColumn(db, "invoices", "customer_city", "TEXT NOT NULL DEFAULT ''");
+  addColumn(db, "invoices", "customer_country", "TEXT NOT NULL DEFAULT 'Nederland'");
+  addColumn(db, "invoices", "customer_vat_id", "TEXT NOT NULL DEFAULT ''");
+  addColumn(db, "invoices", "delivery_date", "TEXT NOT NULL DEFAULT ''");
+  addColumn(db, "invoices", "payment_term_days", "INTEGER NOT NULL DEFAULT 14");
+  addColumn(db, "invoices", "issued_utc", "INTEGER");
+  addColumn(db, "invoices", "invoice_date", "TEXT");
+  // De vastgelegde factuur als JSON. Leeg zolang de factuur nog niet is uitgegeven.
+  addColumn(db, "invoices", "snapshot_json", "TEXT NOT NULL DEFAULT ''");
+  addColumn(db, "invoices", "pdf_filename", "TEXT NOT NULL DEFAULT ''");
+  addColumn(db, "invoices", "pdf_sha256", "TEXT NOT NULL DEFAULT ''");
+
+  freezeLegacyInvoices(db);
+
+  // Een uitgegeven factuur is een fiscaal document (bewaarplicht zeven jaar).
+  // Ook als de applicatie een fout zou maken, weigert de database elke
+  // wijziging van de vastgelegde velden en elke verwijdering, ook het
+  // meeverwijderen via een boeking. Betaalstatus en paywall blijven wijzigbaar.
+  db.exec(`
+    CREATE TRIGGER IF NOT EXISTS invoices_frozen_no_update
+    BEFORE UPDATE OF invoice_number, amount_cents, description, booking_id,
+      customer_name, customer_address, customer_postcode, customer_city,
+      customer_country, customer_vat_id, delivery_date, payment_term_days,
+      issued_utc, invoice_date, snapshot_json
+    ON invoices
+    WHEN OLD.snapshot_json <> ''
+    BEGIN
+      SELECT RAISE(ABORT, 'Een uitgegeven factuur kan niet worden gewijzigd.');
+    END;
+
+    CREATE TRIGGER IF NOT EXISTS invoices_frozen_no_delete
+    BEFORE DELETE ON invoices
+    WHEN OLD.snapshot_json <> ''
+    BEGIN
+      SELECT RAISE(ABORT, 'Een uitgegeven factuur kan niet worden verwijderd (bewaarplicht).');
+    END;
+  `);
+}
+
+/**
+ * Facturen die al een nummer hadden vóór de vastlegging bestond (het nummer
+ * werd toen bij de eerste verzending toegekend): leg ze nu vast, met hetzelfde
+ * nummer en het bedrag en de omschrijving zoals ze nu staan. Het klantadres is
+ * van die facturen nooit bewaard; dat blijft leeg en de factuur is gemarkeerd
+ * als "legacy". Herhaalbaar: een factuur met een vastlegging wordt overgeslagen.
+ */
+function freezeLegacyInvoices(db: Database.Database) {
+  const rows = db
+    .prepare(
+      `SELECT i.id, i.invoice_number, i.amount_cents, i.description,
+              i.payment_sent_utc, i.delivery_sent_utc, i.created_utc, i.updated_utc,
+              b.name AS booking_name, b.location AS booking_location,
+              b.reference AS booking_reference, b.start_utc AS booking_start
+       FROM invoices i JOIN bookings b ON b.id = i.booking_id
+       WHERE i.invoice_number IS NOT NULL AND i.snapshot_json = ''`,
+    )
+    .all() as {
+    id: number;
+    invoice_number: string;
+    amount_cents: number;
+    description: string;
+    payment_sent_utc: number | null;
+    delivery_sent_utc: number | null;
+    created_utc: number;
+    updated_utc: number;
+    booking_name: string;
+    booking_location: string;
+    booking_reference: string;
+    booking_start: number;
+  }[];
+  if (rows.length === 0) return;
+
+  const settingRows = db.prepare("SELECT key, value FROM settings").all() as {
+    key: string;
+    value: string;
+  }[];
+  const settings = new Map(settingRows.map((r) => [r.key, r.value]));
+  const str = (key: keyof InvoiceSettings) =>
+    String(settings.get(key) ?? DEFAULT_INVOICE_SETTINGS[key]);
+  const rate = Number(settings.get("vatRatePercent"));
+  const supplier: InvoiceSettings = {
+    companyName: str("companyName"),
+    companyAddress: str("companyAddress"),
+    companyPostcode: str("companyPostcode"),
+    companyCity: str("companyCity"),
+    companyKvk: str("companyKvk"),
+    companyVatNumber: str("companyVatNumber"),
+    companyIban: str("companyIban"),
+    vatRatePercent: Number.isFinite(rate) ? rate : DEFAULT_INVOICE_SETTINGS.vatRatePercent,
+  };
+
+  const update = db.prepare(
+    `UPDATE invoices
+     SET issued_utc = ?, invoice_date = ?, delivery_date = ?, customer_name = ?,
+         payment_term_days = ?, snapshot_json = ?
+     WHERE id = ? AND snapshot_json = ''`,
+  );
+  const freeze = db.transaction(() => {
+    for (const r of rows) {
+      const issuedUtc = r.payment_sent_utc ?? r.delivery_sent_utc ?? r.updated_utc;
+      const invoiceDate = dateKeyOf(issuedUtc);
+      const snapshot = buildSnapshot({
+        legacy: true,
+        number: r.invoice_number,
+        invoiceDate,
+        deliveryDate: dateKeyOf(r.booking_start),
+        paymentTermDays: DEFAULT_PAYMENT_TERM_DAYS,
+        bookingReference: r.booking_reference,
+        supplier,
+        supplierEmail: site.email,
+        customer: {
+          name: r.booking_name,
+          address: r.booking_location,
+          postcode: "",
+          city: "",
+          country: "",
+          vatId: "",
+        },
+        description: r.description,
+        totalCents: r.amount_cents,
+      });
+      update.run(
+        issuedUtc,
+        invoiceDate,
+        dateKeyOf(r.booking_start),
+        r.booking_name,
+        DEFAULT_PAYMENT_TERM_DAYS,
+        JSON.stringify(snapshot),
+        r.id,
+      );
+    }
+  });
+  freeze();
 }
 
 /** Voegt een kolom toe als die er nog niet is. Bestaande gegevens blijven. */

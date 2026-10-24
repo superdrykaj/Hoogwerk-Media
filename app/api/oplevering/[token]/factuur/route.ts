@@ -1,7 +1,6 @@
 import { getBooking } from "@/lib/bookings";
-import { generateInvoicePdf } from "@/lib/invoice-pdf";
+import { getInvoicePdf } from "@/lib/invoice-issue";
 import { getInvoiceByToken } from "@/lib/invoices";
-import { getInvoiceSettings } from "@/lib/settings";
 
 /**
  * Het factuur-PDF. Anders dan de opleverbestanden zit hier geen paywall op:
@@ -19,14 +18,16 @@ export async function GET(
     return new Response("Niet gevonden", { status: 404 });
   }
 
-  const pdf = await generateInvoicePdf(invoice, booking, getInvoiceSettings());
-  const bestandsnaam = `factuur-${invoice.invoiceNumber ?? "concept"}.pdf`;
+  // Uitgegeven: het bewaarde, onveranderde PDF. Anders een voorbeeld met CONCEPT.
+  const { pdf, filename: bestandsnaam } = await getInvoicePdf(invoice, booking);
 
   return new Response(new Uint8Array(pdf), {
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": `inline; filename="${bestandsnaam}"`,
       "Content-Length": String(pdf.length),
+      // Een uitgegeven factuur verandert niet, een concept wel.
+      "Cache-Control": invoice.issuedUtc ? "private, max-age=3600" : "no-store",
     },
   });
 }

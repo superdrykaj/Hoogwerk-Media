@@ -1,5 +1,39 @@
 # Wijzigingen
 
+## Oktober 2026 — facturen compleet, vastgelegd en bewaard
+
+De bestaande facturatie (bedragen, nummering, Mollie, oplevering) is niet
+herbouwd; dit vult aan wat voor een correcte factuur ontbrak.
+
+- **Wettelijke gegevens op de factuur** (art. 35a Wet OB): factuurdatum en
+  doorlopend nummer, naam en adres van leverancier én afnemer, btw-
+  identificatienummer van de leverancier, KvK, IBAN, omschrijving, datum van
+  levering of uitvoering, bedrag excl. btw, tarief en btw-bedrag, betaaltermijn
+  en uiterste betaaldatum. Bij 0% btw (kleineondernemersregeling) staat de KOR-
+  vermelding erop en is geen btw-id nodig.
+- **Klantgegevens en leverdatum** worden per factuur ingevuld in Beheer →
+  Boekingen → Oplevering & factuur (voorgevuld met naam en opdrachtdatum).
+- **Geen fictieve gegevens**: een factuur kan pas worden uitgegeven (bij
+  "Betaalverzoek versturen" of "Project afronden & opleveren") als de eigen
+  bedrijfsgegevens echt en geldig zijn: adres, postcode, plaats, KvK van 8
+  cijfers, IBAN met geldige controle en, bij btw, een btw-id (NL…B01). De
+  instellingenpagina weigert invulplekken als "Nog invullen" en bewaart wat je
+  had ingevuld bij een foutmelding.
+- **Vastgelegd en onveranderbaar**: bij uitgifte komen nummer, datum en alle
+  gegevens in `invoices.snapshot_json`, en het PDF op de schijf (`invoices/`)
+  met een controlesom. De database weigert daarna elke wijziging van de
+  vastgelegde velden en het verwijderen van de factuur (ook via de boeking);
+  betaalstatus en betaalmuur blijven wijzigbaar. Ontbreekt of wijkt het bestand
+  af, dan wordt het PDF uit de vastlegging opnieuw opgebouwd. Het PDF toont
+  bewust geen betaalstatus.
+- **PDF als bijlage** bij het betaalverzoek en de opleveringsmail (naast de link).
+- **Bestaande facturen**: genummerde facturen van vóór deze wijziging behouden
+  hun nummer, bedrag en token en worden bij de eerstvolgende start vastgelegd
+  (gemarkeerd als `legacy`; hun klantadres is nooit bewaard). Concepten blijven
+  concepten. Getest op een database in het oude schema.
+- Tests: `invoice-rules`, `invoice-issue` (incl. overgang, triggers, PDF-herstel),
+  `invoice-pdf` en `invoice-settings-validation`.
+
 ## Oktober 2026 — Mollie-betalingen betrouwbaarder
 
 De Mollie-koppeling bestond al (betaling aanmaken, doorsturen naar Mollie,

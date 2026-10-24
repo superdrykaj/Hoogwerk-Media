@@ -4,11 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { getBooking } from "@/lib/bookings";
-import {
-  ensureInvoiceNumber,
-  getInvoiceByToken,
-  markPaymentSent,
-} from "@/lib/invoices";
+import { getInvoiceByToken, markPaymentSent } from "@/lib/invoices";
 import { sendRevisionRequestedMail } from "@/lib/mail";
 import { getOrCreateCheckout } from "@/lib/payments";
 import { rateLimit } from "@/lib/rate-limit";
@@ -35,6 +31,9 @@ export async function startInvoicePaymentAction(formData: FormData): Promise<voi
 
   const limit = rateLimit(await clientKey("oplevering-betalen"), 10, 10 * 60 * 1000);
   if (!limit.allowed) redirect(`/oplevering/${token}?fout=1`);
+  // Betalen kan alleen bij een uitgegeven factuur; de opleverlink wordt pas na
+  // het uitgeven gemaild, dit vangt een handmatig doorgegeven concept af.
+  if (!invoice.issuedUtc) redirect(`/oplevering/${token}?fout=1`);
 
   const origin = await siteOrigin();
   const checkout = await getOrCreateCheckout({
@@ -49,9 +48,6 @@ export async function startInvoicePaymentAction(formData: FormData): Promise<voi
   if (!checkout.ok) redirect(`/oplevering/${token}?fout=1`);
 
   markPaymentSent(invoice.id);
-  // Normaliter al gezet doordat de opleveringslink pas gemaild wordt na het
-  // versturen van een betaalverzoek of oplevering; hier ter zekerheid.
-  ensureInvoiceNumber(invoice.id);
   redirect(checkout.checkoutUrl);
 }
 

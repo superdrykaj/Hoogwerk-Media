@@ -79,6 +79,8 @@ export type DeliveryInfo = {
   invoice: Invoice | null;
   files: InvoiceFile[];
   revisions: RevisionRequest[];
+  /** Wat er in de eigen bedrijfsgegevens nog ontbreekt voordat een factuur kan worden uitgegeven. */
+  supplierIssues: string[];
 };
 
 const INVOICE_STATUS_LABELS: Record<InvoiceStatus, string> = {
@@ -116,10 +118,13 @@ export function InvoicePanel({
   bookingId,
   info,
   mollieReady,
+  defaults,
 }: {
   bookingId: number;
   info: DeliveryInfo;
   mollieReady: boolean;
+  /** Voorinvulling uit de boeking: naam van de klant en datum van de opdracht. */
+  defaults: { name: string; deliveryDate: string };
 }) {
   const { invoice, files, revisions } = info;
   const router = useRouter();
@@ -244,6 +249,8 @@ export function InvoicePanel({
     void processQueue(invoice.id);
   }
 
+  const issued = Boolean(invoice?.issuedUtc);
+  const lock = issued ? { readOnly: true, "aria-readonly": true } : {};
   const amountDefault = invoice ? (invoice.amountCents / 100).toFixed(2).replace(".", ",") : "";
 
   return (
@@ -268,10 +275,24 @@ export function InvoicePanel({
             {draftState.message}
           </p>
         )}
+        {info.supplierIssues.length > 0 && !issued && (
+          <p className="notice notice-error" role="status">
+            Je eigen bedrijfsgegevens zijn nog niet compleet: {info.supplierIssues.join(", ")}.
+            Vul ze in bij Instellingen → Bedrijfsgegevens voor facturen; zonder die gegevens
+            kan er geen factuur worden uitgegeven.
+          </p>
+        )}
+        {issued && (
+          <p className="notice notice-success" role="status">
+            Uitgegeven als factuur {invoice?.invoiceNumber} op{" "}
+            {invoice?.invoiceDate}. Een uitgegeven factuur is vastgelegd en kan niet meer
+            worden gewijzigd; voor een correctie is een creditnota nodig.
+          </p>
+        )}
         <div className="flex flex-wrap gap-3">
           <div>
             <label htmlFor={`amount-${bookingId}`} className="field-label">
-              Bedrag (€)
+              Bedrag incl. btw (€)
             </label>
             <input
               id={`amount-${bookingId}`}
@@ -280,11 +301,12 @@ export function InvoicePanel({
               placeholder="250,00"
               inputMode="decimal"
               className="field-input w-32"
+              {...lock}
             />
           </div>
           <div className="min-w-[16rem] flex-1">
             <label htmlFor={`desc-${bookingId}`} className="field-label">
-              Omschrijving
+              Omschrijving van de dienst
             </label>
             <input
               id={`desc-${bookingId}`}
@@ -292,9 +314,26 @@ export function InvoicePanel({
               defaultValue={invoice?.description ?? ""}
               placeholder="Bijv. Dronefotografie — pakket compleet"
               className="field-input"
+              {...lock}
             />
           </div>
         </div>
+
+        <fieldset className="space-y-3 rounded-xl border border-ink-700 p-4">
+          <legend className="px-1 text-xs font-semibold uppercase tracking-wide text-mist-500">
+            Factuur aan
+          </legend>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Field id={`cname-${bookingId}`} name="customerName" label="Naam of bedrijf" defaultValue={invoice?.customerName || defaults.name} lock={lock} />
+            <Field id={`caddr-${bookingId}`} name="customerAddress" label="Straat en huisnummer" defaultValue={invoice?.customerAddress ?? ""} lock={lock} />
+            <Field id={`cpost-${bookingId}`} name="customerPostcode" label="Postcode" defaultValue={invoice?.customerPostcode ?? ""} lock={lock} />
+            <Field id={`ccity-${bookingId}`} name="customerCity" label="Plaats" defaultValue={invoice?.customerCity ?? ""} lock={lock} />
+            <Field id={`ccountry-${bookingId}`} name="customerCountry" label="Land" defaultValue={invoice?.customerCountry || "Nederland"} lock={lock} />
+            <Field id={`cvat-${bookingId}`} name="customerVatId" label="Btw-nummer klant (alleen zakelijk, optioneel)" defaultValue={invoice?.customerVatId ?? ""} lock={lock} />
+            <Field id={`ddate-${bookingId}`} name="deliveryDate" label="Datum levering of uitvoering" type="date" defaultValue={invoice?.deliveryDate || defaults.deliveryDate} lock={lock} />
+            <Field id={`term-${bookingId}`} name="paymentTermDays" label="Betaaltermijn (dagen)" type="number" defaultValue={String(invoice?.paymentTermDays ?? 14)} lock={lock} />
+          </div>
+        </fieldset>
         <label className="flex items-center gap-2 text-sm text-mist-300">
           <input
             type="checkbox"
@@ -306,12 +345,10 @@ export function InvoicePanel({
         <button type="submit" className="btn btn-quiet" disabled={draftPending}>
           {draftPending ? "Bezig…" : "Opslaan"}
         </button>
-        {invoice?.invoiceNumber && (
+        {!issued && (
           <p className="field-hint">
-            Deze factuur is al verstuurd onder nummer {invoice.invoiceNumber}. Wijzig je het
-            bedrag naar aanleiding van een gesprek met de klant, verstuur dan hieronder opnieuw
-            een betaalverzoek of oplevering — anders klopt wat je eerder stuurde niet meer met
-            het nieuwe bedrag.
+            Het factuurnummer en de factuurdatum komen er pas bij het versturen van het
+            betaalverzoek of de oplevering; daarna ligt de factuur vast.
           </p>
         )}
       </form>
@@ -588,6 +625,31 @@ export function InvoicePanel({
           )}
         </>
       )}
+    </div>
+  );
+}
+
+function Field({
+  id,
+  name,
+  label,
+  defaultValue,
+  type = "text",
+  lock,
+}: {
+  id: string;
+  name: string;
+  label: string;
+  defaultValue: string;
+  type?: string;
+  lock: Record<string, unknown>;
+}) {
+  return (
+    <div>
+      <label htmlFor={id} className="field-label">
+        {label}
+      </label>
+      <input id={id} name={name} type={type} defaultValue={defaultValue} className="field-input" {...lock} />
     </div>
   );
 }

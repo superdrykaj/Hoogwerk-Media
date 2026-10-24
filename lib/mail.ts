@@ -152,6 +152,9 @@ function beschrijfFout(error: unknown): string {
 /** Een agenda-afspraak die als uitnodiging met het bericht meegaat. */
 type Agendabijlage = { method: IcsMethod; filename: string; content: string };
 
+/** Een bijlage bij een bericht, bijvoorbeeld het factuur-PDF. */
+export type MailAttachment = { filename: string; content: Buffer; contentType: string };
+
 async function send(
   to: string,
   subject: string,
@@ -159,6 +162,7 @@ async function send(
   /** Adres waarop de ontvanger moet antwoorden, als dat niet de afzender is. */
   replyTo?: string,
   agenda?: Agendabijlage,
+  attachments?: MailAttachment[],
 ): Promise<MailStatus> {
   if (!isMailConfigured()) {
     logMail(to, subject, "skipped", "SMTP nog niet ingesteld; niets verzonden.");
@@ -176,6 +180,7 @@ async function send(
       // juiste inhoudstype met de methode erin. Zonder dat toont Outlook een
       // bestandje in plaats van een afspraak met een knop erbij.
       icalEvent: agenda,
+      attachments,
     });
     logMail(to, subject, "sent", "");
     return "sent";
@@ -433,6 +438,7 @@ export async function sendPaymentRequestMail(
   invoice: Invoice,
   checkoutUrl: string,
   invoiceUrl: string,
+  pdf?: MailAttachment,
 ): Promise<MailStatus> {
   const locale = booking.locale;
   const t = copy(locale).mail;
@@ -458,6 +464,8 @@ export async function sendPaymentRequestMail(
       site.bookingEmail,
     ].join("\n"),
     site.bookingEmail,
+    undefined,
+    pdf ? [pdf] : undefined,
   );
 }
 
@@ -471,6 +479,7 @@ export async function sendDeliveryMail(
   invoice: Invoice,
   deliveryUrl: string,
   invoiceUrl: string,
+  pdf?: MailAttachment,
 ): Promise<MailStatus> {
   const locale = booking.locale;
   const t = copy(locale).mail;
@@ -496,6 +505,8 @@ export async function sendDeliveryMail(
       site.bookingEmail,
     ].join("\n"),
     site.bookingEmail,
+    undefined,
+    pdf ? [pdf] : undefined,
   );
 }
 

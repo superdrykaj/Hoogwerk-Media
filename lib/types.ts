@@ -149,6 +149,22 @@ export type Invoice = {
   paidUtc: number | null;
   paymentSentUtc: number | null;
   deliverySentUtc: number | null;
+  /** Klantgegevens op de factuur; leeg zolang ze niet zijn ingevuld. */
+  customerName: string;
+  customerAddress: string;
+  customerPostcode: string;
+  customerCity: string;
+  customerCountry: string;
+  customerVatId: string;
+  /** Datum van levering of uitvoering, JJJJ-MM-DD; leeg zolang niet ingevuld. */
+  deliveryDate: string;
+  paymentTermDays: number;
+  /** Moment van uitgifte. Vanaf dan is de factuur vastgelegd en onveranderbaar. */
+  issuedUtc: number | null;
+  invoiceDate: string | null;
+  /** Naam en controlesom van het bewaarde PDF; leeg tot het is opgeslagen. */
+  pdfFilename: string;
+  pdfSha256: string;
   createdUtc: number;
   updatedUtc: number;
 };

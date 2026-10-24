@@ -3,7 +3,8 @@ import "server-only";
 
 import crypto from "node:crypto";
 
-import { getDb, withWriteTransaction } from "./db";
+import { getDb } from "./db";
+import type { CustomerDetails } from "./invoice-rules";
 import type { Invoice, InvoiceFile, InvoiceStatus } from "./types";
 
 export { formatAmountCents, parseAmountInput } from "./currency";
@@ -21,6 +22,18 @@ type Row = {
   paid_utc: number | null;
   payment_sent_utc: number | null;
   delivery_sent_utc: number | null;
+  customer_name: string;
+  customer_address: string;
+  customer_postcode: string;
+  customer_city: string;
+  customer_country: string;
+  customer_vat_id: string;
+  delivery_date: string;
+  payment_term_days: number;
+  issued_utc: number | null;
+  invoice_date: string | null;
+  pdf_filename: string;
+  pdf_sha256: string;
   created_utc: number;
   updated_utc: number;
 };
@@ -39,6 +52,18 @@ function map(row: Row): Invoice {
     paidUtc: row.paid_utc,
     paymentSentUtc: row.payment_sent_utc,
     deliverySentUtc: row.delivery_sent_utc,
+    customerName: row.customer_name,
+    customerAddress: row.customer_address,
+    customerPostcode: row.customer_postcode,
+    customerCity: row.customer_city,
+    customerCountry: row.customer_country,
+    customerVatId: row.customer_vat_id,
+    deliveryDate: row.delivery_date,
+    paymentTermDays: row.payment_term_days,
+    issuedUtc: row.issued_utc,
+    invoiceDate: row.invoice_date,
+    pdfFilename: row.pdf_filename,
+    pdfSha256: row.pdf_sha256,
     createdUtc: row.created_utc,
     updatedUtc: row.updated_utc,
   };
@@ -79,40 +104,77 @@ export function getInvoice(id: number): Invoice | null {
   return row ? map(row) : null;
 }
 
+export type InvoiceDraftValues = {
+  amountCents: number;
+  description: string;
+  payBeforeDownload: boolean;
+  customer: CustomerDetails;
+  /** JJJJ-MM-DD */
+  deliveryDate: string;
+  paymentTermDays: number;
+};
+
 /**
  * Maakt de factuur voor deze boeking aan als die nog niet bestaat, en werkt
- * anders bedrag/omschrijving/paywall bij. De status en het betaalverleden
- * blijven bij een bestaande factuur ongemoeid: dit is bewust alleen het
- * concept-formulier, geen verzendactie.
+ * anders het concept bij. De status en het betaalverleden blijven bij een
+ * bestaande factuur ongemoeid: dit is bewust alleen het concept-formulier,
+ * geen verzendactie.
+ *
+ * Een uitgegeven factuur is vastgelegd: dan verandert alleen de betaalmuur
+ * (die hoort niet bij het document). `locked` meldt dat de rest is genegeerd.
  */
 export function saveInvoiceDraft(
   bookingId: number,
-  values: { amountCents: number; description: string; payBeforeDownload: boolean },
-): Invoice {
+  values: InvoiceDraftValues,
+): { invoice: Invoice; locked: boolean } {
   const db = getDb();
   const now = Date.now();
   const existing = getInvoiceByBookingId(bookingId);
 
+  if (existing?.issuedUtc) {
+    db.prepare("UPDATE invoices SET pay_before_download = ?, updated_utc = ? WHERE id = ?").run(
+      values.payBeforeDownload ? 1 : 0,
+      now,
+      existing.id,
+    );
+    return { invoice: getInvoice(existing.id)!, locked: true };
+  }
+
+  const c = values.customer;
   if (existing) {
     db.prepare(
       `UPDATE invoices
-       SET amount_cents = ?, description = ?, pay_before_download = ?, updated_utc = ?
+       SET amount_cents = ?, description = ?, pay_before_download = ?,
+           customer_name = ?, customer_address = ?, customer_postcode = ?,
+           customer_city = ?, customer_country = ?, customer_vat_id = ?,
+           delivery_date = ?, payment_term_days = ?, updated_utc = ?
        WHERE id = ?`,
     ).run(
       values.amountCents,
       values.description,
       values.payBeforeDownload ? 1 : 0,
+      c.name,
+      c.address,
+      c.postcode,
+      c.city,
+      c.country,
+      c.vatId,
+      values.deliveryDate,
+      values.paymentTermDays,
       now,
       existing.id,
     );
-    return getInvoice(existing.id)!;
+    return { invoice: getInvoice(existing.id)!, locked: false };
   }
 
   const result = db
     .prepare(
       `INSERT INTO invoices
-        (booking_id, token, amount_cents, description, pay_before_download, status, created_utc, updated_utc)
-       VALUES (?, ?, ?, ?, ?, 'draft', ?, ?)`,
+        (booking_id, token, amount_cents, description, pay_before_download, status,
+         customer_name, customer_address, customer_postcode, customer_city,
+         customer_country, customer_vat_id, delivery_date, payment_term_days,
+         created_utc, updated_utc)
+       VALUES (?, ?, ?, ?, ?, 'draft', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .run(
       bookingId,
@@ -120,10 +182,18 @@ export function saveInvoiceDraft(
       values.amountCents,
       values.description,
       values.payBeforeDownload ? 1 : 0,
+      c.name,
+      c.address,
+      c.postcode,
+      c.city,
+      c.country,
+      c.vatId,
+      values.deliveryDate,
+      values.paymentTermDays,
       now,
       now,
     );
-  return getInvoice(Number(result.lastInsertRowid))!;
+  return { invoice: getInvoice(Number(result.lastInsertRowid))!, locked: false };
 }
 
 export function setMolliePaymentId(invoiceId: number, paymentId: string): void {
@@ -165,44 +235,6 @@ export function markPaid(invoiceId: number): void {
        WHERE id = ? AND status != 'paid'`,
     )
     .run(now, now, invoiceId);
-}
-
-/**
- * Kent bij de eerste verzending (betaalverzoek of oplevering, wat het eerst
- * gebeurt) een doorlopend factuurnummer toe, bijvoorbeeld "2026-0001". Een
- * concept dat nooit is verstuurd krijgt er nooit een, zodat verwijderde
- * concepten geen gat in de nummering veroorzaken. Al toegekend? Dan komt
- * hetzelfde nummer terug — er wordt er nooit een tweede uitgegeven.
- *
- * Let op: het bedrag op een al genummerde factuur kan daarna nog wijzigen
- * (bijvoorbeeld na een gesprek met de klant). Verstuur in dat geval opnieuw,
- * anders wijkt de eerder verstuurde factuur af van wat er nu klaarstaat.
- */
-export function ensureInvoiceNumber(invoiceId: number): string {
-  return withWriteTransaction((db) => {
-    const existing = db
-      .prepare("SELECT invoice_number FROM invoices WHERE id = ?")
-      .get(invoiceId) as { invoice_number: string | null } | undefined;
-    if (existing?.invoice_number) return existing.invoice_number;
-
-    const year = new Date().getFullYear();
-    const row = db
-      .prepare("SELECT counter FROM invoice_sequence WHERE year = ?")
-      .get(year) as { counter: number } | undefined;
-    const volgnummer = (row?.counter ?? 0) + 1;
-    db.prepare(
-      `INSERT INTO invoice_sequence (year, counter) VALUES (?, ?)
-       ON CONFLICT(year) DO UPDATE SET counter = excluded.counter`,
-    ).run(year, volgnummer);
-
-    const nummer = `${year}-${String(volgnummer).padStart(4, "0")}`;
-    db.prepare("UPDATE invoices SET invoice_number = ?, updated_utc = ? WHERE id = ?").run(
-      nummer,
-      Date.now(),
-      invoiceId,
-    );
-    return nummer;
-  });
 }
 
 export function listInvoiceFiles(invoiceId: number): InvoiceFile[] {
