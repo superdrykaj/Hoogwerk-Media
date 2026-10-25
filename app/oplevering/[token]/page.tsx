@@ -99,48 +99,21 @@ export default async function DeliveryPage({
         )}
 
         {allFiles.length > 0 && !closed && (
-          <div className="mt-6">
-            <h2 className="text-sm font-semibold text-mist-100">{t.previewTitle}</h2>
-            <p className="mt-2 text-sm text-mist-500">
-              {locked ? t.previewIntroLocked : t.previewIntroPaid}
-            </p>
-            <ul className="mt-4 space-y-4">
-              {allFiles.map((file) => {
-                const src = `/api/oplevering/${token}/voorbeeld/${file.id}`;
-                return (
-                  <li key={file.id} className="overflow-hidden rounded-xl border border-ink-700 bg-ink-950">
-                    {file.previewFilename && file.previewType === "video/mp4" ? (
-                      <video
-                        src={src}
-                        controls
-                        controlsList="nodownload"
-                        disablePictureInPicture
-                        playsInline
-                        preload="metadata"
-                        aria-label={file.originalName}
-                        className="aspect-video w-full bg-ink-950"
-                      />
-                    ) : file.previewFilename ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={src}
-                        alt={file.originalName}
-                        loading="lazy"
-                        decoding="async"
-                        className="h-auto w-full"
-                      />
-                    ) : (
-                      <p className="p-4 text-sm text-mist-500">
-                        <span className="text-mist-300">{file.originalName}</span>
-                        <br />
-                        {locked ? t.previewMissing : t.previewPending}
-                      </p>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
+          canDownload ? (
+            // Na betaling zijn de originelen het belangrijkste; de voorbeelden met watermerk blijven op te vragen.
+            <details className="mt-6">
+              <summary className="cursor-pointer text-sm font-semibold text-mist-100">
+                {t.previewTitle}
+              </summary>
+              <PreviewList files={allFiles} token={token} locked={false} t={t} />
+            </details>
+          ) : (
+            <div className="mt-6">
+              <h2 className="text-sm font-semibold text-mist-100">{t.previewTitle}</h2>
+              <p className="mt-2 text-sm text-mist-500">{t.previewIntroLocked}</p>
+              <PreviewList files={allFiles} token={token} locked t={t} />
+            </div>
+          )
         )}
 
         {unpaid && (
@@ -159,7 +132,7 @@ export default async function DeliveryPage({
             {fout === "1" && <p className="notice notice-error mt-4">{t.payError}</p>}
             <form action={startInvoicePaymentAction} className="mt-5">
               <input type="hidden" name="token" value={token} />
-              <button type="submit" className="btn btn-quiet border-emerald-500/40 text-emerald-300">
+              <button type="submit" className="btn btn-quiet min-h-11 border-emerald-500/40 text-emerald-300">
                 {t.payButton}
               </button>
             </form>
@@ -179,7 +152,7 @@ export default async function DeliveryPage({
                 <p className="mt-2 text-sm text-mist-500">{t.filesIntro}</p>
                 {files.length > 1 && (
                   <div className="mt-4">
-                    <a href={links.zip} className="btn btn-quiet border-emerald-500/40 text-emerald-300">
+                    <a href={links.zip} className="btn btn-quiet min-h-11 border-emerald-500/40 text-emerald-300">
                       {t.zipButton(files.length)}
                     </a>
                     <p className="field-hint mt-2">{t.zipHint}</p>
@@ -221,7 +194,7 @@ export default async function DeliveryPage({
                 placeholder={t.revisionPlaceholder}
                 className="field-input"
               />
-              <button type="submit" className="btn btn-quiet mt-3">
+              <button type="submit" className="btn btn-quiet mt-3 min-h-11">
                 {t.revisionSubmit}
               </button>
             </form>
@@ -229,5 +202,54 @@ export default async function DeliveryPage({
         )}
       </div>
     </main>
+  );
+}
+
+type DeliveryText = ReturnType<typeof copy>["delivery"];
+
+/** De voorbeelden met watermerk: foto's als afbeelding, video's met speler. */
+function PreviewList({
+  files,
+  token,
+  locked,
+  t,
+}: {
+  files: ReturnType<typeof listInvoiceFiles>;
+  token: string;
+  locked: boolean;
+  t: DeliveryText;
+}) {
+  return (
+    <ul className="mt-4 space-y-4">
+      {files.map((file) => {
+        const src = `/api/oplevering/${token}/voorbeeld/${file.id}`;
+        return (
+          <li key={file.id} className="overflow-hidden rounded-xl border border-ink-700 bg-ink-950">
+            {file.previewFilename && file.previewType === "video/mp4" ? (
+              <video
+                // #t=0.1: zo toont ook Safari op iPhone een beeld in plaats van een zwart vlak.
+                src={`${src}#t=0.1`}
+                controls
+                controlsList="nodownload"
+                disablePictureInPicture
+                playsInline
+                preload="metadata"
+                aria-label={file.originalName}
+                className="aspect-video w-full bg-ink-950"
+              />
+            ) : file.previewFilename ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={src} alt={file.originalName} loading="lazy" decoding="async" className="h-auto w-full" />
+            ) : (
+              <p className="p-4 text-sm text-mist-500">
+                <span className="text-mist-300">{file.originalName}</span>
+                <br />
+                {locked ? t.previewMissing : t.previewNone}
+              </p>
+            )}
+          </li>
+        );
+      })}
+    </ul>
   );
 }

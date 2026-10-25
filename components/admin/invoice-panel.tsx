@@ -349,7 +349,7 @@ export function InvoicePanel({
           </div>
         </div>
 
-        <fieldset className="space-y-3 rounded-xl border border-ink-700 p-4">
+        <fieldset className="min-w-0 space-y-3 rounded-xl border border-ink-700 p-4">
           <legend className="px-1 text-xs font-semibold uppercase tracking-wide text-mist-500">
             Factuur aan
           </legend>
@@ -517,13 +517,13 @@ export function InvoicePanel({
                 {files.map((file) => (
                   <li
                     key={file.id}
-                    className="flex items-center justify-between gap-3 rounded-lg border border-ink-700 px-3 py-2"
+                    className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 rounded-lg border border-ink-700 px-3 py-2"
                   >
-                    <span className="min-w-0 truncate">
+                    <span className="min-w-0 max-w-full truncate">
                       {file.originalName}{" "}
                       <span className="text-mist-600">({formatSize(file.sizeBytes)})</span>
                     </span>
-                    <div className="flex shrink-0 items-center gap-3 text-xs">
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
                       <span className={file.previewFilename ? "text-emerald-300" : "text-amber-300"}>
                         {file.previewFilename ? "Voorbeeld ✓" : "Geen voorbeeld"}
                       </span>
@@ -774,7 +774,7 @@ function Field({
   lock: Record<string, unknown>;
 }) {
   return (
-    <div>
+    <div className="min-w-0">
       <label htmlFor={id} className="field-label">
         {label}
       </label>

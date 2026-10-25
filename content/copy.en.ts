@@ -822,7 +822,7 @@ export const en: Dictionary = {
       "These are reduced-size previews with a watermark. The original files without watermark become available as soon as the invoice is paid.",
     previewIntroPaid: "Previews of your files. The originals are below.",
     previewMissing: "There is no preview for this file yet. The original becomes available after payment.",
-    previewPending: "The preview is being prepared.",
+    previewNone: "There is no preview of this file; the original is below.",
     zipButton: (count: number) => `Download everything (ZIP, ${count} files)`,
     zipHint: "For a large delivery it is better to download the files one by one: an interrupted ZIP starts over.",
     linkExpiredNotice:

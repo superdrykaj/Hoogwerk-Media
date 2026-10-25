@@ -857,7 +857,7 @@ export const nl = {
       "Dit zijn voorbeelden met watermerk, verkleind. De originele bestanden zonder watermerk komen beschikbaar zodra de factuur is betaald.",
     previewIntroPaid: "Voorbeelden van je bestanden. Hieronder staan de originelen.",
     previewMissing: "Voor dit bestand is nog geen voorbeeld. Het origineel komt na betaling beschikbaar.",
-    previewPending: "Het voorbeeld wordt voorbereid.",
+    previewNone: "Van dit bestand is geen voorbeeld; het origineel staat hieronder.",
     zipButton: (aantal: number) => `Alles downloaden (ZIP, ${aantal} bestanden)`,
     zipHint: "Bij een grote oplevering kun je beter de bestanden los downloaden: een onderbroken ZIP begint opnieuw.",
     linkExpiredNotice:
