@@ -1,5 +1,14 @@
 # syntax=docker/dockerfile:1
 
+# KwijtCalc is volledig statisch en draait onder /kwijtcalc op dezelfde host.
+# Pin broncode én checksum zodat een website-deploy steeds dezelfde versie bouwt.
+FROM node:22-bookworm-slim AS kwijtcalc
+WORKDIR /kwijtcalc
+ADD --checksum=sha256:73f61ab823da858c81cd124ed4b8541923234e19180d3be82456017885ce2b6c https://codeload.github.com/superdrykaj/Kwijtcalc/tar.gz/893e43c1dabadca4ec9982bcfa95d8746f4ec12b /tmp/kwijtcalc.tar.gz
+RUN tar -xzf /tmp/kwijtcalc.tar.gz --strip-components=1
+ENV NEXT_TELEMETRY_DISABLED=1
+RUN npm ci && npm run build:static -- /kwijtcalc
+
 # ---------------------------------------------------------------------------
 # Bouwfase
 # ---------------------------------------------------------------------------
@@ -15,6 +24,7 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
+COPY --from=kwijtcalc /kwijtcalc/out ./public/kwijtcalc
 # De build heeft geen echte sleutels nodig; die komen pas bij het draaien.
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
