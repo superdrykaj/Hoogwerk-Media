@@ -37,13 +37,42 @@ const nextConfig: NextConfig = {
   // Native module: mag niet door de bundler worden meegenomen.
   serverExternalPackages: ["better-sqlite3"],
 
+  async redirects() {
+    return [
+      {
+        source: "/kwijtcalc/:pad*",
+        destination: "https://www.kwijtcalc.nl/:pad*",
+        permanent: true,
+      },
+      {
+        source: "/:pad*",
+        has: [{ type: "host" as const, value: "kwijtcalc.nl" }],
+        destination: "https://www.kwijtcalc.nl/:pad*",
+        permanent: true,
+      },
+    ];
+  },
+
   async rewrites() {
-    // De zelfstandige KwijtCalc-build bevat per pagina een index.html.
-    // Bundels en pdf-worker blijven rechtstreeks onder /kwijtcalc beschikbaar.
-    return ["", "/berekening", "/beroep"].map((pagina) => ({
-      source: `/kwijtcalc${pagina}`,
-      destination: `/kwijtcalc${pagina}/index.html`,
-    }));
+    // Vóór de bestanden en Next-pagina's: ook /, /_next en favicon.ico
+    // moeten op dit domein uit de KwijtCalc-export komen.
+    const has = [{ type: "host" as const, value: "www.kwijtcalc.nl" }];
+    return {
+      beforeFiles: [
+        {
+          source: "/:pad((?!berekening$|beroep$).+)",
+          destination: "/kwijtcalc/:pad",
+          has,
+        },
+        ...["", "/berekening", "/beroep"].map((pagina) => ({
+          source: pagina || "/",
+          destination: `/kwijtcalc${pagina}/index.html`,
+          has,
+        })),
+      ],
+      afterFiles: [],
+      fallback: [],
+    };
   },
 
   async headers() {
