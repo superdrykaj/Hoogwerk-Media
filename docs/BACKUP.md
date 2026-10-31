@@ -14,35 +14,58 @@ De fiscale bewaarplicht (7 jaar) geldt voor de database en de factuur-PDF's. Die
 zijn klein en dus eenvoudig dubbel te bewaren. De originelen zijn zwaar maar ook
 op jouw eigen computer of archief aanwezig.
 
-## 1. Hoeveel ruimte is er echt? (controleer dit vóór livegang)
+## 1. Hoeveel ruimte is er? Het volume blijft 1 GB
 
-De README noemt een volume van 1 GB. Dat is voor video's veel te weinig.
+**Besluit:** het productievolume blijft op **1 GB**; er worden geen abonnementen of
+snapshotinstellingen gewijzigd. Vergroten tot 40 GB is **geen vereiste voor
+livegang**. Wat dat betekent en hoe je het in de gaten houdt:
+
+**Opslagoverzicht in Beheer** (Instellingen → tabblad **Opslag**, alleen voor de
+beheerder): totale, gebruikte en vrije ruimte van het echte datavolume met een
+gebruiksbalk, en een uitsplitsing naar opleverbestanden, voorbeelden, facturen,
+database, back-ups en website-uploads. Vanaf **80%** een waarschuwing, vanaf
+**90%** een dringende melding; de knop "Meting vernieuwen" meet opnieuw. Alles komt
+uit het bestandssysteem zelf; lukt een meting niet, dan staat er een foutmelding en
+geen getal. Het overzicht verwijdert of vergroot nooit iets.
+
+**Bescherming van de database:** een vol volume blokkeert ook boekingen en
+facturen. Daarom weigert de upload van opleverbestanden een bestand dat de vrije
+ruimte onder een reserve zou brengen (10% van het volume, minimaal 64 MB; op 1 GB
+dus ±100 MB), met een duidelijke melding en zonder iets te schrijven.
+`OPSLAG_RESERVE_MB` past de reserve aan.
+
+**Wat past er op 1 GB?** Reken met ±870 MB voor opleverbestanden (1 GB min de
+reserve, de database, back-ups en de website-uploads):
+
+| Opdracht | Grootte (orde) | Past op 1 GB? |
+|---|---|---|
+| 20–40 foto's van een drone (JPEG, 8–20 MB) | 0,2–0,8 GB | ja, één tegelijk |
+| Korte clip, 30 s 4K (H.264/H.265) | 0,1–0,4 GB | ja |
+| Film van 2 minuten, 4K (100 Mbps) | ±1,5 GB | **nee** |
+| Film van 2 minuten, 4K (H.265, ±40 Mbps) | ±0,6 GB | ja, krap |
+
+Praktisch: met 1 GB past ongeveer één gemiddelde opdracht tegelijk. Verwijder
+bestanden zodra de klant ze heeft gedownload (Beheer → Boekingen → Verwijderen bij
+het bestand). Een boeking met een uitgegeven factuur kan niet worden verwijderd
+(bewaarplicht); de bestanden eronder wel. Past een opdracht niet, dan zijn er drie
+uitwegen, in volgorde van voorkeur: (1) een kleinere export maken (H.265 of lagere
+bitrate), (2) de video buiten het systeem leveren en alleen de foto's en de
+factuur via de klantpagina, (3) het volume op dat moment vergroten (kan zonder
+downtime, maar niet terug verkleinen; richtprijs ±€0,15 per GB per maand, controleer
+de actuele prijs):
 
 ```bash
 fly volumes list -a hoogbeeld-media                          # kolom SIZE
 fly ssh console -a hoogbeeld-media -C "df -h /data"          # echt gebruikt en vrij
-fly ssh console -a hoogbeeld-media -C "du -sh /data/deliveries /data/invoices /data/backups /data/kai-aerials.db"
+fly volumes extend <volume-id> -s 5 -a hoogbeeld-media       # alleen als je dit besluit; bijvoorbeeld naar 5 GB
 ```
 
-Vergroten kan, verkleinen niet:
-
-```bash
-fly volumes extend <volume-id> -s 40 -a hoogbeeld-media      # naar 40 GB
-```
-
-**Reken zo:** 4K-dronevideo is ongeveer 0,5–1 GB per minuut; een foto van een
-drone ongeveer 8–20 MB. Een opdracht met twee minuten film en 30 foto's is dan
-1,5–3 GB. Tien van zulke opdrachten per maand is 15–30 GB, en zonder opruimen
-loopt dat in een jaar op tot 200–350 GB. Begin met **40 GB**, kijk elke maand naar
-`df -h`, en vergroot bij 70% vol. Er is nog geen automatische opruiming: verwijder
-bestanden per opdracht in Beheer (knop "Verwijderen" bij het bestand) als de
-bewaartermijn voorbij is, bijvoorbeeld 12 maanden na betaling. Een boeking met
-een uitgegeven factuur kan niet worden verwijderd (bewaarplicht); de bestanden
-eronder wel.
+De drie opdrachten bovenaan zijn alleen-lezen; alleen de laatste wijzigt iets en
+gebruik je pas na een eigen besluit.
 
 ## 2. Is de huidige privéopslag geschikt voor langdurig gebruik?
 
-Voor het volume van een eenmanszaak: **ja, mits** (a) het volume groot genoeg is,
+Voor het volume van een eenmanszaak: **ja, mits** (a) het volume groot genoeg is voor de opdrachten die je levert (op 1 GB: geen zware 4K-video's),
 (b) er een bewaartermijn is voor de zware bestanden en (c) er back-ups buiten het
 volume zijn. De bestanden zijn niet publiek bereikbaar (eigen map buiten
 `public/`), downloads lopen via ondertekende links en de betaalstatus, en het
@@ -119,7 +142,7 @@ de nieuwste facturen. Zet het bestand terug met dezelfde eigenaar als de rest va
 | | Volume (nu) | Objectopslag (S3-compatibel) |
 |---|---|---|
 | Prijs per GB per maand\* | ±0,15 | ±0,006 (Backblaze B2) tot ±0,02 (Tigris, Cloudflare R2: 0,015) |
-| 40 GB | ±6 | ±0,25–0,80 |
+| 40 GB (ter vergelijking) | ±6 | ±0,25–0,80 |
 | 300 GB | ±45 | ±2–6 |
 | Downloadverkeer | via de server (512 MB-machine) | rechtstreeks van de opslag, zonder tussenstap |
 | Duurzaamheid | één schijf + snapshots | gespiegeld en zeer duurzaam |
@@ -128,8 +151,9 @@ de nieuwste facturen. Zet het bestand terug met dezelfde eigenaar als de rest va
 \* Richtprijzen uit mijn geheugen, zonder dat ik ze kan nakijken; controleer de
 actuele tarieven bij Fly, Tigris, Cloudflare R2 en Backblaze.
 
-**Advies:** nu niet bouwen. Met 40 GB, een bewaartermijn en dagelijkse
-back-ups is het volume eenvoudiger en goedkoop genoeg (±6 dollar). Overweeg
+**Advies:** nu niet bouwen. Met het huidige volume van 1 GB, het opslagoverzicht
+met waarschuwingen, een bewaartermijn en dagelijkse back-ups is het volume
+eenvoudiger en goedkoop genoeg; vergroot pas als de opdrachten dat vragen. Overweeg
 objectopslag als het totaal boven ±100–150 GB uitkomt, als je een tweede kopie
 van de media buiten Fly wilt, of als klanten vaak tegelijk grote video's
 downloaden. Het bestaande model van korte ondertekende links past er goed op

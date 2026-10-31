@@ -21,6 +21,11 @@ const nextConfig: NextConfig = {
     "/*": ["data/**/*", "public/images/**/*.tar.gz"],
   },
   images: {
+    // Breedtes waarop afbeeldingen worden verkleind. De standaardlijst gaat door
+    // tot 3840 px, maar onze bronbeelden zijn hooguit 1920 px breed: een verzoek
+    // om 2048 of 3840 geeft hetzelfde bestand terug en kost alleen een extra
+    // omzetting op een koude cache. 1600 is de breedte van de meeste foto's.
+    deviceSizes: [640, 750, 828, 1080, 1200, 1600, 1920],
     // Placeholder-beelden worden lokaal geserveerd; uploads gaan via /api/uploads.
     localPatterns: [
       { pathname: "/images/**" },

@@ -1,3 +1,4 @@
+import { StorageOverview } from "@/components/admin/storage-overview";
 import { CompanySettingsForm } from "@/components/admin/company-settings-form";
 import { PageHeading, Panel } from "@/components/admin/ui";
 import { SettingsForm } from "@/components/admin/settings-form";
@@ -9,13 +10,17 @@ import { supplierProblems } from "@/lib/invoice-rules";
 import { isMailConfigured, mailRecipients } from "@/lib/mail";
 import { getInvoiceSettings, getSettings } from "@/lib/settings";
 import { siteStatus } from "@/lib/site-status";
+import { usageLevel } from "@/lib/storage-level";
+import { measureStorage } from "@/lib/storage-usage";
 
 export const dynamic = "force-dynamic";
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
   const settings = getSettings();
   const invoiceSettings = getInvoiceSettings();
   const invoiceProblems = supplierProblems(invoiceSettings);
+  const storage = await measureStorage();
+  const storageNeedsAttention = !storage.volume || usageLevel(storage.volume.percent) !== "ok";
   const status = siteStatus();
   const mailReady = isMailConfigured();
   const naartoe = mailRecipients();
@@ -32,7 +37,11 @@ export default function SettingsPage() {
 
       <SettingsTabs
         defaultTab={mailReady ? "algemeen" : "email"}
-        attention={{ email: !mailReady, bedrijfsgegevens: invoiceProblems.length > 0 }}
+        attention={{
+          email: !mailReady,
+          bedrijfsgegevens: invoiceProblems.length > 0,
+          opslag: storageNeedsAttention,
+        }}
         algemeen={
           <Panel
             title="Zichtbaarheid van de site"
@@ -105,6 +114,14 @@ export default function SettingsPage() {
               </p>
             </Panel>
           </div>
+        }
+        opslag={
+          <Panel
+            title="Opslag"
+            description="Hoeveel ruimte het datavolume heeft, hoeveel er in gebruik is en waaraan. Alleen voor jou zichtbaar; er wordt niets automatisch verwijderd of vergroot."
+          >
+            <StorageOverview report={storage} />
+          </Panel>
         }
         email={
           <Panel

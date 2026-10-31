@@ -25,7 +25,7 @@ export const DATA_DIR = process.env.DATA_DIR
 
 export const UPLOAD_DIR = path.join(DATA_DIR, "uploads");
 
-const DB_PATH = process.env.DATABASE_PATH
+export const DB_PATH = process.env.DATABASE_PATH
   ? path.resolve(process.env.DATABASE_PATH)
   : path.join(DATA_DIR, "kai-aerials.db");
 

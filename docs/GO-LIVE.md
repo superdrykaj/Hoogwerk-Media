@@ -9,12 +9,14 @@ komt pas na stap 1 t/m 5, en alleen na expliciet akkoord.
 ## Vooraf (nog zonder merge)
 1. **Staging volledig getest:** Mollie-testbetaling (Failed en Paid), voorbeelden,
    downloads, ZIP, terugbetaling, verlopen link; zie `docs/MOLLIE-TEST.md`.
-2. **Schijfruimte op productie:** `fly volumes list -a hoogbeeld-media` en
-   `fly ssh console -a hoogbeeld-media -C "df -h /data"`. Vergroot naar 40 GB:
-   `fly volumes extend <volume-id> -s 40 -a hoogbeeld-media`.
-3. **Snapshots:** bewaartermijn verhogen
-   (`fly volumes update <volume-id> --snapshot-retention 30 -a hoogbeeld-media`) en
-   controleren met `fly volumes snapshots list`.
+2. **Schijfruimte op productie:** het volume blijft **1 GB**; vergroten is geen
+   vereiste voor livegang (besluit eigenaar, zie `docs/BACKUP.md`). Kijk na de deploy
+   in Beheer → Instellingen → **Opslag** naar het echte gebruik; de upload weigert
+   zelf een bestand dat de reserve zou opeten. Pas bij een groot videobestand
+   overweeg je later te vergroten.
+3. **Snapshots:** niets wijzigen aan de instellingen. Alleen kijken welke er zijn
+   (`fly volumes snapshots list <volume-id> -a hoogbeeld-media`) en weten hoe lang ze
+   blijven staan; zie `docs/BACKUP.md`.
 4. **Btw:** btw-identificatienummer NL005579445B28 staat in `content/site.ts` en
    is de beginwaarde bij de factuurinstellingen. Het percentage is **21%** (bevestigd
    door de eigenaar; geen KOR). Vul daarnaast in Beheer → Instellingen →

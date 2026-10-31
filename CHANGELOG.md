@@ -1,5 +1,27 @@
 # Wijzigingen
 
+## November 2026 — opslagoverzicht, uploadreserve en samenvoegingen
+
+- **Opslagoverzicht** in Beheer → Instellingen → Opslag (alleen beheerder): totale,
+  gebruikte en vrije ruimte van het echte datavolume met een gebruiksbalk,
+  uitsplitsing naar opleverbestanden, voorbeelden, facturen, database, back-ups en
+  website-uploads, waarschuwing vanaf 80%, dringende melding vanaf 90% en een knop
+  "Meting vernieuwen". Alles wordt uit het bestandssysteem gemeten (statfs en de
+  werkelijk ingenomen blokken); lukt iets niet, dan staat er een foutmelding en geen
+  getal. Er wordt niets verwijderd of vergroot.
+- **Uploadreserve**: een opleverbestand dat de vrije ruimte onder 10% van het volume
+  (minimaal 64 MB) zou brengen wordt geweigerd (HTTP 507, melding in Beheer, niets
+  geschreven), omdat een vol volume ook boekingen en facturen blokkeert.
+  `OPSLAG_RESERVE_MB` past dit aan.
+- **Volume blijft 1 GB**: 40 GB is geen vereiste voor livegang; documentatie
+  aangepast (`docs/BACKUP.md`, `docs/GO-LIVE.md`).
+- **Afbeeldingsbreedtes** beperkt tot 1920 px (nieuwe stap 1600): de bronbeelden zijn
+  hooguit 1920 px breed, dus verzoeken om 2048 of 3840 px leverden hetzelfde bestand
+  op en kostten alleen een extra koude omzetting.
+- Samengevoegd: PR #23 (Windows-testopruiming, `minimatch`-override in de ZIP-keten,
+  webhook- en ZIP-tests, controle- en rollbackdocument) en `main` (KwijtCalc onder
+  `/kwijtcalc`, alleen `Dockerfile` en `next.config.ts`).
+
 ## Oktober 2026 — btw-identificatienummer
 
 - Het btw-identificatienummer staat nu in `content/site.ts` (`business.vat`) en

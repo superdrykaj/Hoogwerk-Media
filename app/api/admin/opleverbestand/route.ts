@@ -2,6 +2,7 @@ import { isSignedIn } from "@/lib/auth";
 import { saveDeliveryFileStream } from "@/lib/deliveries";
 import { addInvoiceFile, getInvoice, getInvoiceFile } from "@/lib/invoices";
 import { createImagePreview, isImageType, saveManualPreview } from "@/lib/previews";
+import { roomForUpload } from "@/lib/storage-usage";
 
 /**
  * Uploadt een opleverbestand door de binnenkomende stream rechtstreeks naar
@@ -28,6 +29,13 @@ export async function POST(request: Request) {
   }
 
   const contentTypeHeader = request.headers.get("content-type") ?? "application/octet-stream";
+
+  // Eerst kijken of het volume het nog aankan: een vol volume blokkeert ook de
+  // database. Er wordt niets weggegooid; de upload wordt alleen geweigerd.
+  const ruimte = await roomForUpload(Number(request.headers.get("content-length")) || 0);
+  if (!ruimte.ok) {
+    return Response.json({ ok: false, error: ruimte.message }, { status: 507 });
+  }
 
   // Een los voorbeeld (watermerkvideo) bij een bestand dat al is geüpload.
   const previewFor = Number(new URL(request.url).searchParams.get("previewFor"));

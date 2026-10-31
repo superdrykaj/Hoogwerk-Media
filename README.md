@@ -899,13 +899,19 @@ een totale grens instellen, zet dan `SERVER_REQUEST_TIMEOUT_MS` op het gewenste
 aantal milliseconden.
 
 **De schijfruimte van de gekoppelde volume is nu wél de beperking.** Er zit
-geen automatische opruiming op: bestanden blijven staan totdat je een boeking
-verwijdert. Reken bij een paar opdrachten met 4K-beeldmateriaal al snel op
-enkele GB's per maand. Bekijk en vergroot de volume zo nodig:
+geen automatische opruiming op: bestanden blijven staan totdat je ze zelf
+verwijdert (een boeking met een uitgegeven factuur kan niet worden verwijderd). Reken bij een paar opdrachten met 4K-beeldmateriaal al snel op
+enkele GB's per maand. In Beheer → Instellingen → **Opslag** zie je het echte
+gebruik van het datavolume (balk, uitsplitsing, waarschuwing vanaf 80%, dringend
+vanaf 90%); een upload die de vrije ruimte onder een reserve van 10% zou brengen
+wordt geweigerd. Vergroten is niet verplicht: het volume van 1 GB volstaat voor
+boekingen, facturen en kleine fotoleveringen; zie `docs/BACKUP.md` voor wat er
+wel en niet past. Wil je het ooit vergroten, dan kan dat zo (richtprijs
+±€0,15 per GB per maand):
 
 ```bash
 fly volumes list -a hoogbeeld-media-test
-fly volumes extend <volume-id> -s 20   # bijvoorbeeld naar 20 GB
+fly volumes extend <volume-id> -s 5   # bijvoorbeeld naar 5 GB; niet terug te verkleinen
 ```
 
 ```
