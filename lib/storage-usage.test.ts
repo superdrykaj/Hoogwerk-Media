@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -106,12 +107,21 @@ describe("measureStorage", () => {
 });
 
 describe("measureDirectory", () => {
-  it("telt de echt ingenomen ruimte: een sparse bestand telt niet als zijn schijnbare grootte", async () => {
+  it("telt de echt ingenomen ruimte van een sparse bestand", async () => {
     const dir = path.join(tmp, "sparse");
     fs.mkdirSync(dir);
-    const fd = fs.openSync(path.join(dir, "leeg.bin"), "w");
-    fs.ftruncateSync(fd, 500 * MB);
-    fs.closeSync(fd);
+    const file = path.join(dir, "leeg.bin");
+    const fd = fs.openSync(file, "w");
+    try {
+      // Windows reserveert bij ftruncate standaard echte ruimte. Markeer de
+      // fixture eerst als sparse; op Linux doet ftruncate dit vanzelf.
+      if (process.platform === "win32") {
+        execFileSync("fsutil", ["sparse", "setflag", file], { stdio: "ignore" });
+      }
+      fs.ftruncateSync(fd, 500 * MB);
+    } finally {
+      fs.closeSync(fd);
+    }
     const r = await m.measureDirectory(dir);
     expect(r.bytes).toBeLessThan(10 * MB);
   });
@@ -119,9 +129,15 @@ describe("measureDirectory", () => {
   it("volgt geen symbolische links (ook geen lus)", async () => {
     const dir = path.join(tmp, "links");
     schrijf(path.join(dir, "echt.bin"), 1 * MB);
-    schrijf(path.join(tmp, "groot-buiten.bin"), 50 * MB);
-    fs.symlinkSync(path.join(tmp, "groot-buiten.bin"), path.join(dir, "naar-buiten.bin"));
-    fs.symlinkSync(dir, path.join(dir, "lus"));
+    const buiten = path.join(tmp, "buiten");
+    schrijf(path.join(buiten, "groot.bin"), 50 * MB);
+    // Een directory-junction vraagt op Windows geen symlinkprivilege.
+    const linkType = process.platform === "win32" ? "junction" : "dir";
+    fs.symlinkSync(buiten, path.join(dir, "naar-buiten"), linkType);
+    fs.symlinkSync(dir, path.join(dir, "lus"), linkType);
+    if (process.platform !== "win32") {
+      fs.symlinkSync(path.join(buiten, "groot.bin"), path.join(dir, "bestand-link"));
+    }
     const r = await m.measureDirectory(dir);
     ongeveer(r.bytes, 1 * MB);
     expect(r.partial).toBe(false);
