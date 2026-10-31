@@ -13,9 +13,10 @@ komt pas na stap 1 t/m 5, en alleen na expliciet akkoord.
 3. **Snapshots:** bewaartermijn verhogen
    (`fly volumes update <volume-id> --snapshot-retention 30 -a hoogbeeld-media`) en
    controleren met `fly volumes snapshots list`.
-4. **Btw-nummer:** zodra het er is, invullen in Beheer → Instellingen →
-   Bedrijfsgegevens én in `content/site.ts` (`business.vat`). Bevestig bij je
-   boekhouder of Belastingdienst het percentage (21, of 0 bij KOR).
+4. **Btw:** btw-identificatienummer NL005579445B28 staat in `content/site.ts` en
+   is de beginwaarde bij de factuurinstellingen. Het percentage is **21%** (bevestigd
+   door de eigenaar; geen KOR). Vul daarnaast in Beheer → Instellingen →
+   Bedrijfsgegevens in: adres, postcode, plaats en IBAN, en controleer het nummer in VIES.
 5. **Mollie productiesleutel:** pas ná het akkoord, een **Live API-key** (zelfde
    profiel) als secret op `hoogbeeld-media` (nooit op de testomgeving):
    `fly secrets set MOLLIE_API_KEY=live_... -a hoogbeeld-media`. Voor live betalingen
