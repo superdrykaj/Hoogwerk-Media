@@ -25,7 +25,10 @@ beforeAll(async () => {
     deliveries: await import("./deliveries"),
   };
 });
-afterAll(() => fs.rmSync(tmp, { recursive: true, force: true }));
+afterAll(() => {
+  m?.db.getDb().close();
+  fs.rmSync(tmp, { recursive: true, force: true });
+});
 
 /** Een egaal lichtgrijze foto: elk afwijkend pixel is dus van het watermerk. */
 async function testFoto(width = 4000, height = 3000, achtergrond = "#c8c8c8"): Promise<Buffer> {

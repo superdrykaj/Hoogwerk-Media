@@ -1,6 +1,8 @@
 # Livegang: stappen in volgorde
 
-Productie is `hoogbeeld-media` (hoogbeeldmedia.nl). Niets hieronder is al gedaan.
+Productie is `hoogbeeld-media` (hoogbeeldmedia.nl). De controles hieronder moeten
+per omgeving worden bevestigd; code en lokale tests bewijzen geen uitgevoerde
+Mollie-testbetaling of gewijzigde productieopslag.
 Een merge naar `main` start automatisch de productiedeployment, dus de merge
 komt pas na stap 1 t/m 5, en alleen na expliciet akkoord.
 
@@ -40,8 +42,19 @@ komt pas na stap 1 t/m 5, en alleen na expliciet akkoord.
 10. **Kopie buiten Fly:** minstens maandelijks de nieuwste back-up ophalen (zie `docs/BACKUP.md`).
 
 ## Terugdraaien
-Gaat er iets mis na de merge: zet de vorige versie terug door `main` terug te zetten
-naar `c73c343` (de huidige productiestand) via een revert-commit. De database
-blijft werken: de nieuwe kolommen en beschermingen zijn alleen toegevoegd en
-bestaande gegevens zijn niet gewijzigd. Een vergrendelde, uitgegeven factuur blijft
-vergrendeld, ook onder de oude code.
+Leg vóór de merge de daadwerkelijk gedeployde Fly-release en image vast met
+`fly releases -a hoogbeeld-media` en bewaar een gecontroleerde databaseback-up.
+Gebruik die release als referentie voor herstel; een Git-commit alleen bewijst
+niet welke versie op Fly draait.
+
+`main` bevat sinds 26 oktober ook `2b101b7` (KwijtCalc onder `/kwijtcalc`).
+`c73c343` is daarom geen actuele terugvalversie. Draai bij problemen uitsluitend
+de livegang-merge terug met een revert-commit op de dan actuele `main`; behoud
+KwijtCalc en eventuele latere wijzigingen. Controleer de revert-diff vóór push,
+want een push naar `main` deployt automatisch naar productie.
+
+De database-uitbreidingen zijn additief, maar herstel is pas bevestigd na een
+test met de gekozen applicatieversie en een kopie van de actuele database.
+Controleer bestaande factuur-PDF's en de vergrendeling van uitgegeven facturen.
+Zet de productiedatabase niet terug zonder de gevolgen voor nieuwe boekingen,
+betalingen en facturen apart te beoordelen.

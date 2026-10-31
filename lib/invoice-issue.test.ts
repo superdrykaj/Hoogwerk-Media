@@ -32,7 +32,10 @@ beforeAll(async () => {
     settings: await import("./settings"),
   };
 });
-afterAll(() => fs.rmSync(tmp, { recursive: true, force: true }));
+afterAll(() => {
+  m?.db.getDb().close();
+  fs.rmSync(tmp, { recursive: true, force: true });
+});
 
 const leverancier = {
   companyName: "Hoogbeeld Media",

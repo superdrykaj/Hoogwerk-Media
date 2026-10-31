@@ -27,6 +27,11 @@
     "sharp": "^0.35.5",
     "zod": "^4.5.4"
   },
+  "overrides": {
+    "readdir-glob": {
+      "minimatch": "^11.0.1"
+    }
+  },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
     "@types/archiver": "^8.0.0",

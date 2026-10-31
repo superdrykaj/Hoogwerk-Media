@@ -26,7 +26,10 @@ beforeAll(async () => {
     db: await import("./db"),
   };
 });
-afterAll(() => fs.rmSync(tmp, { recursive: true, force: true }));
+afterAll(() => {
+  m?.db.getDb().close();
+  fs.rmSync(tmp, { recursive: true, force: true });
+});
 
 describe("parseRange", () => {
   it("leest gewone, open en suffix-bereiken", () => {
