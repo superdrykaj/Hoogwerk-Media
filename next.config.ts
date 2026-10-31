@@ -37,6 +37,15 @@ const nextConfig: NextConfig = {
   // Native module: mag niet door de bundler worden meegenomen.
   serverExternalPackages: ["better-sqlite3"],
 
+  async rewrites() {
+    // De zelfstandige KwijtCalc-build bevat per pagina een index.html.
+    // Bundels en pdf-worker blijven rechtstreeks onder /kwijtcalc beschikbaar.
+    return ["", "/berekening", "/beroep"].map((pagina) => ({
+      source: `/kwijtcalc${pagina}`,
+      destination: `/kwijtcalc${pagina}/index.html`,
+    }));
+  },
+
   async headers() {
     const ontwikkeling = process.env.NODE_ENV !== "production";
 
