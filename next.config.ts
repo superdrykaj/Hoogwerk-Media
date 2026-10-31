@@ -21,6 +21,11 @@ const nextConfig: NextConfig = {
     "/*": ["data/**/*", "public/images/**/*.tar.gz"],
   },
   images: {
+    // Breedtes waarop afbeeldingen worden verkleind. De standaardlijst gaat door
+    // tot 3840 px, maar onze bronbeelden zijn hooguit 1920 px breed: een verzoek
+    // om 2048 of 3840 geeft hetzelfde bestand terug en kost alleen een extra
+    // omzetting op een koude cache. 1600 is de breedte van de meeste foto's.
+    deviceSizes: [640, 750, 828, 1080, 1200, 1600, 1920],
     // Placeholder-beelden worden lokaal geserveerd; uploads gaan via /api/uploads.
     localPatterns: [
       { pathname: "/images/**" },
@@ -100,6 +105,29 @@ const nextConfig: NextConfig = {
             value: "strict-origin-when-cross-origin",
           },
           { key: "Content-Security-Policy", value: csp },
+        ],
+      },
+      {
+        // Het logo en de voorbeeldbeelden staan in de wortel van public/. Next
+        // stuurt daar standaard "max-age=0" bij, zodat de browser bij elke
+        // pagina opnieuw vraagt of het bestand nog klopt. Een dag vers, en een
+        // week lang mag een oude versie nog getoond worden terwijl de nieuwe
+        // op de achtergrond binnenkomt.
+        source: "/logo-mark.png",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
+      {
+        source: "/images/:bestand*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=86400, stale-while-revalidate=604800",
+          },
         ],
       },
       {

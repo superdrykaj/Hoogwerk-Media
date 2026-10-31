@@ -844,11 +844,32 @@ export const nl = {
     payTitle: "Betaling vereist",
     payIntro: (bedrag: string) =>
       `Voor dit project staat een factuur van ${bedrag} open. Zodra deze betaald is, komen de bestanden hieronder automatisch vrij.`,
+    payTitleOpen: "Factuur openstaand",
+    payIntroOpen: (bedrag: string) =>
+      `Er staat een factuur van ${bedrag} open. Je kunt direct online betalen.`,
     payButton: "Nu betalen",
     payError: "Betalen lukte net niet. Probeer het nog eens of neem contact op.",
     paidNotice: (wanneer: string) => `Betaald op ${wanneer}.`,
     filesTitle: "Jouw bestanden",
     filesIntro: "Klik op een bestand om het te downloaden.",
+    previewTitle: "Voorbeelden",
+    previewIntroLocked:
+      "Dit zijn voorbeelden met watermerk, verkleind. De originele bestanden zonder watermerk komen beschikbaar zodra de factuur is betaald.",
+    previewIntroPaid: "Voorbeelden van je bestanden. Hieronder staan de originelen.",
+    previewMissing: "Voor dit bestand is nog geen voorbeeld. Het origineel komt na betaling beschikbaar.",
+    previewNone: "Van dit bestand is geen voorbeeld; het origineel staat hieronder.",
+    zipButton: (aantal: number) => `Alles downloaden (ZIP, ${aantal} bestanden)`,
+    zipHint: "Bij een grote oplevering kun je beter de bestanden los downloaden: een onderbroken ZIP begint opnieuw.",
+    linkExpiredNotice:
+      "De downloadlink was verlopen. Hieronder staan nieuwe links; klik opnieuw op het bestand.",
+    linkValidNote: (minuten: number) =>
+      `Downloadlinks zijn ${minuten} minuten geldig. Herlaad deze pagina voor nieuwe links; je betaalt nooit opnieuw.`,
+    refundedTitle: "Betaling terugbetaald",
+    refundedBody:
+      "Deze factuur is terugbetaald, daarom zijn de bestanden niet meer beschikbaar. Neem contact op als je denkt dat dit niet klopt.",
+    cancelledBody: "Deze factuur is geannuleerd; er zijn geen bestanden beschikbaar.",
+    downloadsUnavailable:
+      "Downloaden is tijdelijk niet mogelijk. Neem contact op met Hoogbeeld Media.",
     downloadLabel: "Downloaden",
     revisionTitle: "Niet helemaal tevreden?",
     revisionIntro: "Laat weten wat je anders zou willen zien; ik neem het met je door.",

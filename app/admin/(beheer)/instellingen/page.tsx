@@ -1,3 +1,4 @@
+import { StorageOverview } from "@/components/admin/storage-overview";
 import { CompanySettingsForm } from "@/components/admin/company-settings-form";
 import { PageHeading, Panel } from "@/components/admin/ui";
 import { SettingsForm } from "@/components/admin/settings-form";
@@ -5,15 +6,21 @@ import { SettingsTabs } from "@/components/admin/settings-tabs";
 import { SiteStatusForm } from "@/components/admin/site-status-form";
 import { TestMailForm } from "@/components/admin/test-mail-form";
 import { site } from "@/content/site";
+import { supplierProblems } from "@/lib/invoice-rules";
 import { isMailConfigured, mailRecipients } from "@/lib/mail";
 import { getInvoiceSettings, getSettings } from "@/lib/settings";
 import { siteStatus } from "@/lib/site-status";
+import { usageLevel } from "@/lib/storage-level";
+import { measureStorage } from "@/lib/storage-usage";
 
 export const dynamic = "force-dynamic";
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
   const settings = getSettings();
   const invoiceSettings = getInvoiceSettings();
+  const invoiceProblems = supplierProblems(invoiceSettings);
+  const storage = await measureStorage();
+  const storageNeedsAttention = !storage.volume || usageLevel(storage.volume.percent) !== "ok";
   const status = siteStatus();
   const mailReady = isMailConfigured();
   const naartoe = mailRecipients();
@@ -30,7 +37,11 @@ export default function SettingsPage() {
 
       <SettingsTabs
         defaultTab={mailReady ? "algemeen" : "email"}
-        attention={{ email: !mailReady }}
+        attention={{
+          email: !mailReady,
+          bedrijfsgegevens: invoiceProblems.length > 0,
+          opslag: storageNeedsAttention,
+        }}
         algemeen={
           <Panel
             title="Zichtbaarheid van de site"
@@ -51,9 +62,43 @@ export default function SettingsPage() {
           <div className="space-y-8">
             <Panel
               title="Bedrijfsgegevens voor facturen"
-              description="Komen op elke factuur te staan. Standaard fictief — vul aan zodra je KvK- en BTW-nummer bekend zijn."
+              description="Komen op elke factuur te staan. Zonder volledige en geldige gegevens kan er geen factuur worden uitgegeven."
             >
+              {invoiceProblems.length > 0 ? (
+                <p className="notice notice-error mb-5" role="status">
+                  Nog niet compleet: {invoiceProblems.join(", ")}.
+                </p>
+              ) : (
+                <p className="notice notice-success mb-5" role="status">
+                  De bedrijfsgegevens zijn compleet; er kunnen facturen worden uitgegeven.
+                </p>
+              )}
               <CompanySettingsForm settings={invoiceSettings} />
+              <div className="mt-6 rounded-xl border border-ink-700 p-4 text-sm leading-relaxed text-mist-300">
+                <p className="font-semibold text-mist-100">Welk btw-percentage hoort bij jou?</p>
+                <ul className="mt-2 list-disc space-y-1.5 pl-5">
+                  <li>
+                    <strong>Btw-plichtig:</strong> percentage 21 en je btw-identificatienummer
+                    (NL…B01) invullen. Foto- en videodiensten voor klanten in Nederland vallen
+                    in het algemeen onder het hoge tarief.
+                  </li>
+                  <li>
+                    <strong>Kleineondernemersregeling (KOR):</strong> percentage 0. Er wordt dan
+                    geen btw berekend en op de factuur staat de KOR-vermelding. Alleen kiezen
+                    als de Belastingdienst je KOR-deelname heeft bevestigd.
+                  </li>
+                  <li>
+                    <strong>Niet ondersteund:</strong> een ander tarief per klant, btw verlegd
+                    (zakelijke klanten in andere EU-landen) en klanten buiten Nederland. Laat
+                    zulke facturen door je boekhouder maken.
+                  </li>
+                </ul>
+                <p className="field-hint mt-3">
+                  Twijfel je? Kijk in Mijn Belastingdienst Zakelijk of op je
+                  registratiebevestiging, of vraag je boekhouder. De website gaat niet zelf
+                  uit van een regeling.
+                </p>
+              </div>
             </Panel>
 
             <Panel title="Bedrijfsgegevens en teksten">
@@ -69,6 +114,14 @@ export default function SettingsPage() {
               </p>
             </Panel>
           </div>
+        }
+        opslag={
+          <Panel
+            title="Opslag"
+            description="Hoeveel ruimte het datavolume heeft, hoeveel er in gebruik is en waaraan. Alleen voor jou zichtbaar; er wordt niets automatisch verwijderd of vergroot."
+          >
+            <StorageOverview report={storage} />
+          </Panel>
         }
         email={
           <Panel

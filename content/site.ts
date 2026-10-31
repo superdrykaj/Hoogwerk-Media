@@ -80,10 +80,12 @@ export const site = {
     /** Vestigingsplaats, zoals ingeschreven bij de KvK. Geen straatadres. */
     city: "Zaandam" as string,
     /**
-     * BTW-identificatienummer (NL…B01). Nog niet ingevuld: verzin het nooit,
-     * en laat het leeg tot het er is. Zolang het leeg is, toont de site niets.
+     * BTW-identificatienummer (NL…B01), zoals de Belastingdienst het heeft
+     * toegekend. Staat in de footer, op de contactpagina, in de
+     * privacyverklaring en is de beginwaarde bij de factuurinstellingen.
+     * Verzin het nooit; laat het leeg als het er niet is.
      */
-    vat: "" as string,
+    vat: "NL005579445B28" as string,
     /** Operatornummer van de RDW, begint met NLD. */
     droneOperator: "NLDeflfyqk6tk2y5" as string,
     /** Naam van de verzekeraar voor de aansprakelijkheidsverzekering. */

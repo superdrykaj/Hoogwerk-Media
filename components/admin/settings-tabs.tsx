@@ -7,6 +7,7 @@ const TABS = [
   { key: "boekingsregels", label: "Boekingsregels" },
   { key: "email", label: "E-mail" },
   { key: "bedrijfsgegevens", label: "Bedrijfsgegevens" },
+  { key: "opslag", label: "Opslag" },
 ] as const;
 
 export type SettingsTabKey = (typeof TABS)[number]["key"];
@@ -20,6 +21,7 @@ export function SettingsTabs({
   boekingsregels,
   email,
   bedrijfsgegevens,
+  opslag,
 }: {
   defaultTab?: SettingsTabKey;
   /** Welke tabs een stip krijgen omdat er iets op te lossen valt. */
@@ -28,6 +30,7 @@ export function SettingsTabs({
   boekingsregels: React.ReactNode;
   email: React.ReactNode;
   bedrijfsgegevens: React.ReactNode;
+  opslag: React.ReactNode;
 }) {
   const [active, setActive] = useState<SettingsTabKey>(defaultTab);
   const panels: Record<SettingsTabKey, React.ReactNode> = {
@@ -35,6 +38,7 @@ export function SettingsTabs({
     boekingsregels,
     email,
     bedrijfsgegevens,
+    opslag,
   };
 
   return (
