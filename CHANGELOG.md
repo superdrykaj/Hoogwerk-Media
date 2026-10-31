@@ -1,5 +1,15 @@
 # Wijzigingen
 
+## Oktober 2026 — btw-identificatienummer
+
+- Het btw-identificatienummer staat nu in `content/site.ts` (`business.vat`) en
+  volgt vandaar: footer, contactpagina, privacyverklaring en als beginwaarde bij
+  de factuurinstellingen (een in Beheer opgeslagen waarde gaat voor). Formaat en
+  controlegetal zijn gecontroleerd; of het nummer bij de Belastingdienst en in
+  VIES actief is, kon niet automatisch worden nagegaan.
+- Het btw-**percentage** blijft een keuze in Beheer → Instellingen (21, of 0 bij
+  de kleineondernemersregeling); dat volgt niet automatisch uit het nummer.
+
 ## Oktober 2026 — klantpagina: voorbeelden met watermerk, betalen, beveiligd downloaden
 
 Wat er al was (privé-opslag, streaming-upload tot 4 GB, betaalmuur, Mollie,

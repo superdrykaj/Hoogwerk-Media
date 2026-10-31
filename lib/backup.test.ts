@@ -9,7 +9,6 @@ import { afterAll, describe, expect, it } from "vitest";
 import { migrate } from "./db";
 
 const require = createRequire(import.meta.url);
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const backup = require("../scripts/onderhoud/back-up.cjs") as {
   maakBackup: (o: { dir: string; nu?: Date }) => Promise<string>;
   controleer: (map: string) => Promise<{ ok: boolean; problemen: string[]; samenvatting: Record<string, number> }>;
