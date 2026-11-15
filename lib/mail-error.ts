@@ -99,3 +99,36 @@ export function verklaarMailFout(detail: string): MailFoutUitleg | null {
   }
   return null;
 }
+
+/* -------------------------------------------------------------------------- */
+/* Regel voor de serverlog                                                     */
+/* -------------------------------------------------------------------------- */
+
+/** Waar een bericht bij hoort: soort melding en het kenmerk van de aanvraag. */
+export type MailContext = { soort: string; ref: string };
+
+const E_MAILADRES = /[^\s<>"'(),;:@]+@[^\s<>"'(),;:@]+\.[^\s<>"'(),;:@]+/g;
+
+/**
+ * Eén regel voor de serverlog (`fly logs`). Bevat alleen de soort melding, het
+ * kenmerk van de aanvraag, de status en het antwoord van de mailserver. Geen
+ * namen, onderwerp of inhoud; e-mailadressen in het serverantwoord worden
+ * weggepoetst. Zo is een mislukte melding terug te vinden zonder dat er
+ * persoonsgegevens in de log belanden.
+ */
+export function mailLogRegel(
+  status: "sent" | "skipped" | "failed",
+  context: MailContext | undefined,
+  detail: string,
+  /**
+   * Message-ID van het verzonden bericht. Bevat geen persoonsgegevens (de site
+   * maakt hem zelf aan) en blijft dus heel: daarmee zoek je in Message Trace.
+   */
+  berichtId?: string,
+): string {
+  const soort = context?.soort ?? "onbekend";
+  const ref = context?.ref ?? "-";
+  const id = berichtId ? ` message-id=${berichtId.replace(/\s+/g, "")}` : "";
+  const schoon = detail.replace(E_MAILADRES, "[adres]").replace(/\s+/g, " ").trim();
+  return `[mail] status=${status} soort=${soort} ref=${ref}${id}${schoon ? ` detail="${schoon.slice(0, 300)}"` : ""}`;
+}

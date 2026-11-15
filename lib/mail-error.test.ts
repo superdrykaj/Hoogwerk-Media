@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { verklaarMailFout } from "./mail-error";
+import { mailLogRegel, verklaarMailFout } from "./mail-error";
 
 /** De melding die Microsoft 365 teruggaf toen het misging op de echte site. */
 const MICROSOFT_535 =
@@ -46,5 +46,20 @@ describe("uitleg bij een weigerende mailserver", () => {
   it("verzint niets bij een melding die we niet kennen", () => {
     expect(verklaarMailFout("452 4.3.1 Insufficient system storage")).toBeNull();
     expect(verklaarMailFout("")).toBeNull();
+  });
+});
+
+describe("regel voor de serverlog", () => {
+  it("noemt soort en kenmerk en poetst e-mailadressen weg", () => {
+    const regel = mailLogRegel(
+      "failed",
+      { soort: "aanvraag-melding", ref: "HB-TEST1" },
+      "EENVELOPE 550 5.1.1 <iemand@voorbeeld.nl>: Recipient address rejected",
+    );
+    expect(regel).toContain("status=failed");
+    expect(regel).toContain("soort=aanvraag-melding");
+    expect(regel).toContain("ref=HB-TEST1");
+    expect(regel).toContain("550 5.1.1");
+    expect(regel).not.toContain("iemand@voorbeeld.nl");
   });
 });
