@@ -4,7 +4,9 @@ import { conflictingBookings } from "@/lib/availability";
 import { listBookings } from "@/lib/bookings";
 import { getInvoiceByBookingId, listInvoiceFiles } from "@/lib/invoices";
 import { isMailConfigured } from "@/lib/mail";
+import { supplierProblems } from "@/lib/invoice-rules";
 import { isMollieConfigured } from "@/lib/mollie";
+import { getInvoiceSettings } from "@/lib/settings";
 import { listRevisionRequests } from "@/lib/revisions";
 import type { DeliveryInfo } from "@/components/admin/invoice-panel";
 
@@ -21,6 +23,7 @@ export default async function BookingsPage({
 
   // Alleen bevestigde boekingen kunnen worden opgeleverd; voor de rest is dit
   // altijd leeg, dus geen onnodige databasequery's.
+  const supplierIssues = supplierProblems(getInvoiceSettings());
   const deliveryByBooking: Record<number, DeliveryInfo> = {};
   for (const booking of bookings) {
     if (booking.status !== "confirmed") continue;
@@ -29,6 +32,7 @@ export default async function BookingsPage({
       invoice,
       files: invoice ? listInvoiceFiles(invoice.id) : [],
       revisions: invoice ? listRevisionRequests(invoice.id) : [],
+      supplierIssues,
     };
   }
 

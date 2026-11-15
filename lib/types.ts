@@ -133,7 +133,7 @@ export type ProjectImage = {
   sortOrder: number;
 };
 
-export type InvoiceStatus = "draft" | "sent" | "paid" | "cancelled";
+export type InvoiceStatus = "draft" | "sent" | "paid" | "refunded" | "cancelled";
 
 export type Invoice = {
   id: number;
@@ -149,6 +149,28 @@ export type Invoice = {
   paidUtc: number | null;
   paymentSentUtc: number | null;
   deliverySentUtc: number | null;
+  /** Klantgegevens op de factuur; leeg zolang ze niet zijn ingevuld. */
+  customerName: string;
+  customerAddress: string;
+  customerPostcode: string;
+  customerCity: string;
+  customerCountry: string;
+  customerVatId: string;
+  /** Datum van levering of uitvoering, JJJJ-MM-DD; leeg zolang niet ingevuld. */
+  deliveryDate: string;
+  paymentTermDays: number;
+  /** Moment van uitgifte. Vanaf dan is de factuur vastgelegd en onveranderbaar. */
+  issuedUtc: number | null;
+  invoiceDate: string | null;
+  /** Hoe is er betaald: "mollie" (bij Mollie geverifieerd), "manual" (door de beheerder) of leeg. */
+  paymentMethod: "" | "mollie" | "manual";
+  /** Toelichting bij een handmatige betaling (bijvoorbeeld "overgemaakt op 12-11, bankafschrift 45"). */
+  paymentNote: string;
+  /** Moment waarop Mollie een volledige terugbetaling of chargeback meldde. */
+  refundedUtc: number | null;
+  /** Naam en controlesom van het bewaarde PDF; leeg tot het is opgeslagen. */
+  pdfFilename: string;
+  pdfSha256: string;
   createdUtc: number;
   updatedUtc: number;
 };
@@ -161,6 +183,13 @@ export type InvoiceFile = {
   contentType: string;
   sizeBytes: number;
   sortOrder: number;
+  /**
+   * Het voorbeeld met watermerk dat de klant vóór betaling ziet. Leeg zolang
+   * er geen is; dan krijgt de klant niets te zien van dit bestand.
+   */
+  previewFilename: string;
+  /** Inhoudstype van het voorbeeld: image/jpeg of video/mp4. */
+  previewType: string;
   createdUtc: number;
 };
 

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { headers } from "next/headers";
 
+import { NavigationProgress } from "@/components/navigation-progress";
+import { PageLoader } from "@/components/page-loader";
 import { copy } from "@/content/copy";
 import { site } from "@/content/site";
 import { HTML_LANG, OG_LOCALE, localeFromPath, type Locale } from "@/lib/locale";
@@ -24,6 +26,10 @@ const geistMono = Geist_Mono({
   weight: ["400", "500"],
   variable: "--font-geist-mono",
   display: "swap",
+  // Alleen voor kleine labels. Niet vooraf laden: die 30 kB hoeft niet met het
+  // posterbeeld en de scripts om de verbinding te strijden. Het lettertype
+  // wordt gewoon opgehaald zodra de tekst het nodig heeft.
+  preload: false,
 });
 
 /**
@@ -50,6 +56,20 @@ function deelbeeld(locale: Locale, tagline: string) {
 async function currentLocale(): Promise<Locale> {
   const head = await headers();
   return localeFromPath(head.get("x-pathname") ?? "/");
+}
+
+/**
+ * Het laadscherm hoort bij de publieke website. In de beheeromgeving en op de
+ * opleverpagina van een klant zou het alleen in de weg zitten.
+ */
+async function isPublicPage(): Promise<boolean> {
+  const head = await headers();
+  const pad = head.get("x-pathname") ?? "/";
+  return !(
+    pad === "/admin" ||
+    pad.startsWith("/admin/") ||
+    pad.startsWith("/oplevering/")
+  );
 }
 
 // Als functie, niet als vaste waarde: SITE_STATUS wordt pas bij het draaien
@@ -96,6 +116,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const locale = await currentLocale();
+  const publiek = await isPublicPage();
 
   return (
     // De lettertypevariabelen staan op <html>, niet op <body>. Tailwind zet
@@ -114,6 +135,8 @@ export default async function RootLayout({
         >
           {copy(locale).nav.skipToContent}
         </a>
+        {publiek && <PageLoader />}
+        <NavigationProgress />
         {children}
       </body>
     </html>

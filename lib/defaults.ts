@@ -33,7 +33,7 @@ export const DEFAULT_INVOICE_SETTINGS: InvoiceSettings = {
   // Uit content/site.ts, zodat het nummer maar op één plek staat. Een waarde die
   // je in Beheer → Instellingen hebt opgeslagen, gaat hier altijd boven.
   companyKvk: site.business.kvk || "Nog niet ingevuld",
-  companyVatNumber: "Nog niet ingevuld",
+  companyVatNumber: site.business.vat || "Nog niet ingevuld",
   companyIban: "Nog niet ingevuld",
   // Het standaard BTW-tarief in Nederland; van toepassing op foto- en
   // videodiensten. BTW wordt altijd verrekend, er is geen vrijstelling.

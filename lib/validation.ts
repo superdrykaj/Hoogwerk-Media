@@ -1,3 +1,13 @@
+import {
+  formatPostcode,
+  isPlaceholder,
+  isValidDutchPostcode,
+  isValidIban,
+  isValidKvk,
+  isValidVatId,
+  normalizeIban,
+  normalizeVatId,
+} from "./invoice-rules";
 import { z } from "zod";
 
 import type { Dictionary } from "@/content/copy";
@@ -102,16 +112,42 @@ export const settingsFormSchema = z.object({
   maxAdvanceDays: z.coerce.number().int().min(1).max(365),
 });
 
-export const invoiceSettingsFormSchema = z.object({
-  companyName: trimmed(150).min(1, "Vul een bedrijfsnaam in."),
-  companyAddress: trimmed(200).min(1, "Vul een adres in."),
-  companyPostcode: trimmed(20).min(1, "Vul een postcode in."),
-  companyCity: trimmed(100).min(1, "Vul een plaats in."),
-  companyKvk: trimmed(50).min(1, "Vul een KvK-nummer in."),
-  companyVatNumber: trimmed(50).min(1, "Vul een BTW-nummer in."),
-  companyIban: trimmed(50).min(1, "Vul een IBAN in."),
-  vatRatePercent: z.coerce.number().min(0, "Kan niet negatief zijn.").max(100, "Maximaal 100%."),
-});
+export const invoiceSettingsFormSchema = z
+  .object({
+    companyName: trimmed(150).min(1, "Vul een bedrijfsnaam in."),
+    companyAddress: trimmed(200).min(1, "Vul een adres in."),
+    companyPostcode: trimmed(20).min(1, "Vul een postcode in."),
+    companyCity: trimmed(100).min(1, "Vul een plaats in."),
+    companyKvk: trimmed(50).min(1, "Vul een KvK-nummer in."),
+    companyVatNumber: trimmed(50),
+    companyIban: trimmed(50).min(1, "Vul een IBAN in."),
+    vatRatePercent: z.coerce.number().min(0, "Kan niet negatief zijn.").max(100, "Maximaal 100%."),
+  })
+  .superRefine((v, ctx) => {
+    const fout = (path: string, message: string) =>
+      ctx.addIssue({ code: "custom", path: [path], message });
+    // Geen invulplekken op een echte factuur.
+    if (isPlaceholder(v.companyAddress)) fout("companyAddress", "Vul je echte adres in.");
+    if (isPlaceholder(v.companyCity)) fout("companyCity", "Vul je echte plaats in.");
+    if (!isValidDutchPostcode(v.companyPostcode)) {
+      fout("companyPostcode", "Vul een Nederlandse postcode in, bijvoorbeeld 1500 AB.");
+    }
+    if (!isValidKvk(v.companyKvk)) fout("companyKvk", "Een KvK-nummer heeft 8 cijfers.");
+    if (!isValidIban(v.companyIban)) fout("companyIban", "Dit IBAN klopt niet. Controleer het nummer.");
+    if (v.vatRatePercent > 0 && !isValidVatId(v.companyVatNumber)) {
+      fout(
+        "companyVatNumber",
+        "Vul je btw-identificatienummer in, in de vorm NL123456789B01. " +
+          "Heb je geen btw-nummer omdat je de kleineondernemersregeling gebruikt? Zet het percentage dan op 0.",
+      );
+    }
+  })
+  .transform((v) => ({
+    ...v,
+    companyPostcode: formatPostcode(v.companyPostcode),
+    companyIban: normalizeIban(v.companyIban),
+    companyVatNumber: v.companyVatNumber ? normalizeVatId(v.companyVatNumber) : "",
+  }));
 
 /** Eerste foutmelding per veld, klaar voor weergave in het formulier. */
 export function fieldErrors(error: z.ZodError): Record<string, string> {

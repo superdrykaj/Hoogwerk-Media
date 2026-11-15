@@ -33,9 +33,18 @@ swap_size_mb = 512
   internal_port = 3000
   force_https = true
   # Eén machine, omdat SQLite en de uploads op één schijf staan.
+  #
+  # min_machines_running = 1: de machine blijft altijd aan. Met 0 stopt Fly de
+  # machine zodra er even niemand komt, en moet de eerstvolgende bezoeker
+  # wachten tot de machine opnieuw is opgestart en Next.js klaar is. Gemeten op
+  # de testomgeving (zelfde instelling): 5,4 seconden voor de eerste byte,
+  # tegen ruim een halve seconde bij een machine die al draait. Dat valt buiten
+  # elke laadanimatie, want er is nog geen pagina om iets in te tonen. Kosten:
+  # één kleine machine die doorloopt, ongeveer 3 à 4 dollar per maand.
+  # Meer dan één machine blijft verboden, zie de waarschuwing bij [mounts].
   auto_stop_machines = "stop"
   auto_start_machines = true
-  min_machines_running = 0
+  min_machines_running = 1
 
   [[http_service.checks]]
     interval = "30s"

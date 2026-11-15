@@ -402,9 +402,20 @@ function BookingDetail({
           </form>
 
           {booking.status === "confirmed" && delivery && (
-            <InvoicePanel bookingId={booking.id} info={delivery} mollieReady={mollieReady} />
+            <InvoicePanel
+              bookingId={booking.id}
+              info={delivery}
+              mollieReady={mollieReady}
+              defaults={{ name: booking.name, deliveryDate: dateKey }}
+            />
           )}
 
+          {delivery?.invoice?.issuedUtc ? (
+            <p className="border-t border-ink-700 pt-4 text-xs text-mist-500">
+              Aan deze boeking hangt een uitgegeven factuur. Die moet bewaard blijven
+              (bewaarplicht), dus de boeking kan niet worden verwijderd. Annuleren kan wel.
+            </p>
+          ) : (
           <form action={deleteBookingAction} className="border-t border-ink-700 pt-4">
             <input type="hidden" name="id" value={booking.id} />
             <button type="submit" className="btn btn-quiet text-rose-300">
@@ -415,6 +426,7 @@ function BookingDetail({
               genoeg.
             </p>
           </form>
+          )}
         </div>
       </div>
     </div>

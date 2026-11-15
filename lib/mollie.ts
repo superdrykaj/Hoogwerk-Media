@@ -19,6 +19,8 @@ import "server-only";
  * ============================================================================
  */
 
+import { parseRemotePayment, type RemotePayment } from "./payment-rules";
+
 const API_BASE = "https://api.mollie.com/v2";
 
 export function isMollieConfigured(): boolean {
@@ -105,18 +107,31 @@ export type MolliePaymentStatus =
   | "failed"
   | "paid";
 
-export async function fetchMolliePaymentStatus(
+/**
+ * Haalt een betaling op bij Mollie zelf. "unreachable" betekent: geen
+ * antwoord of een fout; de aanroeper mag dan niet aannemen dat er niets is
+ * betaald. Null: Mollie kent het ID niet.
+ */
+export async function fetchMolliePayment(
   paymentId: string,
-): Promise<MolliePaymentStatus | null> {
-  if (!isMollieConfigured() || !paymentId) return null;
+): Promise<RemotePayment | null | "unreachable"> {
+  if (!isMollieConfigured() || !paymentId) return "unreachable";
   try {
     const response = await mollieFetch(`/payments/${encodeURIComponent(paymentId)}`, {
       method: "GET",
     });
-    if (!response.ok) return null;
-    const data = (await response.json()) as { status?: string };
-    return (data.status as MolliePaymentStatus) ?? null;
+    if (response.status === 404) return null;
+    if (!response.ok) return "unreachable";
+    return parseRemotePayment(await response.json()) ?? "unreachable";
   } catch {
-    return null;
+    return "unreachable";
   }
+}
+
+export async function fetchMolliePaymentStatus(
+  paymentId: string,
+): Promise<MolliePaymentStatus | null> {
+  const payment = await fetchMolliePayment(paymentId);
+  if (!payment || payment === "unreachable") return null;
+  return payment.status as MolliePaymentStatus;
 }

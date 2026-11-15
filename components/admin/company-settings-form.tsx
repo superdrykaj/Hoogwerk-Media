@@ -4,6 +4,7 @@ import { useActionState } from "react";
 
 import { saveInvoiceSettingsAction } from "@/app/actions/admin";
 import { emptyActionState, type ActionState } from "@/lib/form-state";
+import { isPlaceholder } from "@/lib/invoice-rules";
 import type { InvoiceSettings } from "@/lib/types";
 
 export function CompanySettingsForm({ settings }: { settings: InvoiceSettings }) {
@@ -28,58 +29,59 @@ export function CompanySettingsForm({ settings }: { settings: InvoiceSettings })
           id="companyName"
           name="companyName"
           label="Bedrijfsnaam"
-          defaultValue={settings.companyName}
+          defaultValue={state.values?.companyName ?? settings.companyName}
           error={state.errors?.companyName}
         />
         <Field
           id="companyKvk"
           name="companyKvk"
           label="KvK-nummer"
-          defaultValue={settings.companyKvk}
+          defaultValue={state.values?.companyKvk ?? settings.companyKvk}
           error={state.errors?.companyKvk}
         />
         <Field
           id="companyAddress"
           name="companyAddress"
           label="Adres"
-          defaultValue={settings.companyAddress}
+          defaultValue={state.values?.companyAddress ?? (isPlaceholder(settings.companyAddress) ? "" : settings.companyAddress)}
           error={state.errors?.companyAddress}
         />
         <Field
           id="companyVatNumber"
           name="companyVatNumber"
-          label="BTW-nummer"
-          defaultValue={settings.companyVatNumber}
+          label="BTW-identificatienummer"
+          defaultValue={state.values?.companyVatNumber ?? (isPlaceholder(settings.companyVatNumber) ? "" : settings.companyVatNumber)}
+          hint="Bijvoorbeeld NL123456789B01. Niet nodig bij 0% btw (KOR)."
           error={state.errors?.companyVatNumber}
         />
         <Field
           id="companyPostcode"
           name="companyPostcode"
           label="Postcode"
-          defaultValue={settings.companyPostcode}
+          defaultValue={state.values?.companyPostcode ?? (isPlaceholder(settings.companyPostcode) ? "" : settings.companyPostcode)}
           error={state.errors?.companyPostcode}
         />
         <Field
           id="companyIban"
           name="companyIban"
           label="IBAN"
-          defaultValue={settings.companyIban}
+          defaultValue={state.values?.companyIban ?? (isPlaceholder(settings.companyIban) ? "" : settings.companyIban)}
           error={state.errors?.companyIban}
         />
         <Field
           id="companyCity"
           name="companyCity"
           label="Plaats"
-          defaultValue={settings.companyCity}
+          defaultValue={state.values?.companyCity ?? (isPlaceholder(settings.companyCity) ? "" : settings.companyCity)}
           error={state.errors?.companyCity}
         />
         <Field
           id="vatRatePercent"
           name="vatRatePercent"
           label="BTW-percentage"
-          defaultValue={String(settings.vatRatePercent)}
+          defaultValue={state.values?.vatRatePercent ?? String(settings.vatRatePercent)}
           type="number"
-          hint="Wordt altijd verrekend op facturen en betaalverzoeken; geen vrijstelling."
+          hint="21 voor btw-plichtige ondernemers. Gebruik je de kleineondernemersregeling (KOR), zet dan 0: er wordt dan geen btw berekend en op de factuur staat de KOR-vermelding. Kies dit alleen als het klopt; vraag bij twijfel je boekhouder."
           error={state.errors?.vatRatePercent}
         />
       </div>

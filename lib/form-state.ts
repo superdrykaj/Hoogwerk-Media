@@ -43,6 +43,8 @@ export type ActionState = {
    * lijstje van wat je eraan kunt doen.
    */
   details?: string[];
+  /** Wat er was ingevuld, om het formulier na een foutmelding terug te zetten. */
+  values?: Record<string, string>;
 };
 
 export const emptyActionState: ActionState = { status: "idle", message: "" };

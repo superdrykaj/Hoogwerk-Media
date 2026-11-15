@@ -47,6 +47,7 @@
   --z-sticky: 40;
   --z-header: 50;
   --z-overlay: 60;
+  --z-loader: 100;
 }
 
 :root {
@@ -446,5 +447,297 @@ body::after {
   .reveal {
     opacity: 1;
     transform: none;
+  }
+}
+
+/* ==========================================================================
+   Laadscherm en navigatiestreep
+   --------------------------------------------------------------------------
+   Opbouw en uitleg: components/page-loader.tsx en navigation-progress.tsx.
+   Alles hier is bewust CSS en SVG, zonder bibliotheek.
+
+   Tijdlijn van het laadscherm:
+     0 ms     onzichtbaar (de pagina is nog gewoon te zien)
+     300 ms   fade-in van 350 ms, pas dan is "laden" de moeite waard
+     klaar    fade-out van 400 ms, vanaf de dekking die het op dat moment had
+              (stond het nog op 0, dan komt het helemaal niet in beeld)
+     7 s      vangnet: ook zonder script gaat het scherm weg
+   ========================================================================== */
+
+.hb-loader {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-loader);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-ink-950);
+  /* Mag nooit klikken blokkeren, ook niet als het scherm blijft hangen. */
+  pointer-events: none;
+  opacity: 0;
+  animation:
+    hb-in 0.35s ease 0.3s forwards,
+    hb-failsafe 0s linear 7s forwards;
+}
+
+.hb-loader[data-state="done"] {
+  animation: hb-out 0.4s ease forwards;
+}
+
+.hb-loader[data-state="skip"],
+.hb-loader[data-state="gone"] {
+  display: none;
+}
+
+/* Zonder JavaScript is er niets dat het scherm kan laten verdwijnen. */
+@media (scripting: none) {
+  .hb-loader {
+    display: none;
+  }
+}
+
+.hb-loader__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Iets boven het midden: optisch staat dat rustiger dan exact midden. */
+  transform: translateY(-3vh);
+}
+
+.hb-loader__mark {
+  width: 4.25rem;
+  height: auto;
+  animation: hb-mark 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both;
+}
+
+.hb-loader__word {
+  margin-top: 1.25rem;
+  font-family: var(--font-display);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.42em;
+  /* De spatiëring zit ook na de laatste letter; dit haalt dat weer weg zodat
+     de tekst optisch gecentreerd staat. */
+  margin-right: -0.42em;
+  text-transform: uppercase;
+  color: var(--color-mist-300);
+  animation: hb-mark 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.47s both;
+}
+
+.hb-loader__flight {
+  position: relative;
+  margin-top: 1.75rem;
+  width: min(72vw, 20rem);
+  /* Zelfde verhouding als de viewBox van de SVG (320 × 44). */
+  aspect-ratio: 320 / 44;
+  animation: hb-mark 0.9s ease 0.6s both;
+}
+
+.hb-loader__lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.hb-loader__horizon {
+  stroke-width: 1;
+}
+.hb-stop-edge {
+  stop-color: var(--color-mist-500);
+  stop-opacity: 0;
+}
+.hb-stop-mid {
+  stop-color: var(--color-mist-500);
+  stop-opacity: 0.55;
+}
+
+.hb-loader__track {
+  fill: none;
+  stroke: var(--color-mist-500);
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.22;
+}
+
+/* Het lichtpunt. Twee lagen, want een boog is een rechte beweging naar rechts
+   plus een heen-en-weer naar boven, elk met een eigen transform. Beide lopen
+   even lang en lineair, zodat het punt precies op de getekende baan blijft.
+   Alleen transform en opacity: dat gebeurt buiten de hoofdthread. */
+.hb-drone-x {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  animation: hb-x 1.9s linear 1s infinite;
+}
+.hb-drone-y {
+  position: absolute;
+  inset: 0;
+  animation: hb-y 1.9s linear 1s infinite;
+}
+.hb-drone {
+  position: absolute;
+  /* Op de horizon (34 van 44) en bij het begin van de baan (8 van 320). */
+  top: 77.27%;
+  left: 2.5%;
+  width: 3.4rem;
+  height: 1.75px;
+  margin-top: -0.9px;
+  margin-left: -3.4rem;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-haze-300)
+  );
+}
+/* De kop van de streep: een kleine, scherpe punt. */
+.hb-drone::after {
+  content: "";
+  position: absolute;
+  right: -1px;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  margin-top: -2px;
+  border-radius: 50%;
+  background: var(--color-haze-300);
+  box-shadow: 0 0 8px 1px var(--color-haze-300);
+}
+
+@keyframes hb-in {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes hb-out {
+  from {
+    opacity: var(--hb-o, 1);
+  }
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+@keyframes hb-failsafe {
+  to {
+    visibility: hidden;
+  }
+}
+@keyframes hb-mark {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes hb-x {
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(95%);
+    opacity: 0;
+  }
+}
+/* Eén halve sinus omhoog en weer omlaag, op dezelfde 21 punten als de baan. */
+@keyframes hb-y {
+  0% { transform: translateY(-0.00%); }
+  5% { transform: translateY(-8.18%); }
+  10% { transform: translateY(-16.15%); }
+  15% { transform: translateY(-23.73%); }
+  20% { transform: translateY(-30.73%); }
+  25% { transform: translateY(-36.96%); }
+  30% { transform: translateY(-42.29%); }
+  35% { transform: translateY(-46.58%); }
+  40% { transform: translateY(-49.71%); }
+  45% { transform: translateY(-51.63%); }
+  50% { transform: translateY(-52.27%); }
+  55% { transform: translateY(-51.63%); }
+  60% { transform: translateY(-49.71%); }
+  65% { transform: translateY(-46.58%); }
+  70% { transform: translateY(-42.29%); }
+  75% { transform: translateY(-36.96%); }
+  80% { transform: translateY(-30.73%); }
+  85% { transform: translateY(-23.73%); }
+  90% { transform: translateY(-16.15%); }
+  95% { transform: translateY(-8.18%); }
+  100% { transform: translateY(-0.00%); }
+}
+
+/* Minder beweging: het merk blijft, de vlucht staat stil als vaste lijn. */
+@media (prefers-reduced-motion: reduce) {
+  .hb-drone-x {
+    display: none;
+  }
+  .hb-loader__mark,
+  .hb-loader__word,
+  .hb-loader__flight {
+    animation: none;
+  }
+  .hb-loader__inner {
+    transform: none;
+  }
+}
+
+/* Navigatiestreep -------------------------------------------------------- */
+.hb-nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 2px;
+  z-index: var(--z-loader);
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+/* De vertraging zit op de overgang naar zichtbaar: is de pagina binnen vóór
+   die 250 ms voorbij zijn, dan keert de overgang om en is er niets te zien
+   geweest. */
+.hb-nav[data-active="true"] {
+  opacity: 1;
+  transition-delay: 0.25s;
+}
+.hb-nav__streak {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 38%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-haze-300) 55%,
+    transparent
+  );
+  transform: translateX(-100%);
+}
+.hb-nav[data-active="true"] .hb-nav__streak {
+  animation: hb-nav 1.3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@keyframes hb-nav {
+  to {
+    transform: translateX(263%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hb-nav__streak {
+    width: 100%;
+    transform: none;
+    opacity: 0.55;
+  }
+  .hb-nav[data-active="true"] .hb-nav__streak {
+    animation: none;
   }
 }

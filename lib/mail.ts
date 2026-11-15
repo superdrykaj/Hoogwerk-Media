@@ -5,6 +5,7 @@ import { site } from "@/content/site";
 import { getDb } from "./db";
 import { bookingIcs, icsFilename, type IcsMethod } from "./ics";
 import { formatAmountCents } from "./invoices";
+import { mailLogRegel, type MailContext } from "./mail-error";
 import { DEFAULT_LOCALE, type Locale } from "./locale";
 import { scopeLines } from "./project-scope";
 import { formatTimestamp } from "./time";
@@ -152,6 +153,9 @@ function beschrijfFout(error: unknown): string {
 /** Een agenda-afspraak die als uitnodiging met het bericht meegaat. */
 type Agendabijlage = { method: IcsMethod; filename: string; content: string };
 
+/** Een bijlage bij een bericht, bijvoorbeeld het factuur-PDF. */
+export type MailAttachment = { filename: string; content: Buffer; contentType: string };
+
 async function send(
   to: string,
   subject: string,
@@ -159,14 +163,19 @@ async function send(
   /** Adres waarop de ontvanger moet antwoorden, als dat niet de afzender is. */
   replyTo?: string,
   agenda?: Agendabijlage,
+  attachments?: MailAttachment[],
+  /** Soort melding en kenmerk, alleen voor de serverlog. */
+  context?: MailContext,
 ): Promise<MailStatus> {
   if (!isMailConfigured()) {
-    logMail(to, subject, "skipped", "SMTP nog niet ingesteld; niets verzonden.");
+    const detail = "SMTP nog niet ingesteld; niets verzonden.";
+    logMail(to, subject, "skipped", detail);
+    console.warn(mailLogRegel("skipped", context, detail));
     return "skipped";
   }
   try {
     const transport = await getTransport();
-    await transport.sendMail({
+    const info = await transport.sendMail({
       from: process.env.MAIL_FROM,
       to,
       replyTo,
@@ -176,11 +185,21 @@ async function send(
       // juiste inhoudstype met de methode erin. Zonder dat toont Outlook een
       // bestandje in plaats van een afspraak met een knop erbij.
       icalEvent: agenda,
+      attachments,
     });
-    logMail(to, subject, "sent", "");
+    // Bericht-ID en antwoord van de server: daarmee is het bericht terug te
+    // vinden in de Message Trace van Microsoft 365.
+    const berichtId = typeof info.messageId === "string" ? info.messageId : "";
+    const antwoord = typeof info.response === "string" ? info.response : "";
+    logMail(to, subject, "sent", `${berichtId} ${antwoord}`.trim().slice(0, 500));
+    console.info(mailLogRegel("sent", context, antwoord, berichtId));
     return "sent";
   } catch (error) {
-    logMail(to, subject, "failed", beschrijfFout(error));
+    const detail = beschrijfFout(error);
+    logMail(to, subject, "failed", detail);
+    // Ook naar de serverlog, zodat een mislukte melding in `fly logs` staat en
+    // niet alleen in de database.
+    console.error(mailLogRegel("failed", context, detail));
     return "failed";
   }
 }
@@ -318,6 +337,9 @@ export async function sendBookingRequestMails(booking: Booking): Promise<{
       // Antwoorden van de klant horen in de boekingenmap, ook als de site vanaf
       // een ander adres verstuurt.
       site.bookingEmail,
+      undefined,
+      undefined,
+      { soort: "aanvraag-bevestiging", ref: booking.reference },
     ),
     send(
       naarJou,
@@ -332,6 +354,9 @@ export async function sendBookingRequestMails(booking: Booking): Promise<{
       ].join("\n"),
       // Zo kun je rechtstreeks op de melding antwoorden naar de klant.
       booking.email,
+      undefined,
+      undefined,
+      { soort: "aanvraag-melding", ref: booking.reference },
     ),
   ]);
 
@@ -433,6 +458,7 @@ export async function sendPaymentRequestMail(
   invoice: Invoice,
   checkoutUrl: string,
   invoiceUrl: string,
+  pdf?: MailAttachment,
 ): Promise<MailStatus> {
   const locale = booking.locale;
   const t = copy(locale).mail;
@@ -458,6 +484,8 @@ export async function sendPaymentRequestMail(
       site.bookingEmail,
     ].join("\n"),
     site.bookingEmail,
+    undefined,
+    pdf ? [pdf] : undefined,
   );
 }
 
@@ -471,6 +499,7 @@ export async function sendDeliveryMail(
   invoice: Invoice,
   deliveryUrl: string,
   invoiceUrl: string,
+  pdf?: MailAttachment,
 ): Promise<MailStatus> {
   const locale = booking.locale;
   const t = copy(locale).mail;
@@ -496,6 +525,8 @@ export async function sendDeliveryMail(
       site.bookingEmail,
     ].join("\n"),
     site.bookingEmail,
+    undefined,
+    pdf ? [pdf] : undefined,
   );
 }
 
@@ -518,6 +549,9 @@ export async function sendRevisionRequestedMail(
       message,
     ].join("\n"),
     booking.email,
+    undefined,
+    undefined,
+    { soort: "wijziging-melding", ref: booking.reference },
   );
 }
 
@@ -545,6 +579,9 @@ export async function sendContactMails(
         t.signature,
       ].join("\n"),
       site.email,
+      undefined,
+      undefined,
+      { soort: "contact-bevestiging", ref: `bericht-${message.id}` },
     ),
     // Een contactbericht is algemeen en gaat naar het algemene adres.
     send(
@@ -557,6 +594,9 @@ export async function sendContactMails(
         message.message,
       ].join("\n"),
       message.email,
+      undefined,
+      undefined,
+      { soort: "contact-melding", ref: `bericht-${message.id}` },
     ),
   ]);
   return { customer, owner };
