@@ -171,7 +171,14 @@ describe("melding van een contactbericht", () => {
 
     // Het bericht-ID van de server komt in de log, voor de Message Trace.
     const regels = info.mock.calls.map((args) => String(args[0]));
-    expect(regels.some((r) => r.includes(`ref=bericht-${id}`) && r.includes("status=sent"))).toBe(true);
+    const verzonden = regels.filter((r) => r.includes(`ref=bericht-${id}`) && r.includes("status=sent"));
+    expect(verzonden).toHaveLength(2);
+    // Het Message-ID blijft heel; het serverantwoord komt erachter.
+    for (const regel of verzonden) {
+      expect(regel).toMatch(/message-id=<[^>\s]+@[^>\s]+>/);
+      expect(regel).not.toContain(klant.email);
+      expect(regel).not.toContain(klant.name);
+    }
     const log = mail.recentMailLog(2);
     expect(log.every((r) => r.status === "sent" && r.detail.includes("250 2.0.0 OK"))).toBe(true);
     await smtp.sluit();

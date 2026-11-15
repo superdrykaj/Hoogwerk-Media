@@ -189,12 +189,10 @@ async function send(
     });
     // Bericht-ID en antwoord van de server: daarmee is het bericht terug te
     // vinden in de Message Trace van Microsoft 365.
-    const detail = [info.messageId, info.response]
-      .filter((deel) => typeof deel === "string" && deel)
-      .join(" ")
-      .slice(0, 500);
-    logMail(to, subject, "sent", detail);
-    console.info(mailLogRegel("sent", context, detail));
+    const berichtId = typeof info.messageId === "string" ? info.messageId : "";
+    const antwoord = typeof info.response === "string" ? info.response : "";
+    logMail(to, subject, "sent", `${berichtId} ${antwoord}`.trim().slice(0, 500));
+    console.info(mailLogRegel("sent", context, antwoord, berichtId));
     return "sent";
   } catch (error) {
     const detail = beschrijfFout(error);
