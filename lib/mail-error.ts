@@ -120,9 +120,15 @@ export function mailLogRegel(
   status: "sent" | "skipped" | "failed",
   context: MailContext | undefined,
   detail: string,
+  /**
+   * Message-ID van het verzonden bericht. Bevat geen persoonsgegevens (de site
+   * maakt hem zelf aan) en blijft dus heel: daarmee zoek je in Message Trace.
+   */
+  berichtId?: string,
 ): string {
   const soort = context?.soort ?? "onbekend";
   const ref = context?.ref ?? "-";
+  const id = berichtId ? ` message-id=${berichtId.replace(/\s+/g, "")}` : "";
   const schoon = detail.replace(E_MAILADRES, "[adres]").replace(/\s+/g, " ").trim();
-  return `[mail] status=${status} soort=${soort} ref=${ref}${schoon ? ` detail="${schoon.slice(0, 300)}"` : ""}`;
+  return `[mail] status=${status} soort=${soort} ref=${ref}${id}${schoon ? ` detail="${schoon.slice(0, 300)}"` : ""}`;
 }
